@@ -17,8 +17,8 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:#070707;color:var(--tx);font-family:var(--sans);overflow:hidden}
-#stage{position:fixed;inset:0;display:grid;place-items:center}
-.deck{width:1280px;height:720px;position:relative;transform-origin:center}
+#stage{position:fixed;inset:0;overflow:hidden}
+.deck{width:1280px;height:720px;position:absolute;left:50%;top:50%;transform-origin:center;transform:translate(-50%,-50%)}
 .slide{position:absolute;inset:0;background:var(--bg);overflow:hidden;opacity:0;pointer-events:none;
   transition:opacity .45s ease, transform .45s ease;transform:translateX(24px)}
 .slide.on{opacity:1;pointer-events:auto;transform:none}
@@ -89,7 +89,7 @@ ul.b li::before{content:"";position:absolute;left:0;top:7px;width:6px;height:2px
 #nav button{background:#1b1a18;border:1px solid #34312c;color:#eee;font:600 12px var(--mono);width:34px;height:30px;cursor:pointer}
 #nav button:hover{border-color:var(--or);color:var(--or)}
 #bar{position:fixed;left:0;top:0;height:3px;background:var(--or);transition:width .4s;z-index:5}
-@media print{
+@media print{.deck{left:0!important;top:0!important}
   html,body{overflow:visible;background:var(--bg)}
   #nav,#bar{display:none}
   #stage{position:static;display:block}
@@ -104,7 +104,7 @@ ul.b li::before{content:"";position:absolute;left:0;top:7px;width:6px;height:2px
 <div id="stage"><div class="deck" id="deck">
 
 <!-- 01 AGENDA -->
-<section class="slide"><div class="in">
+<section class="slide on"><div class="in">
   <div class="top"><span class="tag">[ INTERNAL USE ONLY ]</span><span>NEDP / MID YEAR REVIEW 2026</span><span class="brand"><i></i>TRIATRA</span></div>
   <div class="kick">Agenda</div>
   <h1 class="t">Five Sections Prove I Know the Company,<br>My Products and How I Execute</h1>
@@ -433,8 +433,8 @@ ul.b li::before{content:"";position:absolute;left:0;top:7px;width:6px;height:2px
 <script>
 const S=[...document.querySelectorAll('.slide')],deck=document.getElementById('deck'),bar=document.getElementById('bar');
 let i=0;try{i=Math.min(+(location.hash.slice(1)||1)-1,S.length-1)||0}catch(e){}
-function show(n){i=Math.max(0,Math.min(S.length-1,n));S.forEach((s,k)=>s.classList.toggle('on',k===i));bar.style.width=((i+1)/S.length*100)+'%';history.replaceState(null,'','#'+(i+1))}
-function fit(){const k=Math.min(innerWidth/1280,innerHeight/720);deck.style.transform='scale('+k+')'}
+function show(n){i=Math.max(0,Math.min(S.length-1,n));S.forEach((s,k)=>s.classList.toggle('on',k===i));bar.style.width=((i+1)/S.length*100)+'%';try{history.replaceState(null,'','#'+(i+1))}catch(e){}}
+function fit(){const k=Math.min(innerWidth/1280,innerHeight/720);deck.style.transform='translate(-50%,-50%) scale('+k+')'}
 addEventListener('resize',fit);fit();show(i);
 addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key))show(i+1);if(['ArrowLeft','PageUp'].includes(e.key))show(i-1);if(e.key==='Home')show(0);if(e.key==='End')show(S.length-1)});
 document.getElementById('pv').onclick=()=>show(i-1);document.getElementById('nx').onclick=()=>show(i+1);
