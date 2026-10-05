@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEDP Review — Monochrome Engineering</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0F0F0E; --panel:#191816; --panel2:#211F1C; --line:#34312C; --grid:rgba(255,255,255,.035);
+  --or:#FF6A2B; --or-dim:rgba(255,106,43,.14); --or-glow:rgba(255,106,43,.35);
+  --steel:#6FA3CF; --steel-dim:rgba(111,163,207,.14);
+  --tx:#EEEAE1; --tx2:#B4AFA4; --mut:#7E796F;
+  --page:#070707;--dash:#4A463F;--me-tx:#FFD8C6;--outline:rgba(255,106,43,.55);--hatch:rgba(255,255,255,.015);
+  --sans:"Neue Haas Grotesk Text Pro","Space Grotesk",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--page);color:var(--tx);font-family:var(--sans);overflow:hidden}
+#stage{position:fixed;inset:0;overflow:hidden}
+.deck{width:1280px;height:720px;position:absolute;left:50%;top:50%;transform-origin:center;transform:translate(-50%,-50%)}
+.slide{position:absolute;inset:0;background:var(--bg);overflow:hidden;opacity:0;pointer-events:none;
+  transition:opacity .45s ease, transform .45s ease;transform:translateX(24px)}
+.slide.on{opacity:1;pointer-events:auto;transform:none}
+.slide::before{content:"";position:absolute;inset:0;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:32px 32px;pointer-events:none}
+.in{position:absolute;inset:0;padding:30px 44px 0;display:flex;flex-direction:column}
+
+/* chrome */
+.top{display:flex;justify-content:space-between;align-items:center;font:600 10px var(--mono);letter-spacing:.14em;color:var(--mut)}
+.top .tag{color:var(--or)}
+.brand{display:flex;align-items:center;gap:8px;color:var(--tx)}
+.brand i{width:14px;height:14px;background:var(--or);clip-path:polygon(0 0,100% 0,100% 100%,40% 100%,0 60%)}
+.foot{position:absolute;left:44px;right:44px;bottom:16px;display:flex;justify-content:space-between;font:400 10px var(--mono);color:var(--mut);letter-spacing:.08em}
+.foot b{color:var(--or);font-weight:600}
+
+/* titles */
+.kick{margin-top:26px;font:600 11px var(--mono);letter-spacing:.18em;color:var(--or);text-transform:uppercase;display:flex;gap:10px;align-items:center}
+.kick::before{content:"";width:22px;height:2px;background:var(--or)}
+h1.t{margin-top:8px;font-size:27px;line-height:1.15;font-weight:700;letter-spacing:-.01em;max-width:1050px}
+.body{flex:1;min-height:0;margin:16px 0 46px}
+.lbl{font:600 9.5px var(--mono);letter-spacing:.16em;color:var(--mut);text-transform:uppercase;margin-bottom:8px}
+
+/* cards with crop marks */
+.c{position:relative;background:var(--panel);border:1px solid var(--line);padding:12px 14px}
+.c::after{content:"";position:absolute;inset:-1px;pointer-events:none;
+  background:
+   linear-gradient(var(--or),var(--or)) top left/10px 2px no-repeat,
+   linear-gradient(var(--or),var(--or)) top left/2px 10px no-repeat,
+   linear-gradient(var(--or),var(--or)) bottom right/10px 2px no-repeat,
+   linear-gradient(var(--or),var(--or)) bottom right/2px 10px no-repeat}
+.c.sc::after{background:
+   linear-gradient(var(--steel),var(--steel)) top left/10px 2px no-repeat,
+   linear-gradient(var(--steel),var(--steel)) top left/2px 10px no-repeat,
+   linear-gradient(var(--steel),var(--steel)) bottom right/10px 2px no-repeat,
+   linear-gradient(var(--steel),var(--steel)) bottom right/2px 10px no-repeat}
+.c.plain::after{display:none}
+.me{background:var(--or-dim)!important;border-color:var(--or)!important;box-shadow:0 0 0 1px var(--or),0 0 28px var(--or-glow)}
+.me .n,.me .p{color:var(--me-tx)!important}
+.n{font-weight:700;font-size:13px}
+.p{font-size:11px;color:var(--tx2);margin-top:3px;line-height:1.35}
+.r{font:400 9.5px var(--mono);color:var(--mut);margin-top:3px;letter-spacing:.04em}
+ul.b{list-style:none;font-size:11.5px;line-height:1.45;color:var(--tx2)}
+ul.b li{padding-left:14px;position:relative;margin-bottom:4px}
+ul.b li::before{content:"";position:absolute;left:0;top:7px;width:6px;height:2px;background:var(--or)}
+.sc ul.b li::before,ul.b.s li::before{background:var(--steel)}
+.ev{border:1.5px dashed var(--dash);display:grid;place-items:center;font:600 10px var(--mono);letter-spacing:.2em;color:var(--mut);
+  background:repeating-linear-gradient(-45deg,transparent 0 10px,var(--hatch) 10px 20px)}
+.num{width:28px;height:28px;display:grid;place-items:center;font:700 12px var(--mono);background:var(--or);color:#fff;flex:none;
+  clip-path:polygon(0 0,100% 0,100% 70%,70% 100%,0 100%)}
+.sc .num{background:var(--steel);color:#fff}
+.pill{position:absolute;right:44px;top:56px;font:600 10px var(--mono);letter-spacing:.14em;padding:6px 12px;border:1px solid var(--or);color:var(--or)}
+.pill.s{border-color:var(--steel);color:var(--steel)}
+
+/* divider */
+.div .haz{position:absolute;left:0;right:0;bottom:70px;height:16px;
+  background:repeating-linear-gradient(-45deg,var(--or) 0 14px,var(--bg) 14px 28px);opacity:.9}
+.div .big{position:absolute;right:30px;top:40px;font:700 400px/1 var(--sans);letter-spacing:-.06em;
+  color:transparent;-webkit-text-stroke:2px var(--outline)}
+.div .sec{position:absolute;left:44px;top:250px;font:600 12px var(--mono);letter-spacing:.24em;color:var(--or)}
+.div h2{position:absolute;left:44px;top:276px;font-size:58px;font-weight:700;letter-spacing:-.02em;max-width:700px;line-height:1.02}
+.div .subs{position:absolute;left:44px;top:440px;font:500 14px var(--mono);color:var(--mut);line-height:2}
+.div .subs .a{color:var(--or)}
+.div .subs .a::before{content:"▸ "}
+
+/* nav */
+#nav{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);opacity:.5;display:flex;gap:6px;z-index:5}
+#nav button{background:var(--panel);border:1px solid var(--line);color:var(--tx);font:600 12px var(--mono);width:34px;height:30px;cursor:pointer}
+#nav button:hover{border-color:var(--or);color:var(--or)}
+#bar{position:fixed;left:0;top:0;height:3px;background:var(--or);transition:width .4s;z-index:5}
+@media print{.deck{left:0!important;top:0!important}
+  html,body{overflow:visible;background:var(--bg)}
+  #nav,#bar{display:none}
+  #stage{position:static;display:block}
+  .deck{transform:none!important;width:1280px;height:auto}
+  .slide{position:relative;opacity:1;transform:none;height:720px;page-break-after:always}
+  @page{size:1280px 720px;margin:0}
+}
+</style>
+<style>
+.slide{font-family:var(--sans)}
+
+:root{--page:#1E1E1E;--bg:#0A0A0A;--panel:rgba(255,255,255,.055);--panel2:rgba(255,255,255,.09);--line:rgba(255,255,255,.12);--grid:transparent;
+ --or:#FF7A2F;--or-dim:rgba(255,122,47,.12);--or-glow:rgba(255,122,47,.25);--steel:#BDBDBD;--steel-dim:rgba(255,255,255,.06);
+ --tx:#F2F2F2;--tx2:#A6A6A6;--mut:#6E6E6E;--dash:#4A4A4A;--me-tx:#FFD9C4;--outline:rgba(255,255,255,.18);--hatch:rgba(255,255,255,.015);
+ --sans:"Inter",system-ui,sans-serif;--mono:"Inter",system-ui,sans-serif}
+.slide::before{background-image:repeating-linear-gradient(90deg,transparent 0 319px,rgba(255,255,255,.08) 319px 320px)!important;background-size:auto!important}
+.slide::after{content:"";position:absolute;left:0;right:0;bottom:-120px;height:260px;background:radial-gradient(50% 60% at 70% 100%,rgba(255,110,40,.18),transparent 70%);pointer-events:none}
+h1.t{font-weight:400;font-size:30px;letter-spacing:-.02em}
+.kick{font:400 12px var(--sans);letter-spacing:.02em;text-transform:none;color:var(--tx2)}
+.kick::before{content:"[";width:auto;height:auto;background:none}.kick::after{content:"]"}
+.c{border:none;border-radius:0;backdrop-filter:blur(4px)}
+.c::after{background:linear-gradient(#777,#777) top left/6px 6px no-repeat,linear-gradient(#777,#777) bottom right/6px 6px no-repeat!important}
+.c.plain::after{display:block}
+.n{font-weight:500}.r,.lbl,.top,.foot{font-family:var(--sans)}
+.num{clip-path:none;background:transparent;border:1px solid var(--or);color:var(--or)!important;font-weight:400}
+.sc .num{border-color:#BDBDBD;color:#BDBDBD!important}
+.brand{font:500 13px var(--sans);letter-spacing:.2em}.brand i{background:var(--tx);clip-path:polygon(0 100%,35% 0,100% 0,65% 100%)}
+.div .big{-webkit-text-stroke:1px rgba(255,255,255,.35);font-weight:300;font-size:430px;right:auto;left:30px;top:20px;letter-spacing:-.04em}
+.div .haz{display:none}
+.div h2{font-weight:400;font-size:62px;left:auto;right:44px;top:300px;text-align:right;letter-spacing:-.03em}
+.div .sec{left:auto;right:44px;top:270px;color:var(--tx2);font-family:var(--sans)}
+.div .subs{left:auto;right:44px;text-align:right;font-family:var(--sans)}
+.div::after{bottom:-60px;height:400px;background:radial-gradient(40% 60% at 30% 100%,rgba(255,110,40,.35),transparent 70%)}
+.pill{border-color:rgba(255,255,255,.3);color:var(--tx2)}
+</style>
+</head>
+<body>
+<div id="bar"></div>
+<div id="stage"><div class="deck" id="deck">
+
+<!-- 01 AGENDA -->
+<section class="slide on"><div class="in">
+  <div class="top"><span class="tag">[ INTERNAL USE ONLY ]</span><span>NEDP / MID YEAR REVIEW 2026</span><span class="brand"><i></i>TRIATRA</span></div>
+  <div class="kick">Agenda</div>
+  <h1 class="t">Five Sections Prove I Know the Company,<br>My Products and How I Execute</h1>
+  <div class="body" style="display:grid;grid-template-columns:1.55fr 1fr;gap:28px">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="c plain" style="display:flex;align-items:center;gap:22px;padding:14px 20px"><span style="font:700 30px var(--mono);color:var(--or)">01</span><span style="font-size:19px;font-weight:700">Company Profile</span></div>
+      <div class="c plain" style="display:flex;align-items:center;gap:22px;padding:14px 20px"><span style="font:700 30px var(--mono);color:var(--or)">02</span><span style="font-size:19px;font-weight:700">Site Operation</span></div>
+      <div class="c plain" style="display:flex;align-items:center;gap:22px;padding:14px 20px"><span style="font:700 30px var(--mono);color:var(--or)">03</span><span style="font-size:19px;font-weight:700">Organization Chart</span></div>
+      <div class="c plain" style="display:flex;align-items:center;gap:22px;padding:14px 20px"><span style="font:700 30px var(--mono);color:var(--or)">04</span><span style="font-size:19px;font-weight:700">Roles &amp; Responsibility</span></div>
+      <div class="c plain" style="display:flex;align-items:center;gap:22px;padding:14px 20px"><span style="font:700 30px var(--mono);color:var(--or)">05</span><span style="font-size:19px;font-weight:700">Job Description Execution</span></div>
+    </div>
+    <div class="c" style="padding:26px">
+      <div class="lbl" style="color:var(--or)">Presenter / ID</div>
+      <div style="font-size:28px;font-weight:700;margin-top:6px">Tiberias K. Simu</div>
+      <div class="r" style="font-size:11px">MARKETING STRATEGIC 2 ASSOCIATE</div>
+      <div style="height:1px;background:var(--line);margin:22px 0"></div>
+      <div class="lbl" style="color:var(--or)">Products I Own</div>
+      <div style="font-size:20px;font-weight:700;line-height:1.5">Small Suppeq<br>Truck Others</div>
+      <div style="height:1px;background:var(--line);margin:22px 0"></div>
+      <div class="p">PT Triatra Sinergia Pratama<br>Marketing Unit &amp; Strategic Division</div>
+    </div>
+  </div>
+  <div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>01</b> / 15</span></div>
+</div></section>
+
+<!-- 02 DIVIDER -->
+<section class="slide div"><div class="in">
+  <div class="top"><span class="tag">[ INTERNAL USE ONLY ]</span><span></span><span class="brand"><i></i>TRIATRA</span></div>
+  <div class="big">01</div><div class="sec">SECTION 01</div><h2>Company Profile</h2><div class="haz"></div>
+  <div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>02</b> / 15</span></div>
+</div></section>
+
+<!-- 03 COMPANY -->
+<section class="slide"><div class="in">
+  <div class="top"><span class="tag">[ INTERNAL USE ONLY ]</span><span>SEC/01 — COMPANY</span><span class="brand"><i></i>TRIATRA</span></div>
+  <div class="kick">Company Profile</div>
+  <h1 class="t">Triatra Is Astra's Mining Support Arm — From Unit Selling to After Sales</h1>
+  <div class="body" style="display:grid;grid-template-columns:1fr 1.25fr;gap:34px">
+    <div>
+      <div class="lbl">Ownership Chain</div>
+      <div style="display:flex;flex-direction:column;gap:0">
+        <div class="c plain"><div class="n">Astra International</div><div class="p">Diversified conglomerate</div></div>
+        <div style="height:18px;border-left:2px dashed var(--line);margin-left:24px"></div>
+        <div class="c plain"><div class="n">United Tractors</div><div class="p">Heavy equipment, mining &amp; energy</div></div>
+        <div style="height:18px;border-left:2px dashed var(--line);margin-left:24px"></div>
+        <div class="c plain"><div class="n">UTPE</div><div class="p">United Tractors Pandu Engineering — manufacturing</div></div>
+        <div style="height:18px;border-left:2px dashed var(--or);margin-left:24px"></div>
+        <div class="c me"><div class="n">PT Triatra Sinergia Pratama</div><div class="p">Marketing &amp; sales of Patria products and after-sales services</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="lbl">Business Lines</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="c" style="padding:18px"><div style="font:700 24px var(--sans);letter-spacing:.06em">PATRIA</div><div class="r" style="color:var(--or)">UNIT SELLING</div><div class="p" style="margin-top:8px">Vessels, trailers, supporting equipment and special-purpose trucks</div></div>
+        <div class="c sc" style="padding:18px"><div style="font:700 24px var(--sans);letter-spacing:.06em">ULTRA</div><div class="r" style="color:var(--steel)">AFTER SALES</div><div class="p" style="margin-top:8px">Parts, service and product support for the installed fleet</div></div>
+      </div>
+      <div class="lbl" style="margin-top:22px">Industries Served</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="c plain" style="display:flex;gap:14px;align-items:center;padding:16px"><span style="font:700 20px var(--mono);color:var(--or)">01</span><span class="n" style="font-size:15px">Coal &amp; Mineral Mining</span></div>
+        <div class="c plain" style="display:flex;gap:14px;align-items:center;padding:16px"><span style="font:700 20px var(--mono);color:var(--or)">02</span><span class="n" style="font-size:15px">Construction</span></div>
+        <div class="c plain" style="display:flex;gap:14px;align-items:center;padding:16px"><span style="font:700 20px var(--mono);color:var(--or)">03</span><span class="n" style="font-size:15px">Agro &amp; Forestry</span></div>
+        <div class="c plain" style="display:flex;gap:14px;align-items:center;padding:16px"><span style="font:700 20px var(--mono);color:var(--or)">04</span><span class="n" style="font-size:15px">Marine</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>03</b> / 15</span></div>
+</div></section>
+
+<!-- 04 DIVIDER -->
+<section class="slide div"><div class="in">
+  <div class="top"><span class="tag">[ INTERNAL USE ONLY ]</span><span></span><span class="brand"><i></i>TRIATRA</span></div>
+  <div class="big">02</div><div class="sec">SECTION 02</div><h2>Site Operation</h2><div class="haz"></div>
+  <div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>04</b> / 15</span></div>
+</div></section>
+
+<!-- 05 SITE -->
+<section class="slide"><div class="in">
+  <div class="top"><span class="tag">[ INTERNAL USE ONLY ]</span><span>SEC/02 — SITE</span><span class="brand"><i></i>TRIATRA</span></div>
+  <div class="kick">Site Operation</div>
+  <h1 class="t">Our Coverage Follows Our Customers — From Head Office to Every Active Mine Site</h1>
+  <div class="body" style="display:grid;grid-template-columns:2.4fr 1fr;gap:18px">
+    <div class="ev">COVERAGE MAP — PASTE HERE</div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="c" style="flex:1"><div class="lbl" style="color:var(--or)">● Head Office</div><div class="p">Jakarta — marketing, pricing, coordination</div></div>
+      <div class="c sc" style="flex:1"><div class="lbl" style="color:var(--steel)">● Site Operation</div><div class="p">[ add site list ]</div></div>
+      <div class="c plain" style="flex:1"><div class="lbl" style="color:var(--tx2)">● Site Representative</div><div class="p">[ add site list ]</div></div>
+    </div>
+  </div>
+  <div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>05</b> / 15</span></div>
+</div></section>
+
+<!-- 06 DIVIDER -->
+<section class="slide div"><div class="in">
+  <div class="top"><span class="tag">[ INTERNAL USE ONLY ]</span><span></span><span class="brand"><i></i>TRIATRA</span></div>
+  <div class="big">03</div><div class="sec">SECTION 03</div><h2>Organization Chart</h2><div class="haz"></div>
+  <div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>06</b> / 15</span></div>
+</div></section>
+
+<!-- 07 ORG -->
+<section class="slide"><div class="in">
+  <div class="top"><span class="tag">[ INTERNAL USE ONLY ]</span><span>SEC/03 — ORG.CHART</span><span class="brand"><i></i>TRIATRA</span></div>
+  <div class="kick">Organization Chart</div>
+  <h1 class="t">Each Associate Owns a Distinct Product Group — Mine Is Small Suppeq and Truck Others</h1>
+  <style>
+    .org{flex:1;margin:14px 0 40px}
+    .org .hd{width:300px;margin:0 auto;text-align:center;padding:7px 10px}
+    .org .vl{width:2px;height:10px;background:var(--line);margin:0 auto}
+    .org .cols{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;border-top:2px solid var(--line);padding-top:12px;margin:0 140px;}
+    .org .cols{margin:0}
+    .org .col{display:flex;flex-direction:column;gap:6px}
+    .org .col .c{padding:7px 11px}
+    .org .head{background:var(--panel2);text-align:center}
+    .org .ms2{outline:1.5px solid var(--or);outline-offset:6px}
+    .org .adm{border:1.5px dashed var(--dash);background:transparent;color:var(--mut);font-size:11px;text-align:center;padding:7px}
+  </style>
+  <div class="org">
+    <div class="c plain hd"><div class="n">Ceisar Centiaga</div><div class="r">DIRECTOR IN CHARGE</div></div>
+    <div class="vl"></div>
+    <div class="c plain hd"><div class="n">Ricardo Tanada</div><div class="r">MKT UNIT &amp; STRATEGIC DIV HEAD</div></div>
+    <div class="vl" style="height:12px"></div>
+    <div class="cols">
+      <div class="col">
+        <div class="c plain head"><div class="n">Kresnanto A.W.</div><div class="r">MKT STRATEGIC 1 HEAD</div></div>
+        <div class="c plain"><div class="n">Satrio F.R.</div><div class="p">Big Suppeq, Big Vessel, Bucket</div></div>
+        <div class="c plain"><div class="n">M. Fawwaz J.</div><div class="p">Cabin, Forestry, Agro, Forklift, Towerlamp, Pump</div></div>
+      </div>
+      <div class="col ms2">
+        <div class="c plain head"><div class="n">Ricardo Tanada (c)</div><div class="r">MKT STRATEGIC 2 HEAD</div></div>
+        <div class="c plain" style="text-align:center"><div class="n">Ignatius Indrawan S.</div><div class="r">DEPUTY HEAD</div></div>
+        <div class="c plain"><div class="n">Ervin Bahar P.</div><div class="p">Medium Vessel, Man Hauler, Bus Scania</div></div>
+        <div class="c plain me"><div class="n">Tiberias K.S. <span style="font:600 9px var(--mono);color:var(--or);margin-left:6px">◄ ME</span></div><div class="p">Small Suppeq, Truck Others</div></div>
+        <div class="c plain"><div class="n">Eurico</div><div class="p">Mining / Non-mining Trailer, Overseas Zone</div></div>
+        <div class="adm">Nandu Narpati — Admin</div>
+      </div>
+      <div class="col">
+        <div class="c plain head"><div class="n">Ugik Praseno</div><div class="r">MKT STRATEGIC 3 HEAD</div></div>
+        <div class="c plain"><div class="n">Baihaqi</div><div class="p">Mineral Processing, EPC</div></div>
+        <div class="c plain"><div class="n">Yuda Prana</div><div class="p">Maritime, Renewable Energy</div></div>
+        <div class="c plain"><div class="n">Celine</div><div class="p">Ultra Product Support</div></div>
+        <div class="c plain"><div class="n">Hanifa</div><div class="p">Automation, EV</div></div>
+      </div>
+      <div class="col">
+        <div class="c plain head"><div class="n">Marketing Communication</div><div class="r">MARCOMM</div></div>
+        <div class="c plain"><div class="n">Karina Audina E.</div></div>
+        <div class="c plain"><div class="n">Adinda Siti K.</div></div>
+        <div class="c plain"><div class="n">Rahma</div><div class="p">Graphic Designer</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>07</b> / 15</span></div>
+</div></section>
+
+<!-- 08 DIVIDER -->
+<section class="slide div"><div class="in">
+  <div class="top"><span class="tag">[ INTERNAL USE ONLY ]</span><span></span><span class="brand"><i></i>TRIATRA</span></div>
+  <div class="big">04</div><div class="sec">SECTION 04</div><h2>Roles &amp; Responsibility</h2>
+  <div class="subs" style="top:410px"><div class="a">A — Position &amp; Products</div><div>B — Strategic vs Supply Chain</div></div>
+  <div class="haz"></div>
+  <div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>08</b> / 15</span></div>
+</div></section>
+
+<!-- 09 R&R A -->
+<section class="slide"><div class="in">
+  <div class="top"><span class="tag">[ INTERNAL USE ONLY ]</span><span>SEC/04A — POSITION</span><span class="brand"><i></i>TRIATRA</span></div>
+  <div class="kick">Roles &amp; Responsibility · Position &amp; Products</div>
+  <h1 class="t">I Report Through the Deputy Head and Own Two Product Groups End to End</h1>
+  <div class="body" style="display:grid;grid-template-columns:1fr 1.45fr;gap:34px">
+    <div style="display:flex;flex-direction:column;align-items:center">
+      <div class="lbl" style="align-self:flex-start">Reporting Line</div>
+      <div class="c plain" style="width:62%;text-align:center"><div class="n">Ricardo Tanada</div><div class="r">DEPT HEAD (CONCURRENT)</div></div>
+      <div style="width:2px;height:18px;background:var(--line)"></div>
+      <div class="c plain" style="width:80%;text-align:center"><div class="n">Ignatius Indrawan Sumawinata</div><div class="r">DEPUTY HEAD</div></div>
+      <div style="width:2px;height:18px;background:var(--line)"></div>
+      <div style="display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:8px;width:100%;border-top:2px solid var(--line);padding-top:14px">
+        <div class="c plain" style="text-align:center"><div class="n" style="font-size:12px">Ervin Bahar P.</div><div class="p" style="font-size:10px">Medium Vessel, Man Hauler, Bus Scania</div></div>
+        <div class="c plain me" style="text-align:center;transform:translateY(-6px)"><div class="n" style="font-size:12px">Tiberias K. Simu</div><div class="p" style="font-size:10px">Small Suppeq, Truck Others</div></div>
+        <div class="c plain" style="text-align:center"><div class="n" style="font-size:12px">Eurico</div><div class="p" style="font-size:10px">Trailer, Overseas Zone</div></div>
+      </div>
+      <div class="r" style="margin-top:8px">ASSOCIATES</div>
+    </div>
+    <div style="display:flex;flex-direction:column">
+      <div class="lbl">My Products</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="c"><div class="n" style="font-size:16px">Small Suppeq</div><div class="p">Water Truck (WT20, WT35), Lube Truck (LT08), Fuel Truck (FT20) and similar supporting units</div></div>
+        <div class="c"><div class="n" style="font-size:16px">Truck Others</div><div class="p">Mining Crane, Fire Truck, Mixer Truck, Tyre Truck, Steaming Truck and other special-purpose trucks</div></div>
+      </div>
+      <div class="ev" style="flex:1;margin-top:14px">PRODUCT PHOTOS</div>
+    </div>
+  </div>
+  <div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>09</b> / 15</span></div>
+</div></section>
+
+<!-- 10 R&R B -->
+<section class="slide"><div class="in">
+  <div class="top"><span class="tag">[ INTERNAL USE ONLY ]</span><span>SEC/04B — SCOPE</span><span class="brand"><i></i>TRIATRA</span></div>
+  <div class="kick">Roles &amp; Responsibility · Strategic vs Supply Chain</div>
+  <h1 class="t">My Work Has Two Sides: Strategic Sets the Direction, Supply Chain Delivers the Order</h1>
+  <style>
+    .sip{width:100%;border-collapse:collapse;font-size:10.5px;color:var(--tx2)}
+    .sip th{font:600 9.5px var(--mono);letter-spacing:.14em;color:var(--mut);padding:5px 8px;text-align:left}
+    .sip td{padding:7px 8px;border-top:1px solid var(--line);vertical-align:middle;line-height:1.35}
+    .sip .pc{background:var(--or-dim);color:var(--tx);font-weight:600;border-left:1px solid var(--or);border-right:1px solid var(--or)}
+    .sip th.pc{color:var(--or);background:var(--or-dim)}
+    .sip .rl{font:700 10px var(--mono);letter-spacing:.1em;width:120px}
+  </style>
+  <div class="body">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="c" style="padding:10px 14px"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:700 13px var(--mono);color:var(--or);letter-spacing:.1em">A. STRATEGIC</span><span class="r">DECIDES DIRECTION → MANAGEMENT DECISIONS</span></div>
+        <ul class="b" style="columns:2;margin-top:8px;font-size:11px"><li>Pricing &amp; Market Analysis</li><li>Market Study &amp; Program Dev.</li><li>Market Program for Support Sales</li><li>Performance Reporting (GP, PICA)</li><li>Innovation &amp; Development</li></ul></div>
+      <div class="c sc" style="padding:10px 14px"><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font:700 13px var(--mono);color:var(--steel);letter-spacing:.1em">B. SUPPLY CHAIN</span><span class="r">RUNS THE TRANSACTION → OPERATIONS</span></div>
+        <ul class="b s" style="columns:2;margin-top:8px;font-size:11px"><li>Quotation &amp; Production Coordination</li><li>Operational Reporting</li><li>Internal &amp; External Coordination</li><li>Routine Meetings &amp; Communication</li></ul></div>
+    </div>
+    <div class="lbl" style="margin-top:14px">SIPOC</div>
+    <table class="sip">
+      <tr><th></th><th>Supplier</th><th>Input</th><th class="pc">Process</th><th>Output</th><th>Customer</th></tr>
+      <tr><td class="rl" style="color:var(--steel)">SUPPLY CHAIN</td><td>BC / Sales, UTE (Patria), non-Patria vendors, forwarders</td><td>PCR demand, preliminary drawing, PO / PJB, QFD</td><td class="pc">Quote request → close won → PO Interco → production monitoring → billing</td><td>Quotation, PO Interco, BAST / BAPB, invoice</td><td>Sales team, end customer, Finance</td></tr>
+      <tr><td class="rl" style="color:var(--or)">STRATEGIC</td><td>CRM, sales &amp; GP data, market sources, UTPE</td><td>Market data, competitor specs, price history, GP results</td><td class="pc">Market study, price analysis, sales programs, GP &amp; PICA reporting</td><td>Market study, CRM price list, sales tools, GP / PICA report</td><td>Management / BOD, Sales team</td></tr>
+    </table>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px">
+      <div class="c plain" style="padding:10px 14px"><div class="lbl" style="color:var(--tx)">Dimensions</div><ul class="b" style="font-size:10.5px"><li>Financial: non-Patria procurement budget, COGS per unit, target margin per PO</li><li>Non-financial: vendors &amp; customers, documents verified, report frequency, meetings &amp; site visits</li></ul></div>
+      <div class="c plain" style="padding:10px 14px"><div class="lbl" style="color:var(--tx)">Working Relationships</div><ul class="b" style="font-size:10.5px"><li>Internal: Sales &amp; Marketing, Warehouse, Finance &amp; Accounting, Legal, Procurement</li><li>External: customers, Patria &amp; non-Patria vendors, forwarders, UTPE</li></ul></div>
+      <div class="c plain" style="padding:10px 14px"><div class="lbl" style="color:var(--tx)">Work Challenges</div><ul class="b" style="font-size:10.5px"><li>Keep pricing, procurement and report data accurate</li><li>Align many functions on tight, shifting deadlines</li><li>Adapt to changing market and stakeholder needs</li></ul></div>
+    </div>
+  </div>
+  <div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>10</b> / 15</span></div>
+</div></section>
+
+<!-- 11 DIVIDER -->
+<section class="slide div"><div class="in">
+  <div class="top"><span class="tag">[ INTERNAL USE ONLY ]</span><span></span><span class="brand"><i></i>TRIATRA</span></div>
+  <div class="big">05</div><div class="sec">SECTION 05</div><h2>Job Description Execution</h2>
+  <div class="subs" style="top:420px"><div class="a">Strategic</div><div>Supply Chain</div></div>
+  <div class="haz"></div>
+  <div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>11</b> / 15</span></div>
+</div></section>
+
+<!-- 12 JDE S1 -->
+<section class="slide"><div class="in">
+  <div class="top"><span class="tag">[ INTERNAL USE ONLY ]</span><span>SEC/05 — STRATEGIC 1/2</span><span class="brand"><i></i>TRIATRA</span></div>
+  <div class="kick">Job Description Execution · Strategic (1/2)</div>
+  <h1 class="t">Strategy Starts With Data: I Frame the Question Before I Read the Market</h1>
+  <div class="pill">STEPS 1–4</div>
+  <div class="body" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+    <div class="c" style="display:flex;flex-direction:column"><div style="display:flex;gap:10px;align-items:center"><span class="num">1</span><span class="n">Define Market &amp; Objectives</span></div><ul class="b" style="margin-top:10px"><li>Set the business question for Small Suppeq / Truck Others</li><li>Agree scope and target segment with Dept Head</li></ul><div class="ev" style="flex:1;margin-top:10px">EVIDENCE</div></div>
+    <div class="c" style="display:flex;flex-direction:column"><div style="display:flex;gap:10px;align-items:center"><span class="num">2</span><span class="n">Design Market Study Plan</span></div><ul class="b" style="margin-top:10px"><li>Choose data sources and method</li><li>Set timeline and owners</li></ul><div class="ev" style="flex:1;margin-top:10px">EVIDENCE</div></div>
+    <div class="c" style="display:flex;flex-direction:column"><div style="display:flex;gap:10px;align-items:center"><span class="num">3</span><span class="n">Collect Internal &amp; External Data</span></div><ul class="b" style="margin-top:10px"><li>CRM, PCR, GP history, sales feedback</li><li>Competitor specs and price points</li></ul><div class="ev" style="flex:1;margin-top:10px">EVIDENCE</div></div>
+    <div class="c" style="display:flex;flex-direction:column"><div style="display:flex;gap:10px;align-items:center"><span class="num">4</span><span class="n">Analyse Market &amp; Competitors</span></div><ul class="b" style="margin-top:10px"><li>Market size / share, segmentation, positioning</li><li>Map competitor products against ours</li></ul><div class="ev" style="flex:1;margin-top:10px">EVIDENCE</div></div>
+  </div>
+  <div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>12</b> / 15</span></div>
+</div></section>
+
+<!-- 13 JDE S2 -->
+<section class="slide"><div class="in">
+  <div class="top"><span class="tag">[ INTERNAL USE ONLY ]</span><span>SEC/05 — STRATEGIC 2/2</span><span class="brand"><i></i>TRIATRA</span></div>
+  <div class="kick">Job Description Execution · Strategic (2/2)</div>
+  <h1 class="t">Analysis Only Counts When It Turns Into Tools, Reports and Decisions</h1>
+  <div class="pill">STEPS 5–8</div>
+  <div class="body" style="display:flex;flex-direction:column;gap:14px">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;flex:1">
+      <div class="c" style="display:flex;flex-direction:column"><div style="display:flex;gap:10px;align-items:center"><span class="num">5</span><span class="n">Build Sales Tools &amp; Programs</span></div><ul class="b" style="margin-top:8px"><li>Pamphlets, incentive programs, campaigns</li><li>Standard price list in CRM, event support</li></ul><div class="ev" style="flex:1;margin-top:8px">EVIDENCE</div></div>
+      <div class="c" style="display:flex;flex-direction:column"><div style="display:flex;gap:10px;align-items:center"><span class="num">6</span><span class="n">Prepare Performance Reports</span></div><ul class="b" style="margin-top:8px"><li>GP Report and Performance Report</li><li>PICA analysis on gaps</li></ul><div class="ev" style="flex:1;margin-top:8px">EVIDENCE</div></div>
+      <div class="c" style="display:flex;flex-direction:column"><div style="display:flex;gap:10px;align-items:center"><span class="num">7</span><span class="n">Interpret Results &amp; Recommend</span></div><ul class="b" style="margin-top:8px"><li>Turn findings into pricing / program advice</li><li>Present to management</li></ul><div class="ev" style="flex:1;margin-top:8px">EVIDENCE</div></div>
+      <div class="c" style="display:flex;flex-direction:column"><div style="display:flex;gap:10px;align-items:center"><span class="num">8</span><span class="n">Innovation &amp; Development</span></div><ul class="b" style="margin-top:8px"><li>Project Charter for innovation projects</li><li>Training (Patria Mover), site visit reports</li></ul><div class="ev" style="flex:1;margin-top:8px">EVIDENCE</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line)">
+      <div style="padding:10px 14px;border-right:1px solid var(--line)"><div class="lbl" style="color:var(--or)">Deliverables</div><div class="p">Market study, sales tools, CRM price list, GP &amp; PICA reports</div></div>
+      <div style="padding:10px 14px;border-right:1px solid var(--line)"><div class="lbl" style="color:var(--or)">Departments Involved</div><div class="p">Sales, Finance &amp; Accounting, UTPE, Marketing Communication</div></div>
+      <div style="padding:10px 14px;border-right:1px solid var(--line)"><div class="lbl" style="color:var(--or)">Challenges</div><div class="p">Scattered data sources; limited competitor price visibility</div></div>
+      <div style="padding:10px 14px"><div class="lbl" style="color:var(--or)">Improvements</div><div class="p">Single dashboard for GP and pipeline; regular competitor mapping</div></div>
+    </div>
+  </div>
+  <div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>13</b> / 15</span></div>
+</div></section>
+
+<!-- 14 JDE SC1 -->
+<section class="slide"><div class="in">
+  <div class="top"><span class="tag">[ INTERNAL USE ONLY ]</span><span>SEC/05 — SUPPLY CHAIN 1/2</span><span class="brand"><i></i>TRIATRA</span></div>
+  <div class="kick" style="color:var(--steel)">Job Description Execution · Supply Chain (1/2)</div>
+  <h1 class="t">Before Any Price Goes Out, I Clarify the Demand and Read the Drawing</h1>
+  <div class="pill s">MAIN PROCESS · STEPS 1–3</div>
+  <div class="body" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+    <div class="c sc" style="display:flex;flex-direction:column"><div style="display:flex;gap:10px;align-items:center"><span class="num">1</span><span class="n">Demand Check</span></div><ul class="b s" style="margin-top:10px"><li>See demand rise in PCR</li><li>Clarify with BC: reason to buy (expansion / new business / replacement)</li><li>Project location; fast or low-cost priority</li><li>Expected price and estimated PO date</li></ul><div class="ev" style="flex:1;margin-top:10px">EVIDENCE</div></div>
+    <div class="c sc" style="display:flex;flex-direction:column"><div style="display:flex;gap:10px;align-items:center"><span class="num">2</span><span class="n">Preliminary Drawing Review</span></div><ul class="b s" style="margin-top:10px"><li>Check unit function and how it works</li><li>Flag critical main components on price and lead time</li><li>Consult Application Engineering</li></ul><div class="ev" style="flex:1;margin-top:10px">EVIDENCE</div></div>
+    <div class="c sc" style="display:flex;flex-direction:column"><div style="display:flex;gap:10px;align-items:center"><span class="num">3</span><span class="n">Request Quote to UTE</span></div><ul class="b s" style="margin-top:10px"><li>Attach prelim, expected price &amp; lead time, end customer, expected delivery</li><li>Check standard GP (13.6% — pre-negotiation price)</li><li>Track SLA, escalate if late; log result in PCR</li></ul><div class="ev" style="flex:1;margin-top:10px">EVIDENCE</div></div>
+  </div>
+  <div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>14</b> / 15</span></div>
+</div></section>
+
+<!-- 15 JDE SC2 -->
+<section class="slide"><div class="in">
+  <div class="top"><span class="tag">[ INTERNAL USE ONLY ]</span><span>SEC/05 — SUPPLY CHAIN 2/2</span><span class="brand"><i></i>TRIATRA</span></div>
+  <div class="kick" style="color:var(--steel)">Job Description Execution · Supply Chain (2/2)</div>
+  <h1 class="t">Winning the Order Is Half the Job — Monitoring Keeps Delivery on Schedule</h1>
+  <div class="pill s">MAIN PROCESS · STEPS 4–5</div>
+  <style>
+    .chain{display:flex;align-items:center;gap:0;flex-wrap:nowrap}
+    .chain span{font:600 11px var(--mono);padding:10px 8px;border:1px solid var(--line);background:var(--panel);white-space:nowrap}
+    .chain i{color:var(--mut);font-style:normal;padding:0 3px;font-size:10px}
+    .chain .lab{border:none;color:#fff;font-weight:700;width:92px;text-align:center;margin-right:8px}
+  </style>
+  <div class="body" style="display:flex;flex-direction:column;gap:12px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="c sc"><div style="display:flex;gap:10px;align-items:center"><span class="num">4</span><span class="n">Close Won → CPO</span></div><ul class="b s" style="margin-top:8px;font-size:11px"><li>Check PO / prelim / PJB in CRM; request QFD from UTE; collect special requests &amp; painting style from BC</li><li>RFD from QFD becomes PO Interco due date</li><li>Close won: Sales Mgr → Mkt Associate → Mkt Mgr → GM Mkt · PO Interco approval: Mkt Mgr → GM Mkt → Mkt Director</li></ul></div>
+      <div class="c sc"><div style="display:flex;gap:10px;align-items:center"><span class="num">5</span><span class="n">Monitoring</span></div><ul class="b s" style="margin-top:8px;font-size:11px"><li>Track production &amp; update sales (factory visit or photos from Nandu); match QFD vs actual</li><li>Escalate when RFD is at risk; request painting style ≥1 month before RFD</li><li>Accompany BC at customer FAT</li></ul></div>
+    </div>
+    <div>
+      <div class="lbl">Internal Monitoring</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+        <div class="c plain" style="border-left:3px solid var(--steel);padding:8px 12px"><div class="n" style="font-size:12px">Pipeline–OSPO</div><div class="p">Dashboard, updated monthly</div></div>
+        <div class="c plain" style="border-left:3px solid var(--steel);padding:8px 12px"><div class="n" style="font-size:12px">CRM Staging Pipeline</div><div class="p">No prelim = early talks; prelim = validate &amp; quote to UTPE</div></div>
+        <div class="c plain" style="border-left:3px solid var(--steel);padding:8px 12px"><div class="n" style="font-size:12px">Quote Price to UTE</div><div class="p">Detail, average SLA, initial price</div></div>
+        <div class="c plain" style="border-left:3px solid var(--steel);padding:8px 12px"><div class="n" style="font-size:12px">Progress Billing</div><div class="p">Check staging, escalate</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="lbl">Billing Process Chain</div>
+      <div class="chain"><span class="lab" style="background:var(--steel)">AT UTE</span><span>PO Interco</span><i>›</i><span>PRO</span><i>›</i><span>PR</span><i>›</i><span>PO</span><i>›</i><span>Drawing</span><i>›</i><span>BOM</span><i>›</i><span>LPPB</span><i>›</i><span>PB</span><i>›</i><span>Fabrication</span><i>›</i><span>Assembly</span><i>›</i><span>QC passed</span><i>›</i><span>GR Teco</span><i>›</i><span>GI</span></div>
+      <div class="chain" style="margin-top:8px"><span class="lab" style="background:var(--or)">AT TRIATRA</span><span>GR</span><i>›</i><span>DO / TO</span><i>›</i><span>GI</span><i>›</i><span>BAST</span><i>›</i><span>BAST approval</span><i>›</i><span style="border-color:var(--or);color:var(--or)">Invoice</span></div>
+    </div>
+  </div>
+  <div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>15</b> / 15</span></div>
+</div></section>
+
+</div></div>
+<div id="nav"><button id="pv" aria-label="Previous">‹</button><button id="nx" aria-label="Next">›</button></div>
+<script>
+const S=[...document.querySelectorAll('.slide')],deck=document.getElementById('deck'),bar=document.getElementById('bar');
+let i=0;try{i=Math.min(+(location.hash.slice(1)||1)-1,S.length-1)||0}catch(e){}
+function show(n){i=Math.max(0,Math.min(S.length-1,n));S.forEach((s,k)=>s.classList.toggle('on',k===i));bar.style.width=((i+1)/S.length*100)+'%';try{history.replaceState(null,'','#'+(i+1))}catch(e){}}
+function fit(){const k=Math.min(innerWidth/1280,innerHeight/720);deck.style.transform='translate(-50%,-50%) scale('+k+')'}
+addEventListener('resize',fit);fit();show(i);
+addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key))show(i+1);if(['ArrowLeft','PageUp'].includes(e.key))show(i-1);if(e.key==='Home')show(0);if(e.key==='End')show(S.length-1)});
+document.getElementById('pv').onclick=()=>show(i-1);document.getElementById('nx').onclick=()=>show(i+1);
+deck.addEventListener('click',e=>{if(e.target.closest('button'))return;show(e.clientX>innerWidth/2?i+1:i-1)});
+</script>
+</body>
+</html>
