@@ -72,9 +72,44 @@ slide3 = f'''<section class="slide cg"><div class="in">
   <div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>03</b> / 15</span></div>
 </div></section>'''
 
+# ---------- slide 05: Site Operation & Support ----------
+mapimg = png(A + "indonesia_neon.png", 1600)
+SITES = [  # (no, name, address, type, x, y) — x/y in source outline px (695x287); type H/O/R
+ (1, "Head Office", "Jl. Raya Bekasi KM 22, Cakung, Jakarta Timur, 13910", "H", 183, 207),
+ (2, "Jakarta", "Jl. Raya Bekasi KM 22, Cakung, Jakarta Timur, 13910", "O", 176, 196),
+ (3, "Tanjung Enim", "Jl. Lingga Raya 10, Kel. Muara Enim, Sumatera Selatan, 31711", "R", 140, 168),
+ (4, "Pekanbaru", "Jl. Soekarno Hatta KM 3,5 No. 151, Pekanbaru, Riau, 28291", "R", 92, 98),
+ (5, "Banjarmasin", "Jl. Ahmad Yani KM 13,5 Gambut, Banjarmasin, Kalimantan Selatan, 70652", "R", 300, 210),
+ (6, "Sungai Danau", "Ds. Karang Indah RT 12/RW 03, Kec. Angsana, Tanah Bambu, Kalimantan Selatan", "R", 318, 203),
+ (7, "Tanjung Tabalong", "Jl. A. Yani KM 7,5 Maburai, Kec. Murung Pudak, Kab. Tabalong, Kalimantan Selatan", "O", 309, 178),
+ (8, "Batu Kajang", "Jl. Negara KM 140 Batukajang, Kec. Batu Sopang, Kab. Paser, Kalimantan Timur", "R", 322, 168),
+ (9, "Muara Teweh", "Jl. Ahmad Yani No. 85, Kel. Melayu, Kab. Barito Utara, Kalimantan Tengah", "R", 296, 158),
+ (10, "Balikpapan", "Jl. Jenderal Sudirman No. 844, Balikpapan, Kalimantan Timur, 76114", "O", 336, 152),
+ (11, "Melak", "D/A PT Tambang Raya Usaha Tama, Hauling Road Trubaindo, Muara Lawa, Kutai Barat, Kalimantan Timur", "R", 312, 136),
+ (12, "Tabang", "Site Indonesia Pratama, Workshop Buma Km 6, Hauling Road Baratabang, Kec. Muara", "R", 322, 118),
+ (13, "Tanjung Redeb", "Jl. Gunung Panjang RT.04 No. 101B, Kab. Berau, 77311", "R", 333, 87),
+ (14, "Sangatta", "Jl. HDRS Tango Delta KPC, Mine Site Sangatta, Kutai Timur, 75683", "O", 348, 112),
+ (15, "Sumbawa", "Memco Area Tongo, Sekongkang, West Sumbawa, Nusa Tenggara Barat, 84457", "R", 372, 253),
+ (16, "Timika", "Jl. Kuala Tembaga E-4 LIP Kuala Kencana, Timika, 99920", "O", 612, 218),
+]
+pins = "".join(f'<div class="pin {t}" style="left:{(x-16)/663*100:.2f}%;top:{(y-33)/242*100:.2f}%">{n}</div>' for n, _, _, t, x, y in SITES)
+items = "".join(f'<div class="si"><span class="sn {t}">{n}</span><div><b>{nm}</b>{ad}</div></div>' for n, nm, ad, t, _, _ in SITES)
+slide5 = f'''<section class="slide site"><div class="in">
+  <div class="top"><span class="tag">[ INTERNAL USE ONLY ]</span><span>SEC/02 — SITE</span><img class="tri" src="{tri}" alt="Triatra"></div>
+  <div class="kick">Site Operation &amp; Support</div>
+  <h1 class="t">Site Operation</h1>
+  <div class="ssub">Triatra covers many areas in Indonesia, with the Head Office in Jakarta, 5 Site Operations and Site Representatives.</div>
+  <div class="map"><img src="{mapimg}" alt="Indonesia">{pins}</div>
+  <div class="legend"><span><i class="H"></i>Head Office</span><span><i class="O"></i>Site Operation</span><span><i class="R"></i>Site Representative</span></div>
+  <div class="slist">{items}</div>
+  <div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>05</b> / 15</span></div>
+</div></section>'''
+
 # ---------- swap slides 2 and 3 ----------
 parts = re.split(r'(?=<!-- \d\d [^>]*-->\s*<section)', html)
 idx = [k for k, p in enumerate(parts) if re.match(r'<!-- 0[23] ', p)]
+i5 = [k for k, p in enumerate(parts) if re.match(r'<!-- 05 ', p)][0]
+parts[i5] = "<!-- 05 SITE -->\n" + slide5 + "\n\n"
 assert len(idx) == 2, idx
 parts[idx[0]] = "<!-- 02 OPENER -->\n" + slide2 + "\n\n"
 parts[idx[1]] = "<!-- 03 COMPANY -->\n" + slide3 + "\n\n"
@@ -136,6 +171,22 @@ html.present .frame.on{display:block}
 .opener .obrands{position:absolute;left:0;right:0;bottom:70px;display:flex;justify-content:center;gap:18px}
 .opener .obrands .chip{width:190px;height:56px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
 .opener .foot{color:rgba(255,255,255,.7)}
+/* site operation */
+.site .ssub{position:absolute;left:44px;top:156px;font-size:12px;color:var(--tx2)}
+.site .map{position:absolute;left:150px;right:150px;top:180px;height:300px}
+.site .map img{width:100%;height:100%;object-fit:fill;display:block;filter:drop-shadow(0 0 4px rgba(255,110,40,.9)) drop-shadow(0 0 14px rgba(255,90,31,.55))}
+.site .pin{position:absolute;transform:translate(-50%,-50%);width:17px;height:17px;border-radius:50%;display:grid;place-items:center;font:700 8px var(--sans)}
+.site .pin.H,.site .sn.H{background:var(--or);color:#fff;box-shadow:0 0 12px var(--or)}
+.site .pin.O,.site .sn.O{background:#fff;color:#111;box-shadow:0 0 10px rgba(255,255,255,.7)}
+.site .pin.R,.site .sn.R{background:#111;color:#fff;border:1.5px solid var(--or)}
+.site .legend{position:absolute;right:44px;top:150px;display:flex;gap:16px;font-size:10.5px;color:var(--tx2)}
+.site .legend span{display:flex;align-items:center;gap:6px}
+.site .legend i{width:11px;height:11px;border-radius:50%;display:inline-block}
+.site .legend i.H{background:var(--or)}.site .legend i.O{background:#fff}.site .legend i.R{background:#111;border:1.5px solid var(--or)}
+.site .slist{position:absolute;left:44px;right:44px;top:492px;bottom:40px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-flow:column;grid-template-rows:repeat(4,auto);gap:5px 14px}
+.site .si{display:flex;gap:7px;font-size:8.3px;line-height:1.3;color:var(--tx2)}
+.site .si b{display:block;color:var(--tx);font-size:9.5px}
+.site .sn{flex:none;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;font:700 7.5px var(--sans)}
 /* company group & business */
 .cg .keys{position:absolute;left:44px;right:44px;top:146px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .cg .key{font-size:11.5px;color:var(--tx2);line-height:1.35;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.03);display:flex;gap:10px;align-items:center}
