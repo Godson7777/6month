@@ -13,11 +13,22 @@ html = open(OUT).read()
 order = [1, 3, 0, 2, 4]                                    # trailer, water truck, dump vessel (centre), dump body, service truck
 heights = [118, 136, 172, 136, 118]
 lineup = "".join(f'<img src="{units[k]}" style="height:{h}px" alt="">' for k, h in zip(order, heights))
-# Slide 2 is the user's finished artwork; baked-in nav buttons and footer were inpainted out (assets/slides).
-s2img = photo(A + "slides/slide02_bg.png", 1688)
-slide2 = f'''<section class="slide imgslide"><img class="full" src="{s2img}" alt="Section 01 — Company Profile">
+# Slide 2: live-rendered opener (crisp at any resolution), modelled on the approved artwork.
+hd = [png(A + f"cutout/u{i}.png", 900) for i in range(1, 6)]
+order = [1, 3, 0, 2, 4]                                    # trailer, water truck, dump vessel (centre), dump body, service truck
+heights = [118, 134, 172, 134, 124]
+lineup = "".join(f'<img src="{hd[k]}" style="height:{h}px" alt="">' for k, h in zip(order, heights))
+slide2 = f'''<section class="slide opener"><div class="in">
+  <div class="top"><span class="tag">[ INTERNAL USE ONLY ]</span><span></span><img class="tri" src="{tri}" alt="Triatra"></div>
+  <img class="mark" src="{tri}" alt="">
+  <div class="osec">SECTION 01</div>
+  <h2 class="otitle">Company Profile</h2>
+  <div class="osub">Part of the UTPE Group · Distributor of PATRIA and ULTRA</div>
+  <div class="ofloor"></div><div class="ohorizon"></div>
+  <div class="olineup">{lineup}</div>
+  <div class="obrands"><div class="chip"><img src="{logo['patria']}"></div><div class="chip"><img src="{logo['ultra']}"></div></div>
   <div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>02</b> / 15</span></div>
-</section>'''
+</div></section>'''
 
 # ---------- slide 03: Company Group & Business ----------
 inds = "".join(
@@ -102,26 +113,29 @@ html.present .frame.on{display:block}
 .top img.tri{height:26px;display:block}
 .chip{background:#fff;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:4px 8px;flex:none;overflow:hidden}
 .chip img{max-width:100%;max-height:100%;width:auto;height:auto;display:block}
-/* slide 2: full-bleed artwork */
-.imgslide::before{display:none}
-.imgslide .full{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
-.imgslide .foot{z-index:2;color:rgba(255,255,255,.75)}
-/* opener (GGE style) */
-.opener{background:radial-gradient(110% 80% at 50% 112%,#FF6A2B 0%,#D2380F 26%,#5a1205 52%,#0B0B0B 78%)!important}
-.opener::before{background:repeating-linear-gradient(90deg,transparent 0 70px,rgba(255,140,90,.08) 70px 110px,transparent 110px 160px)!important;
- -webkit-mask:linear-gradient(180deg,transparent 0%,#000 65%);mask:linear-gradient(180deg,transparent 0%,#000 65%)}
-.opener .mark{position:absolute;left:50%;top:130px;transform:translateX(-50%);width:600px;opacity:.10;mix-blend-mode:screen}
-.opener .osec{position:absolute;left:0;right:0;top:96px;text-align:center;font:600 12px var(--sans);letter-spacing:.32em;color:var(--or)}
-.opener .otitle{position:absolute;left:0;right:0;top:116px;text-align:center;font-weight:600;font-size:78px;letter-spacing:-.03em;
- background:linear-gradient(180deg,#fff 30%,#a7a19b);-webkit-background-clip:text;background-clip:text;color:transparent}
-.opener .osub{position:absolute;left:0;right:0;top:218px;text-align:center;font-size:15px;color:#d9d2cc}
-.opener .olineup{position:absolute;left:40px;right:40px;top:300px;height:240px;display:flex;align-items:flex-end;justify-content:center;gap:0}
-.opener .olineup img{display:block;width:auto;margin:0 -6px;filter:drop-shadow(0 20px 16px rgba(0,0,0,.7))}
+/* opener (modelled on approved artwork) */
+.opener{background:
+ radial-gradient(70% 45% at 50% 0%,rgba(60,70,90,.35),transparent 70%),
+ radial-gradient(140% 85% at 50% 100%,#FF7A2E 0%,#E84A12 22%,#A8280A 42%,#4a1205 62%,#0B0B0B 82%)!important}
+.opener::before{display:none}
+.opener .mark{position:absolute;left:50%;top:118px;transform:translateX(-50%);width:640px;opacity:.13;mix-blend-mode:screen;filter:saturate(.4)}
+.opener .osec{position:absolute;left:0;right:0;top:82px;text-align:center;font:600 13px var(--sans);letter-spacing:.32em;color:var(--or)}
+.opener .otitle{position:absolute;left:0;right:0;top:104px;text-align:center;font-weight:700;font-size:84px;letter-spacing:-.03em;
+ background:linear-gradient(180deg,#fff 35%,#b9b3ad);-webkit-background-clip:text;background-clip:text;color:transparent;
+ filter:drop-shadow(0 6px 18px rgba(0,0,0,.45))}
+.opener .osub{position:absolute;left:0;right:0;top:214px;text-align:center;font-size:17px;font-weight:500;color:#efe9e4}
+.opener .ofloor{position:absolute;left:0;right:0;top:528px;bottom:0;background:
+ linear-gradient(180deg,rgba(255,120,50,.55),rgba(232,74,18,.25) 30%,transparent 70%)}
+.opener .ohorizon{position:absolute;left:3%;right:3%;top:524px;height:6px;border-radius:50%;
+ background:radial-gradient(50% 50% at 50% 50%,rgba(255,220,180,.9),rgba(255,120,40,.5) 40%,transparent 75%);filter:blur(2px)}
+.opener .olineup{position:absolute;left:30px;right:30px;top:300px;height:230px;display:flex;align-items:flex-end;justify-content:center}
+.opener .olineup img{display:block;width:auto;margin:0 -10px;filter:drop-shadow(0 14px 10px rgba(0,0,0,.55));
+ -webkit-box-reflect:below 0 linear-gradient(transparent 62%,rgba(0,0,0,.28))}
 .opener .olineup img:nth-child(3){position:relative;z-index:2}
-.opener .oroad{position:absolute;left:0;right:0;top:532px;height:120px;background:linear-gradient(180deg,rgba(255,140,90,.35),transparent 60%);
- -webkit-mask:radial-gradient(60% 100% at 50% 0%,#000,transparent);mask:radial-gradient(60% 100% at 50% 0%,#000,transparent)}
-.opener .obrands{position:absolute;left:0;right:0;bottom:62px;display:flex;justify-content:center;gap:16px}
-.opener .obrands .chip{width:170px;height:50px}
+.opener .olineup img:nth-child(2),.opener .olineup img:nth-child(4){position:relative;z-index:1}
+.opener .obrands{position:absolute;left:0;right:0;bottom:70px;display:flex;justify-content:center;gap:18px}
+.opener .obrands .chip{width:190px;height:56px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.opener .foot{color:rgba(255,255,255,.7)}
 /* company group & business */
 .cg .keys{position:absolute;left:44px;right:44px;top:146px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .cg .key{font-size:11.5px;color:var(--tx2);line-height:1.35;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,.03);display:flex;gap:10px;align-items:center}
