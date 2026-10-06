@@ -90,7 +90,7 @@ SITES = [  # (no, name, address, type, x, y) — x/y in source outline px (695x2
  (13, "Tanjung Redeb", "Jl. Gunung Panjang RT.04 No. 101B, Kab. Berau, 77311", "R", 338.7, 86.7),
  (14, "Sangatta", "Jl. HDRS Tango Delta KPC, Mine Site Sangatta, Kutai Timur, 75683", "O", 339.5, 110.3),
  (15, "Sumbawa", "Memco Area Tongo, Sekongkang, West Sumbawa, Nusa Tenggara Barat, 84457", "R", 378, 247),
- (16, "Timika", "Jl. Kuala Tembaga E-4 LIP Kuala Kencana, Timika, 99920", "O", 618, 219),
+ (16, "Timika", "Jl. Kuala Tembaga E-4 LIP Kuala Kencana, Timika, 99920", "O", 619, 185),
 ]
 pins = "".join(f'<div class="pin {t}" style="left:{(x-16)/663*100:.2f}%;top:{(y-33)/242*100:.2f}%">{n}</div>' for n, _, _, t, x, y in SITES)
 items = "".join(f'<div class="si"><span class="sn {t}">{n}</span><div><b>{nm}</b>{ad}</div></div>' for n, nm, ad, t, _, _ in SITES)
