@@ -96,7 +96,7 @@ h1{position:absolute;left:44px;top:100px;font-weight:500;font-size:34px;letter-s
 .ind::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.82))}
 .ind .n{position:absolute;left:16px;bottom:14px;z-index:1;display:flex;align-items:baseline;gap:10px}
 .ind .n b{font-size:22px;color:var(--or);font-weight:600}.ind .n span{font-size:16px;font-weight:600}
-#nav{display:none;position:fixed;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:5;opacity:.5}
+#nav{display:none;position:fixed;bottom:10px;left:50%;transform:translateX(-50%);gap:6px;z-index:5;opacity:.5}
 html.present #nav{display:flex}
 #nav button{background:#1b1a18;border:1px solid #34312c;color:#eee;width:34px;height:30px;cursor:pointer}
 """
