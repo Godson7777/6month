@@ -25,11 +25,16 @@ CSS = """
 :root{--bg:#0B0B0B;--or:#FF5A1F;--tx:#F4F1EE;--tx2:#A9A29C;--mut:#6F6963;--line:rgba(255,255,255,.09);
  --sans:"Neue Haas Grotesk Text Pro","Inter",system-ui,sans-serif}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;overflow:hidden;background:linear-gradient(180deg,#121212,#4a1606);font-family:var(--sans);color:var(--tx)}
-#stage{position:fixed;inset:0}
-.slide{position:absolute;left:50%;top:50%;width:1280px;height:720px;transform:translate(-50%,-50%);transform-origin:center;
- background:var(--bg);border-radius:22px;overflow:hidden;opacity:0;pointer-events:none;transition:opacity .45s}
-.slide.on{opacity:1;pointer-events:auto}
+html,body{background:linear-gradient(180deg,#121212,#4a1606);font-family:var(--sans);color:var(--tx)}
+body{padding:16px;display:flex;flex-direction:column;gap:16px}
+/* No-JS default: every slide stacked, scaled by its SVG viewBox */
+.frame{display:block;width:100%;height:auto}
+.slide{position:relative;width:1280px;height:720px;background:var(--bg);border-radius:22px;overflow:hidden}
+/* Presenter mode (JS on): one slide at a time, fit to window */
+html.present,html.present body{height:100%;overflow:hidden}
+html.present body{padding:0;display:grid;place-items:center}
+html.present .frame{display:none;width:min(100vw,calc(100vh*16/9));height:auto}
+html.present .frame.on{display:block}
 .glow{position:absolute;inset:0;pointer-events:none;background:
  radial-gradient(120% 75% at 50% 118%,rgba(255,106,43,.55) 0%,rgba(210,56,15,.38) 30%,rgba(90,18,5,.22) 55%,transparent 75%),
  radial-gradient(60% 55% at 100% 0%,rgba(255,90,31,.14),transparent 70%),
@@ -91,14 +96,15 @@ h1{position:absolute;left:44px;top:100px;font-weight:500;font-size:34px;letter-s
 .ind::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.82))}
 .ind .n{position:absolute;left:16px;bottom:14px;z-index:1;display:flex;align-items:baseline;gap:10px}
 .ind .n b{font-size:22px;color:var(--or);font-weight:600}.ind .n span{font-size:16px;font-weight:600}
-#nav{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:5;opacity:.5}
+#nav{display:none;position:fixed;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:5;opacity:.5}
+html.present #nav{display:flex}
 #nav button{background:#1b1a18;border:1px solid #34312c;color:#eee;width:34px;height:30px;cursor:pointer}
 """
 
 def frame(inner, n, cls=""):
-    return f'''<section class="slide {cls}"><div class="glow"></div><div class="bars"></div>
+    return f'''<svg class="frame" viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg"><foreignObject width="1280" height="720"><section xmlns="http://www.w3.org/1999/xhtml" class="slide {cls}"><div class="glow"></div><div class="bars"></div>
 <div class="hdr"><span>[ INTERNAL USE ONLY ]</span><img src="{tri}" alt="Triatra"></div>
-{inner}<div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>{n:02d}</b> / 15</span></div></section>'''
+{inner}<div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>{n:02d}</b> / 15</span></div></section></foreignObject></svg>'''
 
 names = ["Dump Vessel", "Side Dump Trailer", "Dump Truck Body", "Water Truck", "Service Truck"]
 heights = [128] * 5  # uniform height so the line-up reads as one fleet
@@ -140,15 +146,15 @@ s3 = frame(f'''<div class="kick">COMPANY PROFILE</div><h1>Business Line &amp; In
 html = f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Section 01 · Company Profile</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>{CSS}</style></head><body><div id="stage">{s1.replace('class="slide intro"','class="slide intro on"',1)}{s2}{s3}</div>
+<style>{CSS}</style></head><body>{s1}{s2}{s3}
 <div id="nav"><button id="pv">‹</button><button id="nx">›</button></div>
 <script>
-const S=[...document.querySelectorAll('.slide')];let i=0;
+document.documentElement.classList.add('present');
+const S=[...document.querySelectorAll('.frame')];let i=0;
 function show(n){{i=Math.max(0,Math.min(S.length-1,n));S.forEach((s,k)=>s.classList.toggle('on',k===i))}}
-function fit(){{const k=Math.min(innerWidth/1280,innerHeight/720);S.forEach(s=>s.style.transform='translate(-50%,-50%) scale('+k+')')}}
-addEventListener('resize',fit);fit();
+show(0);
 addEventListener('keydown',e=>{{if(['ArrowRight','PageDown',' '].includes(e.key))show(i+1);if(['ArrowLeft','PageUp'].includes(e.key))show(i-1)}});
-pv.onclick=()=>show(i-1);nx.onclick=()=>show(i+1);
+document.getElementById('pv').onclick=()=>show(i-1);document.getElementById('nx').onclick=()=>show(i+1);
 </script></body></html>'''
 open("NEDP_Section01_Ref4.html", "w").write(html)
 print(len(html) // 1024, "KB")
