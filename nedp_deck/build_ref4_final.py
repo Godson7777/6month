@@ -13,17 +13,11 @@ html = open(OUT).read()
 order = [1, 3, 0, 2, 4]                                    # trailer, water truck, dump vessel (centre), dump body, service truck
 heights = [118, 136, 172, 136, 118]
 lineup = "".join(f'<img src="{units[k]}" style="height:{h}px" alt="">' for k, h in zip(order, heights))
-slide2 = f'''<section class="slide opener"><div class="in">
-  <div class="top"><span class="tag">[ INTERNAL USE ONLY ]</span><span></span><img class="tri" src="{tri}" alt="Triatra"></div>
-  <img class="mark" src="{tri}" alt="">
-  <div class="osec">SECTION 01</div>
-  <h2 class="otitle">Company Profile</h2>
-  <div class="osub">Part of the UTPE Group · Distributor of PATRIA and ULTRA</div>
-  <div class="oroad"></div>
-  <div class="olineup">{lineup}</div>
-  <div class="obrands"><div class="chip"><img src="{logo['patria']}"></div><div class="chip"><img src="{logo['ultra']}"></div></div>
+# Slide 2 is the user's finished artwork; baked-in nav buttons and footer were inpainted out (assets/slides).
+s2img = photo(A + "slides/slide02_bg.png", 1688)
+slide2 = f'''<section class="slide imgslide"><img class="full" src="{s2img}" alt="Section 01 — Company Profile">
   <div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>02</b> / 15</span></div>
-</div></section>'''
+</section>'''
 
 # ---------- slide 03: Company Group & Business ----------
 inds = "".join(
@@ -108,6 +102,10 @@ html.present .frame.on{display:block}
 .top img.tri{height:26px;display:block}
 .chip{background:#fff;border-radius:9px;display:flex;align-items:center;justify-content:center;padding:4px 8px;flex:none;overflow:hidden}
 .chip img{max-width:100%;max-height:100%;width:auto;height:auto;display:block}
+/* slide 2: full-bleed artwork */
+.imgslide::before{display:none}
+.imgslide .full{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.imgslide .foot{z-index:2;color:rgba(255,255,255,.75)}
 /* opener (GGE style) */
 .opener{background:radial-gradient(110% 80% at 50% 112%,#FF6A2B 0%,#D2380F 26%,#5a1205 52%,#0B0B0B 78%)!important}
 .opener::before{background:repeating-linear-gradient(90deg,transparent 0 70px,rgba(255,140,90,.08) 70px 110px,transparent 110px 160px)!important;
