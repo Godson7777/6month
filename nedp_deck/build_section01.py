@@ -4,9 +4,25 @@ import base64, io, re
 src = open("build_company_profile.py").read()
 exec(src.split("L = ")[0])  # reuse b64() helper
 
+from PIL import Image, ImageFilter
+
+def sharpen(im, minw):
+    """Upscale small sources, then unsharp-mask so photos stay crisp when projected."""
+    if im.width < minw:
+        im = im.resize((minw, round(im.height * minw / im.width)), Image.LANCZOS)
+    return im.filter(ImageFilter.UnsharpMask(radius=1.6, percent=120, threshold=2))
+
+def photo(path, w=900):
+    im = sharpen(Image.open(path).convert("RGB"), w)
+    if im.width > w:
+        im = im.resize((w, round(im.height * w / im.width)), Image.LANCZOS)
+    buf = io.BytesIO(); im.save(buf, "JPEG", quality=88)
+    return "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
+
 def png(path, maxw):
-    from PIL import Image
     im = Image.open(path).convert("RGBA")
+    rgb, a = sharpen(im.convert("RGB"), maxw), im.getchannel("A")
+    im = rgb.convert("RGBA"); im.putalpha(a.resize(rgb.size, Image.LANCZOS))
     if im.width > maxw:
         im = im.resize((maxw, round(im.height * maxw / im.width)), Image.LANCZOS)
     buf = io.BytesIO(); im.save(buf, "PNG", optimize=True)
@@ -17,9 +33,9 @@ logo = {k: b64(A + "logos/" + f, 420, trim=True, fmt="PNG", edge=k in {"utpe", "
     "astra": "astra_international.png", "ut": "united_tractors.png", "utpe": "utpe.png", "triatra": "triatra.webp",
     "pml": "pml.png", "pmp": "pmp.png", "patria": "patria.png", "ultra": "ultra.png"}.items()}
 tri = png(A + "cutout/triatra_logo.png", 300)
-units = [png(A + f"cutout/u{i}.png", 700) for i in range(1, 6)]
-ind = [b64(A + "industries/" + f, 900) for f in ["01_coal_mining.webp", "02_construction.png",
-       "03_agro_forestry_PLACEHOLDER.png", "04_maritime_PLACEHOLDER.png"]]
+units = [png(A + f"cutout/u{i}.png", 640) for i in range(1, 6)]
+ind = [photo(A + "industries/" + f) for f in ["01_coal_mining.webp", "02_construction.png",
+       "03_agro_forestry.webp", "04_maritime.png"]]
 
 CSS = """
 :root{--bg:#0B0B0B;--or:#FF5A1F;--tx:#F4F1EE;--tx2:#A9A29C;--mut:#6F6963;--line:rgba(255,255,255,.09);
@@ -82,6 +98,22 @@ h1{position:absolute;left:44px;top:100px;font-weight:500;font-size:34px;letter-s
 .me .t{color:#FFD3C0}
 .badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--or);color:#fff;font:700 8.5px var(--sans);
  letter-spacing:.14em;padding:3px 10px;border-radius:999px;white-space:nowrap}
+/* merged company profile */
+.cp{position:absolute;left:44px;right:44px;top:160px;bottom:50px;display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.tree2{display:flex;flex-direction:column;min-height:0}
+.tree2 .row{width:auto;height:84px;margin:0;gap:14px;flex:none}
+.tree2 .row .chip{width:150px;height:48px}
+.tree2 .vl{height:14px;margin:0 0 0 84px}
+.tree2 .kids{gap:10px;padding-top:14px;flex:1;min-height:0}
+.tree2 .kid{padding:12px 8px;display:flex;flex-direction:column;justify-content:center}.tree2 .kid .chip{height:52px}.tree2 .kid .t{font-size:11px}
+.units{display:flex;flex-direction:column;min-height:0}
+.ugrid{flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:10px;min-height:0}
+.ucell{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:12px 10px 10px;min-height:0;
+ background:radial-gradient(80% 60% at 50% 85%,rgba(255,90,31,.20),transparent 70%),linear-gradient(180deg,rgba(28,28,28,.92),rgba(14,14,14,.92))}
+.uimg{flex:1;width:100%;display:flex;align-items:center;justify-content:center;min-height:0}
+.uimg img{width:92%;max-height:130px;height:auto;object-fit:contain;display:block;filter:drop-shadow(0 12px 12px rgba(0,0,0,.6))}
+.ucell span{margin-top:10px;font:600 9px var(--sans);letter-spacing:.14em;color:var(--tx2);white-space:nowrap}
+.brandcell{justify-content:center}.brandcell span{letter-spacing:.08em}.brandcell .chip{width:80%;height:58px}
 /* business lines */
 .bl{position:absolute;left:44px;right:44px;top:168px;bottom:52px;display:grid;grid-template-columns:1fr 1.35fr;gap:26px}
 .brands{display:grid;grid-template-rows:1fr 1fr;gap:14px;min-height:0}
@@ -107,30 +139,26 @@ def frame(inner, n, cls=""):
 {inner}<div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>{n:02d}</b> / 15</span></div></section></foreignObject></svg>'''
 
 names = ["Dump Vessel", "Side Dump Trailer", "Dump Truck Body", "Water Truck", "Service Truck"]
-heights = [128] * 5  # uniform height so the line-up reads as one fleet
-lineup = "".join(f'<div class="u"><img src="{u}" style="--h:{h}px" alt="{n}"><span>{n.upper()}</span></div>'
-                 for u, n, h in zip(units, names, heights))
-s1 = frame(f'''<div class="sec">SECTION 01</div><h2>Company Profile</h2>
-<div class="sub">Who we are, where we sit in the Astra group, and the markets we serve</div>
-<div class="road"></div><div class="lineup">{lineup}</div>
-<div class="agenda"><b>01</b> Company Structure &nbsp;·&nbsp; <b>02</b> Business Line &amp; Industries</div>
-<div class="brandrow"><div class="chip"><img src="{logo['triatra']}"></div><div class="chip"><img src="{logo['utpe']}"></div>
-<div class="chip"><img src="{logo['patria']}"></div><div class="chip"><img src="{logo['ultra']}"></div></div>''', 2, "intro")
-
-s2 = frame(f'''<div class="kick">COMPANY STRUCTURE</div><h1>Company Profile</h1>
-<div class="tree">
- <div class="card row"><div class="chip"><img src="{logo['astra']}"></div><div class="t"><b>Astra International</b>Astra Heavy Equipment, Mining, Construction, and Energy</div></div>
- <div class="vl"></div>
- <div class="card row"><div class="chip"><img src="{logo['ut']}"></div><div class="t"><b>United Tractors</b>Construction Machinery</div></div>
- <div class="vl"></div>
- <div class="card row"><div class="chip"><img src="{logo['utpe']}"></div><div class="t"><b>UTPE</b>Astra Heavy Equipment, Mining, Construction, and Energy</div></div>
- <div class="vl"></div>
- <div class="kids">
-  <div class="card kid me"><span class="badge">MY COMPANY</span><div class="chip"><img src="{logo['triatra']}"></div><div class="t">Distributorship and Trading</div></div>
-  <div class="card kid"><div class="chip"><img src="{logo['pml']}"></div><div class="t">Logistic and Energy Provider</div></div>
-  <div class="card kid"><div class="chip"><img src="{logo['pmp']}"></div><div class="t">Ship Building and Maintenance</div></div>
+cells = "".join(f'<div class="card ucell"><div class="uimg"><img src="{u}" alt="{n}"></div><span>{n.upper()}</span></div>'
+                for u, n in zip(units, names))
+cells += f'<div class="card ucell brandcell"><div class="chip"><img src="{logo["patria"]}"></div><span>UTPE UNITS · SOLD BY TRIATRA</span></div>'
+s2 = frame(f'''<div class="kick">SECTION 01</div><h1>Company Profile</h1>
+<div class="cp">
+ <div class="tree2"><div class="lbl">COMPANY STRUCTURE</div>
+  <div class="card row"><div class="chip"><img src="{logo['astra']}"></div><div class="t"><b>Astra International</b>Astra Heavy Equipment, Mining, Construction, and Energy</div></div>
+  <div class="vl"></div>
+  <div class="card row"><div class="chip"><img src="{logo['ut']}"></div><div class="t"><b>United Tractors</b>Construction Machinery</div></div>
+  <div class="vl"></div>
+  <div class="card row"><div class="chip"><img src="{logo['utpe']}"></div><div class="t"><b>UTPE</b>Astra Heavy Equipment, Mining, Construction, and Energy</div></div>
+  <div class="vl"></div>
+  <div class="kids">
+   <div class="card kid me"><span class="badge">MY COMPANY</span><div class="chip"><img src="{logo['triatra']}"></div><div class="t">Distributorship and Trading</div></div>
+   <div class="card kid"><div class="chip"><img src="{logo['pml']}"></div><div class="t">Logistic and Energy Provider</div></div>
+   <div class="card kid"><div class="chip"><img src="{logo['pmp']}"></div><div class="t">Ship Building and Maintenance</div></div>
+  </div>
  </div>
-</div>''', 3)
+ <div class="units"><div class="lbl">PATRIA UNITS</div><div class="ugrid">{cells}</div></div>
+</div>''', 2)
 
 inds = "".join(f'<div class="ind"><img src="{src}"><div class="n"><b>{i+1:02d}</b><span>{t}</span></div></div>'
                for i, (src, t) in enumerate(zip(ind, ["Coal &amp; Mineral Mining", "Construction", "Forestry &amp; Agro", "Maritime"])))
@@ -141,12 +169,12 @@ s3 = frame(f'''<div class="kick">COMPANY PROFILE</div><h1>Business Line &amp; In
   <div class="card bcard"><div class="chip"><img src="{logo['ultra']}"></div><div class="k">PART, COMPONENT &amp; SERVICES</div><div class="h">ULTRA</div><div class="d">After-sales services, including maintenance and remanufacturing</div></div>
  </div></div>
  <div><div class="lbl">INDUSTRIES</div><div class="inds" style="height:calc(100% - 22px)">{inds}</div></div>
-</div>''', 4)
+</div>''', 3)
 
 html = f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Section 01 · Company Profile</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>{CSS}</style></head><body>{s1}{s2}{s3}
+<style>{CSS}</style></head><body>{s2}{s3}
 <div id="nav"><button id="pv">‹</button><button id="nx">›</button></div>
 <script>
 document.documentElement.classList.add('present');
