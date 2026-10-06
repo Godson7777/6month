@@ -98,36 +98,33 @@ h1{position:absolute;left:44px;top:100px;font-weight:500;font-size:34px;letter-s
 .me .t{color:#FFD3C0}
 .badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--or);color:#fff;font:700 8.5px var(--sans);
  letter-spacing:.14em;padding:3px 10px;border-radius:999px;white-space:nowrap}
-/* merged company profile */
-.cp{position:absolute;left:44px;right:44px;top:160px;bottom:50px;display:grid;grid-template-columns:1fr 1fr;gap:28px}
-.tree2{display:flex;flex-direction:column;min-height:0}
-.tree2 .row{width:auto;height:84px;margin:0;gap:14px;flex:none}
-.tree2 .row .chip{width:150px;height:48px}
-.tree2 .vl{height:14px;margin:0 0 0 84px}
-.tree2 .kids{gap:10px;padding-top:14px;flex:1;min-height:0}
-.tree2 .kid{padding:12px 8px;display:flex;flex-direction:column;justify-content:center}.tree2 .kid .chip{height:52px}.tree2 .kid .t{font-size:11px}
-.units{display:flex;flex-direction:column;min-height:0}
-.ugrid{flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:10px;min-height:0}
-.ucell{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:12px 10px 10px;min-height:0;
- background:radial-gradient(80% 60% at 50% 85%,rgba(255,90,31,.20),transparent 70%),linear-gradient(180deg,rgba(28,28,28,.92),rgba(14,14,14,.92))}
+/* single company profile slide */
+.cp{position:absolute;left:44px;right:44px;top:150px;bottom:44px;display:grid;grid-template-columns:1fr 1.12fr;gap:24px}
+.col{display:flex;flex-direction:column;min-height:0}
+.cp .lbl{margin-bottom:7px}
+.cp .row{display:flex;align-items:center;gap:12px;padding:6px 10px;height:58px;width:auto;margin:0}
+.cp .row .chip{width:130px;height:44px;padding:4px 8px}
+.cp .t{font-size:10.5px;color:var(--tx2);line-height:1.3}.cp .t b{display:block;color:var(--tx);font-size:12px;font-weight:600}
+.cp .vl{width:2px;height:10px;background:rgba(255,255,255,.2);margin:0 0 0 68px}
+.cp .kids{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;border-top:2px solid rgba(255,255,255,.2);padding-top:12px}
+.cp .kid{padding:14px 8px 10px;text-align:center;position:relative}
+.cp .kid .chip{width:100%;height:52px;margin-bottom:6px;padding:4px 8px}
+.cp .kid .t{font-size:10px}
+.blines{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:8px;min-height:0}
+.bl2{display:flex;flex-direction:column;justify-content:center;gap:8px;padding:10px 12px}
+.bl2 .chip{width:130px;height:40px;padding:4px 8px}
+.ugrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;height:118px;flex:none}
+.ucell{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 6px 7px;min-height:0;
+ background:radial-gradient(80% 60% at 50% 80%,rgba(255,90,31,.20),transparent 70%),linear-gradient(180deg,rgba(28,28,28,.92),rgba(14,14,14,.92))}
 .uimg{flex:1;width:100%;display:flex;align-items:center;justify-content:center;min-height:0}
-.uimg img{width:92%;max-height:130px;height:auto;object-fit:contain;display:block;filter:drop-shadow(0 12px 12px rgba(0,0,0,.6))}
-.ucell span{margin-top:10px;font:600 9px var(--sans);letter-spacing:.14em;color:var(--tx2);white-space:nowrap}
-.brandcell{justify-content:center}.brandcell span{letter-spacing:.08em}.brandcell .chip{width:80%;height:58px}
-/* business lines */
-.bl{position:absolute;left:44px;right:44px;top:168px;bottom:52px;display:grid;grid-template-columns:1fr 1.35fr;gap:26px}
-.brands{display:grid;grid-template-rows:1fr 1fr;gap:14px;min-height:0}
-.bcard{padding:20px 22px;display:flex;flex-direction:column;justify-content:center}
-.bcard .chip{width:210px;height:70px;margin-bottom:16px}
-.bcard .k{font:600 10px var(--sans);letter-spacing:.14em;color:var(--or);margin-bottom:6px}
-.bcard .h{font-size:20px;font-weight:600}
-.bcard .d{font-size:13px;color:var(--tx2);margin-top:6px;line-height:1.45}
-.inds{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:14px;min-height:0}
-.ind{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+.uimg img{width:94%;max-height:72px;height:auto;object-fit:contain;display:block;filter:drop-shadow(0 8px 8px rgba(0,0,0,.6))}
+.ucell span{margin-top:6px;font:600 7.5px var(--sans);letter-spacing:.08em;color:var(--tx2);white-space:nowrap}
+.inds{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(2,minmax(0,1fr));gap:8px;min-height:0}
+.ind{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line)}
 .ind img{width:100%;height:100%;object-fit:cover;display:block}
-.ind::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.82))}
-.ind .n{position:absolute;left:16px;bottom:14px;z-index:1;display:flex;align-items:baseline;gap:10px}
-.ind .n b{font-size:22px;color:var(--or);font-weight:600}.ind .n span{font-size:16px;font-weight:600}
+.ind::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(0,0,0,.82))}
+.ind .n{position:absolute;left:12px;bottom:9px;z-index:1;display:flex;align-items:baseline;gap:8px}
+.ind .n b{font-size:15px;color:var(--or);font-weight:600}.ind .n span{font-size:12.5px;font-weight:600}
 #nav{display:none;position:fixed;bottom:10px;left:50%;transform:translateX(-50%);gap:6px;z-index:5;opacity:.5}
 html.present #nav{display:flex}
 #nav button{background:#1b1a18;border:1px solid #34312c;color:#eee;width:34px;height:30px;cursor:pointer}
@@ -141,10 +138,13 @@ def frame(inner, n, cls=""):
 names = ["Dump Vessel", "Side Dump Trailer", "Dump Truck Body", "Water Truck", "Service Truck"]
 cells = "".join(f'<div class="card ucell"><div class="uimg"><img src="{u}" alt="{n}"></div><span>{n.upper()}</span></div>'
                 for u, n in zip(units, names))
-cells += f'<div class="card ucell brandcell"><div class="chip"><img src="{logo["patria"]}"></div><span>UTPE UNITS · SOLD BY TRIATRA</span></div>'
+inds = "".join(f'<div class="ind"><img src="{src}"><div class="n"><b>{i+1:02d}</b><span>{t}</span></div></div>'
+               for i, (src, t) in enumerate(zip(ind, ["Coal &amp; Mineral Mining", "Construction", "Forestry &amp; Agro", "Maritime"])))
+# Single Company Profile slide: structure + business line (left), units + industries (right)
 s2 = frame(f'''<div class="kick">SECTION 01</div><h1>Company Profile</h1>
 <div class="cp">
- <div class="tree2"><div class="lbl">COMPANY STRUCTURE</div>
+ <div class="col">
+  <div class="lbl">COMPANY STRUCTURE</div>
   <div class="card row"><div class="chip"><img src="{logo['astra']}"></div><div class="t"><b>Astra International</b>Astra Heavy Equipment, Mining, Construction, and Energy</div></div>
   <div class="vl"></div>
   <div class="card row"><div class="chip"><img src="{logo['ut']}"></div><div class="t"><b>United Tractors</b>Construction Machinery</div></div>
@@ -156,25 +156,24 @@ s2 = frame(f'''<div class="kick">SECTION 01</div><h1>Company Profile</h1>
    <div class="card kid"><div class="chip"><img src="{logo['pml']}"></div><div class="t">Logistic and Energy Provider</div></div>
    <div class="card kid"><div class="chip"><img src="{logo['pmp']}"></div><div class="t">Ship Building and Maintenance</div></div>
   </div>
+  <div class="lbl" style="margin-top:14px">BUSINESS LINE</div>
+  <div class="blines">
+   <div class="card bl2"><div class="chip"><img src="{logo['patria']}"></div><div class="t"><b>Unit</b>International &amp; domestic trader of UTPE units</div></div>
+   <div class="card bl2"><div class="chip"><img src="{logo['ultra']}"></div><div class="t"><b>Part, Component &amp; Services</b>After-sales maintenance and remanufacturing</div></div>
+  </div>
  </div>
- <div class="units"><div class="lbl">PATRIA UNITS</div><div class="ugrid">{cells}</div></div>
+ <div class="col">
+  <div class="lbl">PATRIA UNITS</div>
+  <div class="ugrid">{cells}</div>
+  <div class="lbl" style="margin-top:14px">INDUSTRIES</div>
+  <div class="inds">{inds}</div>
+ </div>
 </div>''', 2)
-
-inds = "".join(f'<div class="ind"><img src="{src}"><div class="n"><b>{i+1:02d}</b><span>{t}</span></div></div>'
-               for i, (src, t) in enumerate(zip(ind, ["Coal &amp; Mineral Mining", "Construction", "Forestry &amp; Agro", "Maritime"])))
-s3 = frame(f'''<div class="kick">COMPANY PROFILE</div><h1>Business Line &amp; Industries</h1>
-<div class="bl">
- <div><div class="lbl">BUSINESS LINE</div><div class="brands" style="height:calc(100% - 22px)">
-  <div class="card bcard"><div class="chip"><img src="{logo['patria']}"></div><div class="k">UNIT</div><div class="h">PATRIA</div><div class="d">International &amp; domestic trader of UTPE units</div></div>
-  <div class="card bcard"><div class="chip"><img src="{logo['ultra']}"></div><div class="k">PART, COMPONENT &amp; SERVICES</div><div class="h">ULTRA</div><div class="d">After-sales services, including maintenance and remanufacturing</div></div>
- </div></div>
- <div><div class="lbl">INDUSTRIES</div><div class="inds" style="height:calc(100% - 22px)">{inds}</div></div>
-</div>''', 3)
 
 html = f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Section 01 · Company Profile</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>{CSS}</style></head><body>{s2}{s3}
+<style>{CSS}</style></head><body>{s2}
 <div id="nav"><button id="pv">‹</button><button id="nx">›</button></div>
 <script>
 document.documentElement.classList.add('present');
