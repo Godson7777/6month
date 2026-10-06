@@ -75,22 +75,22 @@ slide3 = f'''<section class="slide cg"><div class="in">
 # ---------- slide 05: Site Operation & Support ----------
 mapimg = png(A + "indonesia_neon.png", 1600)
 SITES = [  # (no, name, address, type, x, y) — x/y in source outline px (695x287); type H/O/R
- (1, "Head Office", "Jl. Raya Bekasi KM 22, Cakung, Jakarta Timur, 13910", "H", 183, 207),
- (2, "Jakarta", "Jl. Raya Bekasi KM 22, Cakung, Jakarta Timur, 13910", "O", 176, 196),
- (3, "Tanjung Enim", "Jl. Lingga Raya 10, Kel. Muara Enim, Sumatera Selatan, 31711", "R", 140, 168),
- (4, "Pekanbaru", "Jl. Soekarno Hatta KM 3,5 No. 151, Pekanbaru, Riau, 28291", "R", 92, 98),
- (5, "Banjarmasin", "Jl. Ahmad Yani KM 13,5 Gambut, Banjarmasin, Kalimantan Selatan, 70652", "R", 300, 210),
- (6, "Sungai Danau", "Ds. Karang Indah RT 12/RW 03, Kec. Angsana, Tanah Bambu, Kalimantan Selatan", "R", 318, 203),
- (7, "Tanjung Tabalong", "Jl. A. Yani KM 7,5 Maburai, Kec. Murung Pudak, Kab. Tabalong, Kalimantan Selatan", "O", 309, 178),
- (8, "Batu Kajang", "Jl. Negara KM 140 Batukajang, Kec. Batu Sopang, Kab. Paser, Kalimantan Timur", "R", 322, 168),
- (9, "Muara Teweh", "Jl. Ahmad Yani No. 85, Kel. Melayu, Kab. Barito Utara, Kalimantan Tengah", "R", 296, 158),
- (10, "Balikpapan", "Jl. Jenderal Sudirman No. 844, Balikpapan, Kalimantan Timur, 76114", "O", 336, 152),
- (11, "Melak", "D/A PT Tambang Raya Usaha Tama, Hauling Road Trubaindo, Muara Lawa, Kutai Barat, Kalimantan Timur", "R", 312, 136),
- (12, "Tabang", "Site Indonesia Pratama, Workshop Buma Km 6, Hauling Road Baratabang, Kec. Muara", "R", 322, 118),
- (13, "Tanjung Redeb", "Jl. Gunung Panjang RT.04 No. 101B, Kab. Berau, 77311", "R", 333, 87),
- (14, "Sangatta", "Jl. HDRS Tango Delta KPC, Mine Site Sangatta, Kutai Timur, 75683", "O", 348, 112),
- (15, "Sumbawa", "Memco Area Tongo, Sekongkang, West Sumbawa, Nusa Tenggara Barat, 84457", "R", 372, 253),
- (16, "Timika", "Jl. Kuala Tembaga E-4 LIP Kuala Kencana, Timika, 99920", "O", 612, 218),
+ (1, "Head Office", "Jl. Raya Bekasi KM 22, Cakung, Jakarta Timur, 13910", "H", 191, 210),
+ (2, "Jakarta", "Jl. Raya Bekasi KM 22, Cakung, Jakarta Timur, 13910", "O", 179, 200),
+ (3, "Tanjung Enim", "Jl. Lingga Raya 10, Kel. Muara Enim, Sumatera Selatan, 31711", "R", 140.5, 171.2),
+ (4, "Pekanbaru", "Jl. Soekarno Hatta KM 3,5 No. 151, Pekanbaru, Riau, 28291", "R", 106.5, 110.2),
+ (5, "Banjarmasin", "Jl. Ahmad Yani KM 13,5 Gambut, Banjarmasin, Kalimantan Selatan, 70652", "R", 296.7, 165.0),
+ (6, "Sungai Danau", "Ds. Karang Indah RT 12/RW 03, Kec. Angsana, Tanah Bambu, Kalimantan Selatan", "R", 309.4, 170.9),
+ (7, "Tanjung Tabalong", "Jl. A. Yani KM 7,5 Maburai, Kec. Murung Pudak, Kab. Tabalong, Kalimantan Selatan", "O", 308.8, 148.3),
+ (8, "Batu Kajang", "Jl. Negara KM 140 Batukajang, Kec. Batu Sopang, Kab. Paser, Kalimantan Timur", "R", 317.8, 143.3),
+ (9, "Muara Teweh", "Jl. Ahmad Yani No. 85, Kel. Melayu, Kab. Barito Utara, Kalimantan Tengah", "R", 301.0, 131.1),
+ (10, "Balikpapan", "Jl. Jenderal Sudirman No. 844, Balikpapan, Kalimantan Timur, 76114", "O", 329.1, 135.2),
+ (11, "Melak", "D/A PT Tambang Raya Usaha Tama, Hauling Road Trubaindo, Muara Lawa, Kutai Barat, Kalimantan Timur", "R", 314.6, 120.8),
+ (12, "Tabang", "Site Indonesia Pratama, Workshop Buma Km 6, Hauling Road Baratabang, Kec. Muara", "R", 317.5, 109.6),
+ (13, "Tanjung Redeb", "Jl. Gunung Panjang RT.04 No. 101B, Kab. Berau, 77311", "R", 338.7, 86.7),
+ (14, "Sangatta", "Jl. HDRS Tango Delta KPC, Mine Site Sangatta, Kutai Timur, 75683", "O", 339.5, 110.3),
+ (15, "Sumbawa", "Memco Area Tongo, Sekongkang, West Sumbawa, Nusa Tenggara Barat, 84457", "R", 378, 247),
+ (16, "Timika", "Jl. Kuala Tembaga E-4 LIP Kuala Kencana, Timika, 99920", "O", 618, 219),
 ]
 pins = "".join(f'<div class="pin {t}" style="left:{(x-16)/663*100:.2f}%;top:{(y-33)/242*100:.2f}%">{n}</div>' for n, _, _, t, x, y in SITES)
 items = "".join(f'<div class="si"><span class="sn {t}">{n}</span><div><b>{nm}</b>{ad}</div></div>' for n, nm, ad, t, _, _ in SITES)
