@@ -314,3 +314,18 @@ EXTRA_CSS += """
 .evimg{flex:1;min-height:0;display:flex;flex-direction:column;gap:5px}
 .evimg img{flex:1;min-height:0;width:100%;object-fit:contain;background:#050505;border:1px solid var(--line);border-radius:6px}
 """
+
+# ---------- final Strategic: single slide 12 (slide 13 removed) ----------
+EVID = {0: ["s1_a.png", "s1_b.webp", "s1_c.png"], 1: ["s2_a.png", "s2_b.webp"],
+        2: ["s3_a.webp", "s3_b.png", "s3_c.webp", "s3_d.png"], 3: ["s4_a.webp", "s4_b.webp"],
+        4: ["s5_a.webp", "s5_b.webp", "s5_c.webp"]}
+slide12 = jde(12, KA, "Strategic", "STEPS 1–5", area_cards([
+  ("Pricing &amp; Market Analysis", "", ["Price &amp; market analysis simulation"], "Basis for the pricing strategy"),
+  ("Market Study &amp; Program Development", "", ["Collect market data", "Map competitor products", "Analyse new product development", "Write the market study summary"],
+   "Market size / share, segmentation, positioning &amp; targeting"),
+  ("Market Program for Support Sales", "", ["Sales tools (pamphlet)", "Campaign, portfolio &amp; project showcase", "Event support (mining expo)"], "Programs ready for the sales team"),
+  ("Performance Reporting", "", ["PICA analysis", "Billing report"], "Input for performance evaluation &amp; management decisions"),
+  ("Innovation &amp; Development", "", ["Innovation project &amp; development"], "Innovation framework; field conditions documented"),
+ ]), 5, info)
+DROP_SLIDES = ["13"]
+EXTRA_CSS += ".jde .jcard{gap:6px}.jde .jcard ul.b{font-size:10.5px}\n"
