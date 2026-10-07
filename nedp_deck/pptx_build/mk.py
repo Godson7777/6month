@@ -9,7 +9,7 @@ def col(c):
     m=re.findall(r'[\d.]+',c);return RGBColor(*[int(float(x)) for x in m[:3]])
 for i,items in enumerate(D):
     s=P.slides.add_slide(P.slide_layouts[6])
-    s.shapes.add_picture(f'bg{i}.png',0,0,P.slide_width,P.slide_height)
+    s.shapes.add_picture(f'bg{i}.jpg',0,0,P.slide_width,P.slide_height)
     for t in items:
         tb=s.shapes.add_textbox(Emu(int(t['x']*k)),Emu(int(t['y']*k)),Emu(int((t['w']+6)*k)),Emu(int(t['h']*k)))
         tf=tb.text_frame;tf.word_wrap=True;tf.margin_left=tf.margin_right=tf.margin_top=tf.margin_bottom=0;tf.vertical_anchor=MSO_ANCHOR.TOP
