@@ -461,3 +461,169 @@ slide14 = jde(14, KB, "Supply Chain (1/2)", "MAIN PROCESS · STEPS 1–3", steps
                             "Check the standard GP (13.6%, the price before negotiation)", "Check the SLA and escalate if it takes too long", "Enter the quote result into PCR"]),
  ], "sc"), 3, "", "s")
 PROJECT = PROJECT[:-1]  # summary slide removed
+
+# ===================== Section 06 Project: native redesign (tables/bars = editable in PPT) =====================
+def bars(series, cats, colors, maxv):
+    out = '<div class="vbars">'
+    for ci, c in enumerate(cats):
+        out += '<div class="vgrp"><div class="vcols">' + "".join(
+            f'<div class="vcol" style="height:{v/maxv*100:.0f}%;background:{colors[si]}"><span>{v:.0f}</span></div>'
+            for si, (_, vals) in enumerate(series) for v in [vals[ci]]) + f'</div><div class="vlab">{c}</div></div>'
+    return out + '</div>'
+def legend(names, colors):
+    return '<div class="leg">' + "".join(f'<span><i style="background:{c}"></i>{n}</span>' for n, c in zip(names, colors)) + '</div>'
+def table(head, rows, hl=None, cls="dt"):
+    h = "".join(f"<th>{x}</th>" for x in head)
+    b = "".join(f'<tr class="{(hl or {}).get(r[0], "")}">' + "".join(f"<td>{x}</td>" for x in r) + "</tr>" for r in rows)
+    return f'<table class="{cls}"><tr>{h}</tr>{b}</table>'
+
+CLS_C = ["#5b6470", "#9aa3ad", "#FF8A3D", "#4da3ff"]
+CLS_N = ["Light (≤ 8 tm)", "Small (8–25 tm)", "Medium (25–45 tm)", "Heavy (> 45 tm)"]
+units = [("Light", [54, 49, 40, 55]), ("Small", [56, 51, 66, 43]), ("Medium", [71, 59, 54, 19]), ("Heavy", [12, 17, 35, 2])]
+q1 = pslide("Market Size by Class", f'''
+ <div class="pg2" style="grid-template-columns:1.25fr 1fr"><div>
+  <div class="lbl">UNITS IMPORTED PER YEAR BY CLASS · 2023 – 2026*</div>{legend(CLS_N, CLS_C)}
+  {bars(units, ["2023", "2024", "2025", "2026*"], CLS_C, 75)}
+  <div class="lbl" style="margin-top:10px">TOTAL UNITS &amp; IMPORT VALUE · 2023 – 14 AUG 2026</div>
+  {table(["Class", "Lifting moment", "Units", "Import value (IDR)", "Share"], [
+    ["Light", "≤ 8 tm", "177", "Rp 40.118.000.000", "12%"], ["Small", "8 – 25 tm", "200", "Rp 77.241.000.000", "24%"],
+    ["Medium", "25 – 45 tm", "196", "Rp 118.328.000.000", "36%"], ["Heavy", "> 45 tm", "65", "Rp 91.154.000.000", "28%"],
+    ["Total", "", "638", "Rp 326.841.000.000", "100%"]], {"Medium": "or", "Heavy": "bl", "Total": "tot"})}
+ </div><div>
+  <div class="lbl">AVERAGE UNITS PER YEAR</div>
+  <div class="kpis">{kpi("67", "Medium + Heavy · target classes", True)}{kpi("104", "Light + Small · non-target")}</div>
+  <div class="lbl" style="margin-top:12px">KEY POINTS</div>
+  <div class="c pbox"><ul class="b">
+   <li><b>Medium + Heavy:</b> 41% of units, 64% of import value</li>
+   <li><b>Value per unit:</b> Rp 803 Jt vs Rp 311 Jt for Light + Small</li>
+   <li><b>Use:</b> 88% of Medium &amp; Heavy cranes need a truck GVW ≥ 24 t — mining, construction, heavy logistics</li>
+   <li><b>2026 is partial:</b> only 12 Medium and 1 Heavy unit to 14 Aug; import records may be incomplete</li></ul></div>
+  <div class="src">*2026 annualised (Jan – 14 Aug × 1.61). Source: Indonesia import records HS 84269100 + 84264900; truck-mounted knuckle boom cranes; Zoomlion &amp; Hyva excluded; USD 1 = Rp 17.803.</div>
+ </div></div>''')
+
+def hbars(rows, color, maxv):
+    return '<div class="hb">' + "".join(f'<div class="hbr"><span class="hn">{n}</span><div class="hbt"><div style="width:{u/maxv*100:.0f}%;background:{color if k==len(rows)-1 else "#4a4a4a"}"></div></div><span class="hv">{u} · {v}</span></div>'
+                                      for k, (n, u, v) in enumerate(rows)) + '</div>'
+q2 = pslide("Brand Leaders · 2025", f'''
+ <div class="pg2"><div>
+  <div class="ctag or">MEDIUM · 25 – 45 tm</div>
+  <div class="lbl">UNITS &amp; IMPORT VALUE BY BRAND · 2025</div>
+  {hbars([("Amco Veba", 5, "Rp 2,7 M"), ("Palfinger", 5, "Rp 4,9 M"), ("XCMG", 14, "Rp 7,2 M"), ("Sany Palfinger", 30, "Rp 13,2 M")], "#FF8A3D", 30)}
+  {table(["#", "Brand", "Units", "Import value (IDR)", "Share"], [["1", "Sany Palfinger", "30", "Rp 13.226.000.000", "47%"], ["2", "XCMG", "14", "Rp 7.197.000.000", "26%"], ["3", "Palfinger", "5", "Rp 4.869.000.000", "17%"]], {"1": "or"})}
+  <div class="note2">Total Medium 2025: 54 units · Rp 28,0 M</div>
+ </div><div>
+  <div class="ctag bl">HEAVY · &gt; 45 tm</div>
+  <div class="lbl">UNITS &amp; IMPORT VALUE BY BRAND · 2025</div>
+  {hbars([("XCMG", 4, "Rp 4,6 M"), ("Amco Veba", 7, "Rp 11,1 M"), ("Palfinger", 22, "Rp 29,7 M")], "#4da3ff", 30)}
+  {table(["#", "Brand", "Units", "Import value (IDR)", "Share"], [["1", "Palfinger", "22", "Rp 29.738.000.000", "62%"], ["2", "Amco Veba", "7", "Rp 11.065.000.000", "23%"], ["3", "XCMG", "4", "Rp 4.647.000.000", "10%"]], {"1": "bl"})}
+  <div class="note2">Total Heavy 2025: 35 units · Rp 48,0 M. Sany Palfinger = Sany–Palfinger JV, made in China.</div><div class="c pbox" style="margin-top:12px"><ul class="b"><li>Both leaders are well ahead of the next brand in value</li><li>Scope: 2025 only, so figures are smaller than the 2023 – 2026 totals</li></ul></div>
+ </div></div>''')
+
+MODELS = [("Sany Palfinger", "or", [("SPK36080 · 36 tm", 14), ("SPK42502 · 42.5 tm", 6), ("SPK32080 · 30.4 tm", 6)]),
+          ("XCMG", "or", [("GSQZ330.4 · 33 tm", 4), ("SQZ325.4 · 32.5 tm", 3), ("KSQZ300.3 · 30 tm", 3)]),
+          ("Palfinger", "or", [("PK 32080 C · 30.4 tm", 4), ("PK 41002 EH C · 38.4 tm", 1)]),
+          ("Palfinger", "bl", [("PK 53002 SH B · 50.1 tm", 22)]), ("Amco Veba", "bl", [("V950 · 45.9 tm", 7)]),
+          ("XCMG", "bl", [("GSQZ880.6 · 88 tm", 2), ("GSQZ860.6 · 86 tm", 2)])]
+def mcard(b, c, rows):
+    mx = max(u for _, u in rows); col = "#FF8A3D" if c == "or" else "#4da3ff"
+    return (f'<div class="c mcard"><b>{b}</b>' + "".join(f'<div class="hbr"><span class="hn">{n}</span><div class="hbt"><div style="width:{u/mx*100:.0f}%;background:{col if k==0 else "#4a4a4a"}"></div></div><span class="hv">{u}</span></div>' for k, (n, u) in enumerate(rows)) + '</div>')
+q3 = pslide("Models of the Brand Leaders · 2025", f'''
+ <div class="ctag or">MEDIUM · 25 – 45 tm · units sold by model</div><div class="mrow">{"".join(mcard(*m) for m in MODELS[:3])}</div>
+ <div class="ctag bl">HEAVY · &gt; 45 tm · units sold by model</div><div class="mrow">{"".join(mcard(*m) for m in MODELS[3:])}</div>
+ <div class="c pbox"><ul class="b"><li>Each leader relies on one main model; <b>PK 53002 alone is 63% of Heavy units</b> in 2025</li></ul></div>''')
+
+def pcell(x):
+    if not x: return '<td></td>'
+    m, d, spec, price = x
+    k = "g" if d.startswith("−") else ("r" if d.startswith("+") else "nn")
+    return f'<td class="{k}"><b>{m}</b> <em>{d}</em><br><span>{spec}</span><br><span>{price}</span></td>'
+def ptable(brands, rows):
+    h = '<tr><th>tm class</th><th class="ff">F.lli Ferrari</th>' + "".join(f"<th>{b}<br><span>{u}</span></th>" for b, u in brands) + '</tr>'
+    body = ""
+    for cls, ff, cells in rows:
+        body += f'<tr><td class="tc">{cls}</td><td class="ffc">{ff}</td>' + "".join(pcell(c) for c in cells) + "</tr>"
+    return f'<table class="pt">{h}{body}</table>'
+PLEG = '<div class="leg"><span><i style="background:#1f5f35"></i>F.lli Ferrari cheaper</span><span><i style="background:#6b2222"></i>F.lli Ferrari more expensive</span><span><i style="background:#3a3a3a"></i>About the same (±0%)</span></div>'
+PSRC = '<div class="src">Competitor: highest import unit price 2023 – 14 Aug 2026 × Rp 17.803/USD + import duty + PPN 11% + PPh 22 2.5%, before distributor margin. F.lli Ferrari: TSP price list Rev1 (Jun 2026) less 13.6% margin and 3% warranty. Rounded to Rp 10 Jt.</div>'
+ML = lambda *a: "<br>".join(a)
+q4 = pslide("Price Comparison · Medium 25 – 35 tm", PLEG + ptable(
+  [("Sany Palfinger", "88 units"), ("Amco Veba", "36 units"), ("XCMG", "33 units"), ("Palfinger", "29 units"), ("Hiab", "10 units")], [
+  (ML("&gt;25–30 tm", "49 units"), ML("<b>268 A4</b>", "25.4 tm", "Rp 500 Jt"), [None, ("V825", "−23%", "25.6 tm · 31 units", "Rp 650 Jt"),
+     ("KSQZ300.3", "−3%", "30 tm · 15 units · smaller crane", "Rp 510 Jt"), None, None]),
+  ("", "", [None, None, ("SQ12ZK3Q", "±0%", "30 tm · 2 units", "Rp 500 Jt"), None, None]),
+  ("", "", [None, None, ("KSQZ300.4", "−12%", "30 tm · 1 unit · smaller crane", "Rp 570 Jt"), None, None]),
+  (ML("&gt;30–35 tm", "62 units"), ML("<b>FBR350R A4</b>", "32.8 tm", "Rp 1.090 Jt"), [("SPK32080", "+107%", "30.4 tm · 33 units", "Rp 530 Jt"),
+     ("V933", "+30%", "31.9 tm · 4 units", "Rp 840 Jt"), ("GSQZ330.4", "+40%", "33 tm · 4 units", "Rp 780 Jt"),
+     ("PK 32080 C", "±0%", "30.4 tm · 8 units", "Rp 1.090 Jt"), ("X-CLX 388", "−25%", "34.3 tm · 9 units", "Rp 1.460 Jt")]),
+  ("", "", [None, None, ("SQZ325.4", "+98%", "32.5 tm · 3 units", "Rp 550 Jt"), None, ("X-CLX 328", "−2%", "30.3 tm · 1 unit", "Rp 1.120 Jt")]),
+ ]) + PSRC)
+q5 = pslide("Price Comparison · Medium 35 – 45 tm", PLEG + ptable(
+  [("Sany Palfinger", "88 units"), ("Amco Veba", "36 units"), ("XCMG", "33 units"), ("Palfinger", "29 units")], [
+  (ML("&gt;35–40 tm", "66 units"), ML("<b>7441C</b>", "37.7 tm · estimate", "Rp 1.240 Jt"), [("SPK36080", "+88%", "36 tm · 37 units", "Rp 660 Jt"), None,
+     ("KSQZ400.4", "+66%", "40 tm · 2 units", "Rp 750 Jt"), ("PK 41002", "−14%", "38.4 tm · 21 units", "Rp 1.440 Jt")]),
+  ("", "", [None, None, ("GSQZ400.4", "+76%", "40 tm · 2 units", "Rp 700 Jt"), None]),
+  ("", "", [None, None, ("SQZ365.4", "+107%", "36.5 tm · 2 units", "Rp 600 Jt"), None]),
+  ("", "", [None, None, ("SQZ400", "+109%", "40 tm · 1 unit", "Rp 600 Jt"), None]),
+  ("", "", [None, None, ("KSQZ365.4", "+129%", "36.5 tm · 1 unit", "Rp 540 Jt"), None]),
+  (ML("&gt;40–45 tm", "19 units"), ML("<b>746 A4</b>", "43.4 tm", "Rp 1.420 Jt"), [("SPK42502", "+48%", "42.5 tm · 18 units", "Rp 960 Jt"),
+     ("V946B", "+12%", "44.2 tm · 1 unit", "Rp 1.270 Jt"), None, None]),
+ ]) + PSRC)
+q6 = pslide("Price Comparison · Heavy 45 – 90 tm", PLEG + ptable(
+  [("Palfinger", "42 units"), ("Amco Veba", "12 units"), ("XCMG", "7 units"), ("Hiab", "2 units"), ("Fassi", "1 unit"), ("Sany Palfinger", "1 unit")], [
+  (ML("&gt;45–50 tm", "17 units"), ML("<b>FBR450R A4</b>", "45.5 tm", "Rp 1.350 Jt"), [None, ("V950", "−32%", "45.9 tm · 12 units", "Rp 1.990 Jt"),
+     ("GSQZ460.4", "+66%", "46 tm · 3 units", "Rp 810 Jt"), ("EFFER 525H", "−10%", "50 tm · 1 unit · smaller crane", "Rp 1.510 Jt"), ("F485RA.2.23", "−16%", "47 tm · 1 unit", "Rp 1.610 Jt"), None]),
+  (ML("&gt;50–55 tm", "40 units"), ML("<b>9601CR A8</b>", "50.7 tm", "Rp 3.260 Jt"), [("PK 53002", "+85%", "50.1 tm · 39 units", "Rp 1.760 Jt"), None, None,
+     ("X-HIPRO B58", "−3%", "50.93 tm · 1 unit", "Rp 3.370 Jt"), None, None]),
+  (ML("&gt;55–60 tm", "0 units"), ML("<b>FBR660R A4</b>", "58.8 tm", "Rp 2.030 Jt"), [None] * 6),
+  (ML("&gt;60–65 tm", "1 unit"), ML("<b>9661C</b>", "63.2 tm", "Price not yet known"), [None] * 5 + [("SPK61502", "no price", "61.5 tm · 1 unit", "Rp 1.400 Jt")]),
+  (ML("&gt;70–75 tm", "2 units"), ML("<b>990R</b>", "74 tm", "Rp 4.110 Jt"), [("PK 76002 EH D", "+80%", "71.6 tm · 2 units", "Rp 2.290 Jt")] + [None] * 5),
+  (ML("&gt;80–85 tm", "1 unit"), "No F.lli Ferrari model", [("PK 88002 EH C", "+85%", "81.6 tm · 1 unit", "Rp 2.220 Jt")] + [None] * 5),
+  (ML("&gt;85–90 tm", "4 units"), "No F.lli Ferrari model", [None, None, ("GSQZ880.6 / 860.6", "+211%", "86–88 tm · 4 units", "Rp 1.320 Jt")] + [None] * 3),
+ ]) + PSRC)
+CR2 = [("268 A4", "25.4 tm", "31", [("Amco Veba V825 · 31", "−23%")]), ("7441C*", "37.7 tm", "21", [("Palfinger PK 41002 · 21", "−14%")]),
+       ("FBR450R A4", "45.5 tm", "13", [("Amco Veba V950 · 12", "−32%"), ("Fassi F485RA.2.23 · 1", "−16%")]),
+       ("FBR350R A4", "32.8 tm", "10", [("Hiab X-CLX 388 · 9", "−25%"), ("Hiab X-CLX 328 · 1", "−2%")]), ("9601CR A8", "50.7 tm", "1", [("Hiab X-HIPRO B58 · 1", "−3%")])]
+cc = "".join(f'<div class="c crc"><img src="{photo(f"assets/project/crane{k}.png", 500)}"><div class="crh"><b>{m}</b><span>{t}</span></div><div class="crn">{u}<small>units won</small></div><div class="crl">CHEAPER THAN</div>'
+             + "".join(f'<div class="crv">{c} <i>{d}</i></div>' for c, d in vs) + '</div>' for k, (m, t, u, vs) in enumerate(CR2))
+q7 = pslide("F.lli Ferrari Crane Advantage", f'''
+ <div class="lbl">FIVE F.LLI FERRARI CRANES · SAME SIZE OR BIGGER AND LOWER PRICE THAN THESE COMPETITORS · JAN 2023 – 14 AUG 2026</div>
+ <div class="crs crs2">{cc}</div>
+ <div class="src">Units won = imports of the rival model. Head to head = F.lli Ferrari cheaper and not more than 2 tm smaller. *7441C price is an estimate.</div>''')
+qa1 = islide("Appendix · Model Photos · Medium", "p11.png")
+qa2 = islide("Appendix · Model Photos · Heavy &amp; F.lli Ferrari", "p12.png")
+q6 = q6.replace('class="pt"', 'class="pt tight"')
+PROJECT = [p_div, q1, q2, q3, q4, q5, q6, q7, qa1, qa2]
+EXTRA_CSS += """
+.leg{display:flex;gap:14px;font-size:10px;color:var(--tx2);margin:2px 0 6px}.leg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.vbars{display:flex;gap:18px;height:170px;align-items:flex-end;border-bottom:1px solid var(--line);padding:0 6px}
+.vgrp{flex:1;display:flex;flex-direction:column;height:100%}.vcols{flex:1;display:flex;align-items:flex-end;gap:3px}
+.vcol{flex:1;position:relative;border-radius:3px 3px 0 0}.vcol span{position:absolute;top:-14px;left:0;right:0;text-align:center;font-size:9px;color:var(--tx2)}
+.vlab{text-align:center;font-size:10px;color:var(--tx2);padding-top:4px}
+.dt{width:100%;border-collapse:collapse;font-size:10.5px}.dt th{text-align:left;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);padding:5px 8px;border-bottom:1px solid var(--line)}
+.dt td{padding:5px 8px;border-bottom:1px solid var(--line);color:var(--tx2)}.dt tr.or td{color:#FF8A3D;font-weight:600}.dt tr.bl td{color:#4da3ff;font-weight:600}.dt tr.tot td{color:var(--tx);font-weight:700}
+.src{font-size:8.5px;color:var(--mut);line-height:1.35;margin-top:6px}
+.ctag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.1em;padding:3px 10px;border-radius:999px;margin-bottom:6px;color:#111}.ctag.or{background:#FF8A3D}.ctag.bl{background:#4da3ff}
+.hb{display:flex;flex-direction:column;gap:6px;margin:4px 0 10px}.hbr{display:grid;grid-template-columns:150px 1fr 90px;gap:8px;align-items:center;font-size:10.5px}
+.hn{color:var(--tx)}.hv{color:var(--tx2);font-size:10px}.hbt{height:12px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden}.hbt div{height:100%}
+.note2{font-size:10px;color:var(--tx2);margin-top:6px}
+.mrow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:8px}.mcard{padding:10px 12px;display:flex;flex-direction:column;gap:5px}.mcard>b{font-size:12px;margin-bottom:2px}
+.mcard .hbr{grid-template-columns:130px 1fr 24px}
+.pt{width:100%;border-collapse:collapse;font-size:9.6px;table-layout:fixed}.pt th{background:#1a1a1a;color:var(--tx);font-size:10px;padding:5px;border:1px solid #2a2a2a}.pt th span{color:var(--mut);font-weight:400;font-size:9px}
+.pt th.ff{background:#b3261e}.pt td{border:1px solid #2a2a2a;padding:4px 6px;vertical-align:top;line-height:1.3;color:var(--tx2)}
+.pt td b{color:var(--tx)}.pt td em{font-style:normal;font-weight:700}.pt td.g{background:#1f3d2a}.pt td.g em{color:#5bd17a}.pt td.r{background:#3d1f1f}.pt td.r em{color:#ff8a8a}.pt td.nn{background:#2a2a2a}.pt td.nn em{color:#ddd}
+.pt td.tc{color:#4da3ff;font-weight:600;text-align:center}.pt td.ffc{background:#3a1512;color:var(--tx)}
+.crs2 .crc img{width:100%;height:120px;object-fit:cover;border-radius:8px;margin-bottom:8px}.crs2{flex:1}.crs2 .crv{margin-top:6px}
+"""
+
+EXTRA_CSS += """
+.prj .pb{gap:12px}
+.pt{font-size:11.5px}.pt th{font-size:11.5px;padding:8px 6px}.pt td{padding:8px 8px;line-height:1.4}
+.vbars{height:250px}.vcol span{font-size:11px}.vlab{font-size:12px}
+.dt{font-size:12px}.dt td{padding:7px 8px}.dt th{font-size:10px}
+.hb{gap:10px}.hbr{font-size:12.5px;grid-template-columns:160px 1fr 110px}.hbt{height:18px}.hv{font-size:11.5px}
+.mrow{gap:14px;margin-bottom:14px}.mcard{padding:16px 18px;gap:10px}.mcard>b{font-size:15px}.mcard .hbr{grid-template-columns:170px 1fr 28px}
+.prj .pbox ul.b{font-size:13px}.kpi b{font-size:30px}.kpi span{font-size:11.5px}
+.crs2 .crc{display:flex;flex-direction:column}.crs2 .crc img{height:200px}.crs2 .crn{font-size:52px}.crs2 .crv{font-size:12.5px}.crs2 .crh b{font-size:16px}
+.ctag{font-size:11.5px;padding:4px 12px}.note2{font-size:11.5px}.src{font-size:9.5px}
+"""
+EXTRA_CSS += ".pt.tight td{padding:4px 7px;line-height:1.3}.pt.tight{font-size:10.8px}\n"
