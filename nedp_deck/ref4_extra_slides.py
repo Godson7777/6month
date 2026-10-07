@@ -14,11 +14,28 @@ for lab, c, cells in sip_rows:
     sip += f'<tr><td class="rl {c}">{lab}</td>' + "".join(f'<td class="{"pc" if k == 2 else ""}">{v}</td>' for k, v in enumerate(cells)) + "</tr>"
 sip += "</table>"
 
-sides = ('<div class="two">'
-  '<div class="c side o"><div class="sh"><b>A. STRATEGIC</b><span>Sets the direction · output used for management decisions</span></div>'
-  + ul(["Pricing &amp; Market Analysis", "Market Study &amp; Program Development", "Market Program for Support Sales", "Performance Reporting (GP, PICA)", "Innovation &amp; Development"]) + '</div>'
-  '<div class="c side s"><div class="sh"><b>B. SUPPLY CHAIN</b><span>Runs the transaction · output used for operations</span></div>'
-  + ul(["Quotation &amp; Production Coordination", "Operational Reporting", "Internal &amp; External Coordination", "Routine Meetings &amp; Communication"], "s") + '</div></div>')
+def ex_table(title, sub, cls, rows):
+    body = "".join(f"<tr><td>{a}</td><td>{r}</td></tr>" for a, r in rows)
+    return (f'<div class="c side {cls}"><div class="sh"><b>{title}</b><span>{sub}</span></div>'
+            f'<table class="ex"><tr><th>Example activities</th><th>End result</th></tr>{body}</table></div>')
+
+# Condensed from the official Position Description (Roles & Responsibilities + End Result)
+STRAT = [
+ ("Price &amp; market analysis simulation", "Basis for pricing strategy"),
+ ("Market data, competitor mapping, new product analysis", "Market size / share, segmentation, positioning &amp; targeting"),
+ ("Sales tools, campaigns, seasonal promo, CRM price list, event support", "Sales programs ready for the sales team"),
+ ("GP Report, Performance Report, PICA analysis", "Periodic reports for performance evaluation &amp; management decisions"),
+ ("Innovation Project Charter, Patria Mover training, site visit report", "Innovation framework; field conditions documented"),
+]
+SUPPLY = [
+ ("Quotation to vendors / third parties; price request (Patria &amp; non-Patria)", "Logistics cost estimate; Patria &amp; non-Patria price info"),
+ ("Supporting data for price request &amp; PO", "Complete, accurate data for PO submission"),
+ ("Production planning update, cross-team coordination, site / factory visit", "Production issues identified; actual unit condition documented"),
+ ("QFD with UTPE, pickup / delivery &amp; LOCO, BAST / BAPB &amp; billing follow-up", "Valid billing documents for invoicing"),
+ ("Daily briefing; weekly S&amp;M, production, billing, forecast, QFD &amp; HANSEI meetings", "Coordinated daily agenda &amp; follow-ups"),
+]
+sides = ('<div class="two">' + ex_table("A. STRATEGIC", "Sets the direction · for management decisions", "o", STRAT)
+         + ex_table("B. SUPPLY CHAIN", "Runs the transaction · for operations", "s", SUPPLY) + '</div>')
 boxes = ('<div class="three">'
   '<div class="c box"><h4>Dimensions</h4>' + ul(["<b>Financial:</b> non-Patria procurement budget, COGS per unit, target margin per PO", "<b>Non-financial:</b> vendors &amp; customers, documents verified, report frequency, meetings &amp; site visits"]) + '</div>'
   '<div class="c box"><h4>Working Relationships</h4>' + ul(["<b>Internal:</b> Sales &amp; Marketing, Warehouse, Finance &amp; Accounting, Legal, Procurement", "<b>External:</b> customers, Patria &amp; non-Patria vendors, forwarders, UTPE"]) + '</div>'
@@ -86,26 +103,31 @@ TITLES = [
 
 EXTRA_CSS = """
 .pill{top:104px!important}
-.rr2 .bands{position:absolute;left:44px;right:44px;top:150px;bottom:42px;display:grid;grid-template-rows:auto auto 1fr;gap:12px}
+.rr2 .bands{position:absolute;left:44px;right:44px;top:146px;bottom:40px;display:grid;grid-template-rows:auto auto 1fr;gap:8px}
 .band{display:flex;flex-direction:column;gap:7px;min-height:0}
-.bh{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line);padding-bottom:5px}
+.bh{display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line);padding-bottom:3px}
 .bh b{width:22px;height:22px;border-radius:6px;background:var(--or);color:#fff;display:grid;place-items:center;font-size:12px}
 .bh span{font-size:15px;font-weight:600}
 .rr2 .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.rr2 .side{padding:10px 14px}.rr2 .side.o{border-top:2px solid var(--or)}.rr2 .side.s{border-top:2px solid var(--steel)}
+.rr2 .side{padding:7px 12px}.rr2 .side.o{border-top:2px solid var(--or)}.rr2 .side.s{border-top:2px solid var(--steel)}
 .rr2 .sh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
 .rr2 .sh b{font-size:13px;letter-spacing:.1em}.rr2 .side.o .sh b{color:var(--or)}.rr2 .side.s .sh b{color:var(--steel)}
 .rr2 .sh span{font-size:9.5px;color:var(--mut)}
 .rr2 .side ul.b{columns:2;font-size:11px}
-.sip2{width:100%;border-collapse:collapse;font-size:10.5px;color:var(--tx2)}
+.ex{width:100%;border-collapse:collapse;font-size:9.6px;line-height:1.3}
+.ex th{text-align:left;font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);padding:2px 6px 4px 0;font-weight:600}
+.ex td{padding:3px 6px 3px 0;border-top:1px solid var(--line);vertical-align:top;color:var(--tx2)}
+.ex td:first-child{color:var(--tx);width:54%}
+.rr2 .side.s .ex td:first-child{color:var(--tx)}
+.sip2{width:100%;border-collapse:collapse;font-size:9.8px;color:var(--tx2)}
 .sip2 th{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tx);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
-.sip2 td{padding:7px 8px;border-bottom:1px solid var(--line);line-height:1.35}
+.sip2 td{padding:4px 8px;border-bottom:1px solid var(--line);line-height:1.35}
 .sip2 .pc{background:var(--or-dim);color:var(--tx);font-weight:600;border-left:1px solid var(--or);border-right:1px solid var(--or)}
 .sip2 th.pc{color:var(--or)}
 .sip2 .rl{font-size:10.5px;font-weight:700;letter-spacing:.08em;width:118px}.sip2 .rl.o{color:var(--or)}.sip2 .rl.s{color:var(--steel)}
 .rr2 .three{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;min-height:0}
-.rr2 .box{padding:10px 14px}.rr2 .box h4{font-size:12.5px;margin-bottom:6px}
-.rr2 .box ul.b{font-size:10.8px}.rr2 .box ul.b b{color:var(--tx)}
+.rr2 .box{padding:7px 12px}.rr2 .box h4{font-size:12px;margin-bottom:3px}
+.rr2 .box ul.b{font-size:9.8px}.rr2 .box ul.b b{color:var(--tx)}
 .sc2b{position:absolute;left:44px;right:44px;top:150px;bottom:42px;display:grid;grid-template-rows:1.25fr auto 1fr;gap:14px}
 .sc2 .two{display:grid;grid-template-columns:1fr 1fr;gap:14px;min-height:0}
 .sc2 .stp{padding:14px 16px;display:flex;flex-direction:column;gap:10px}
