@@ -6,7 +6,7 @@ for(let i=0;i<n;i++){
  await p.evaluate(i=>{const S=[...document.querySelectorAll('.frame')];S.forEach((s,k)=>s.classList.toggle('on',k===i));document.querySelectorAll('#nav,#bar').forEach(e=>e.style.display='none');document.querySelectorAll('[data-hid]').forEach(e=>{e.style.cssText=e.dataset.hid;e.removeAttribute('data-hid')})},i);
  await p.waitForTimeout(300);
  const items=await p.evaluate(()=>{const f=document.querySelector('.frame.on');const fr=f.getBoundingClientRect();const INL=new Set(['B','I','EM','SPAN','SMALL','BR','STRONG','A']);const res=[];
-  const all=[...f.querySelectorAll('*')].filter(e=>{if(INL.has(e.tagName)&&e.parentElement&&[...e.parentElement.childNodes].some(c=>c.nodeType==3&&c.textContent.trim()))return false;
+  const all=[...f.querySelectorAll('h1.t,h2,.kick,.sec,.osec,.otitle,.osub,.tag')].filter(e=>{if(INL.has(e.tagName)&&e.parentElement&&[...e.parentElement.childNodes].some(c=>c.nodeType==3&&c.textContent.trim()))return false;
    const t=(e.innerText||'').trim();if(!t)return false;return [...e.children].every(c=>INL.has(c.tagName))&&!['svg','IMG','STYLE','SCRIPT'].includes(e.tagName)});
   const sel=new Set();for(const e of all){let a=e.parentElement,skip=false;while(a&&a!==f){if(sel.has(a)){skip=true;break}a=a.parentElement}if(skip)continue;const r=e.getBoundingClientRect();if(r.width<2||r.height<2)continue;const cs=getComputedStyle(e);if(parseFloat(cs.fontSize)>150)continue;sel.add(e);
    if(cs.visibility=='hidden'||+cs.opacity===0)continue;

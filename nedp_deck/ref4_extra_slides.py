@@ -1,3 +1,4 @@
+import re
 # Slides 10 and 15 for the Ref4 deck; exec'd by build_ref4_final.py (needs `tri` in scope).
 def band(n, label, body):
     return f'<div class="band"><div class="bh"><b>{n}</b><span>{label}</span></div>{body}</div>'
@@ -681,3 +682,41 @@ EXTRA_CSS += """
 .prj .mrow{flex:1}.prj .mcard{justify-content:center}.prj .mcard .hbt{height:22px}
 .prj .pt{height:auto}.prj .vbars{height:290px}
 """
+
+# ---------- Personal Information section ----------
+KPI_ = "Personal Information"
+def perslide(title, body):
+    return pslide(title, body).replace(KP, KPI_)
+info_rows = "".join(f'<div class="pi"><span>{k}</span><b>{v}</b></div>' for k, v in [
+  ("Position", "Marketing Strategic 2 Associate"), ("Division", "Marketing Unit &amp; Strategic · PT Triatra Sinergia Pratama"),
+  ("Products", "Small Suppeq · Truck Others"), ("Date of birth", "[ fill in ]"), ("Place of birth", "[ fill in ]"),
+  ("Email", "[ fill in ]@triatra.co.id"), ("LinkedIn", "[ fill in ]")])
+about = perslide("About Me", f'''
+ <div class="pg3" style="grid-template-columns:1fr 1.25fr 0.9fr;flex:1;align-items:stretch">
+  <div class="c pbox"><div class="pname">Tiberias Krisgaharu Simu</div><div class="prole">Marketing Strategic 2 Associate</div>{info_rows}</div>
+  <div class="c pbox"><h4>Education</h4><div class="tl"><b>[ University ]</b><span>[ Degree · Major ]</span><span>[ Year – Year ] · GPA [ x.xx / 4.00 ]</span></div>
+   <h4 style="margin-top:14px">Work Experience</h4>
+   <div class="tl"><b>PT Triatra Sinergia Pratama</b><span>Marketing Strategic 2 Associate · 2026 – now</span></div>
+   <div class="tl"><b>[ Company ]</b><span>[ Role · Period ]</span></div><div class="tl"><b>[ Company ]</b><span>[ Role · Period ]</span></div></div>
+  <div class="c pbox photo"><span>PROFILE PHOTO</span></div>
+ </div>''')
+PH = [("p3.png", "B-ONE · Basic Orientation for New Employee"), ("p1.webp", "Basic Technical Course"), ("p2.png", "Batch gathering"), ("p4.png", "Marketing HO presentation")]
+journey = perslide("Onboarding Journey", '<div class="jg">' + "".join(
+  f'<div class="ph2"><img src="{photo("assets/personal/" + f, 1200)}"><span>{t}</span></div>' for f, t in PH) + '</div>')
+pdiv = p_div.replace("SECTION 06", "PERSONAL").replace("<h2>Project</h2>", "<h2>Personal Information</h2>").replace('<div class="big">06</div>', '<div class="big">00</div>')
+pdiv = re.sub(r'<div class="subs".*?</div></div>', '<div class="subs" style="top:400px"><div>About Me</div><div>Onboarding Journey</div></div>', pdiv, count=1, flags=re.S)
+PERSONAL = [pdiv, about, journey]
+TITLES.append(('<span style="font:700 30px var(--mono);color:var(--or)">01</span><span style="font-size:19px;font-weight:700">Company Profile</span></div>',
+  '<span style="font:700 30px var(--mono);color:var(--or)">01</span><span style="font-size:19px;font-weight:700">Company Profile</span></div>'))
+EXTRA_CSS += """
+.pname{font-size:22px;font-weight:700;color:var(--tx)}.prole{color:var(--or);font-weight:600;margin:2px 0 12px}
+.pi{display:flex;flex-direction:column;padding:6px 0;border-top:1px solid var(--line)}.pi span{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}.pi b{font-size:13px;color:var(--tx);font-weight:500}
+.tl{border-left:2px solid var(--or);padding:4px 0 4px 10px;margin:8px 0;display:flex;flex-direction:column}.tl b{font-size:14px}.tl span{font-size:12px;color:var(--tx2)}
+.photo{display:grid;place-items:center;border:1.5px dashed var(--dash)!important;color:var(--mut);letter-spacing:.2em;font-size:11px}
+.jg{flex:1;display:grid;grid-template-columns:1.4fr 1fr;grid-template-rows:1fr 1fr;gap:10px;min-height:0}.jg .ph2:first-child{grid-row:span 2}
+.ph2{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line)}.ph2 img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ph2 span{position:absolute;left:0;right:0;bottom:0;padding:22px 14px 10px;background:linear-gradient(transparent,rgba(0,0,0,.85));font-size:13px;font-weight:600}
+"""
+_r = '<div class="c plain" style="display:flex;align-items:center;gap:22px;padding:14px 20px"><span style="font:700 30px var(--mono);color:var(--or)">01</span>'
+TITLES.append((_r, '<div class="c plain" style="display:flex;align-items:center;gap:22px;padding:14px 20px"><span style="font:700 30px var(--mono);color:var(--or)">00</span><span style="font-size:19px;font-weight:700">Personal Information</span></div>' + _r))
+EXTRA_CSS += '.slide .body>div>.c.plain[style*="padding:14px 20px"]{padding:9px 20px!important}\n'

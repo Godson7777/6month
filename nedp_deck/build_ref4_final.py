@@ -122,6 +122,7 @@ parts[idx[1]] = "<!-- 03 COMPANY -->\n" + slide3 + "\n\n"
 for tag in DROP_SLIDES:
     parts = [p for p in parts if not re.match(rf'<!-- {tag} ', p)]
 html = "".join(parts)
+html = html.replace("<!-- 02 OPENER -->", "\n".join(PERSONAL) + "\n<!-- 02 OPENER -->", 1)
 html = re.sub(r'(</div></div>\s*<div id="nav">)', lambda m: "\n".join(PROJECT) + "\n" + m.group(1), html, count=1)
 _tot = len(re.findall(r'<b>\d\d</b> / 15', html)); _n = iter(range(1, 100))
 html = re.sub(r'<b>\d\d</b> / 15', lambda m: f'<b>{next(_n):02d}</b> / {_tot}', html)
