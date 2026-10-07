@@ -449,3 +449,14 @@ PROJECT = [p_div] + [islide(t, f) for t, f in PROJ_SLIDES] + [p_close]
 EXTRA_CSS += ".evbig.full{flex:1;background:#0d1117}\n"
 
 EXTRA_CSS += ".prj .pg3{flex:none;align-items:start}.prj .pbox ul.b{font-size:12px}\n"
+
+SC_EV["Request Quote to UTE"].append("sc3_c.png")
+SC_EV["Preliminary Drawing Review"] += ["sc2_c.webp", "sc2_d.png"]
+slide14 = jde(14, KB, "Supply Chain (1/2)", "MAIN PROCESS · STEPS 1–3", steps([
+  ("Demand Check", ["Look at which demands are rising in PCR", "Clarify with the Business Consultant why the customer is buying — expansion, new business or replacement",
+                    "Check where the project is located", "Check whether the customer wants it fast or cheap", "Check the expected price and when the PO is likely to come"]),
+  ("Preliminary Drawing Review", ["Check what the unit does and how it works", "Check the main components and find which ones are critical on price or lead time",
+                                  "Consult Application Engineering to understand the unit in more depth"]),
+  ("Request Quote to UTE", ["Attach the preliminary drawing, expected price and lead time, end customer name and expected delivery so UTE has the full picture",
+                            "Check the standard GP (13.6%, the price before negotiation)", "Check the SLA and escalate if it takes too long", "Enter the quote result into PCR"]),
+ ], "sc"), 3, "", "s")
