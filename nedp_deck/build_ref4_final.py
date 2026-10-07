@@ -112,7 +112,7 @@ parts = re.split(r'(?=<!-- \d\d [^>]*-->\s*<section)', html)
 idx = [k for k, p in enumerate(parts) if re.match(r'<!-- 0[23] ', p)]
 i5 = [k for k, p in enumerate(parts) if re.match(r'<!-- 05 ', p)][0]
 parts[i5] = "<!-- 05 SITE -->\n" + slide5 + "\n\n"
-for tag, sl in (("10", slide10), ("12", slide12), ("14", slide14), ("15", slide15)):
+for tag, sl in (("10", slide10), ("12", slide12), ("14", slide14), ("14", slide14), ("15", slide15)):
     k = [k for k, p in enumerate(parts) if re.match(rf'<!-- {tag} ', p)][0]
     tail = parts[k].split("</section>", 1)[1]  # keep anything after the slide (nav, script on the last one)
     parts[k] = f"<!-- {tag} -->\n" + sl + tail
@@ -122,8 +122,9 @@ parts[idx[1]] = "<!-- 03 COMPANY -->\n" + slide3 + "\n\n"
 for tag in DROP_SLIDES:
     parts = [p for p in parts if not re.match(rf'<!-- {tag} ', p)]
 html = "".join(parts)
-_n = iter(range(1, 100))
-html = re.sub(r'<b>\d\d</b> / 15', lambda m: f'<b>{next(_n):02d}</b> / 14', html)
+html = re.sub(r'(</div></div>\s*<div id="nav">)', lambda m: "\n".join(PROJECT) + "\n" + m.group(1), html, count=1)
+_tot = len(re.findall(r'<b>\d\d</b> / 15', html)); _n = iter(range(1, 100))
+html = re.sub(r'<b>\d\d</b> / 15', lambda m: f'<b>{next(_n):02d}</b> / {_tot}', html)
 
 # ---------- plain, consistent titles ----------
 for a, b in TITLES:

@@ -329,3 +329,103 @@ slide12 = jde(12, KA, "Strategic", "STEPS 1–5", area_cards([
  ]), 5, info)
 DROP_SLIDES = ["13"]
 EXTRA_CSS += ".jde .jcard{gap:6px}.jde .jcard ul.b{font-size:10.5px}\n"
+
+# ---------- Supply Chain (1/2) evidence ----------
+SC_EV = {"Demand Check": ["sc1_a.png", "sc1_b.webp", "sc1_c.png"], "Preliminary Drawing Review": ["sc2_a.png", "sc2_b.png"],
+         "Request Quote to UTE": ["sc3_a.png", "sc3_b.png"]}
+def steps(items, color_cls="", start=1):
+    out = ""
+    for k, (t, pts) in enumerate(items):
+        key = t.replace("&amp;", "&")
+        ev = ('<div class="evimg evrow">' + "".join(f'<img src="{photo("assets/evidence/" + f, 1100)}">' for f in SC_EV[key]) + '</div>'
+              if key in SC_EV else '<div class="ev2">EVIDENCE</div>')
+        out += (f'<div class="c jcard {color_cls}"><div class="sth"><span class="num">{start + k}</span><b>{t}</b></div>'
+                + ul(pts, "s" if color_cls else "") + ev + '</div>')
+    return out
+slide14 = jde(14, KB, "Supply Chain (1/2)", "MAIN PROCESS · STEPS 1–3", steps([
+  ("Demand Check", ["Look at which demands are rising in PCR", "Clarify with the Business Consultant why the customer is buying — expansion, new business or replacement",
+                    "Check where the project is located", "Check whether the customer wants it fast or cheap", "Check the expected price and when the PO is likely to come"]),
+  ("Preliminary Drawing Review", ["Check what the unit does and how it works", "Check the main components and find which ones are critical on price or lead time",
+                                  "Consult Application Engineering to understand the unit in more depth"]),
+  ("Request Quote to UTE", ["Attach the preliminary drawing, expected price and lead time, end customer name and expected delivery so UTE has the full picture",
+                            "Check the standard GP (13.6%, the price before negotiation)", "Check the SLA and escalate if it takes too long", "Enter the quote result into PCR"]),
+ ], "sc"), 3, "", "s")
+EXTRA_CSS += ".evrow{flex-direction:row;flex-wrap:wrap}.evrow img{flex:1 1 45%;min-width:0;height:calc(50% - 3px)}\n"
+
+# ---------- Section 06: Project — F.lli Ferrari crane strategy ----------
+TITLES.append(('<span style="font-size:19px;font-weight:700">Job Description Execution</span></div>',
+  '<span style="font-size:19px;font-weight:700">Job Description Execution</span></div><div class="c plain" style="display:flex;align-items:center;gap:22px;padding:14px 20px"><span style="font:700 30px var(--mono);color:var(--or)">06</span><span style="font-size:19px;font-weight:700">Project — F.lli Ferrari Crane Strategy</span></div>'))
+EXTRA_CSS += ".agenda-fix{}\n"
+KP = "Section 06 · Project · F.lli Ferrari Crane Strategy"
+def pslide(title, body, extra_cls=""):
+    return f'''<section class="slide prj {extra_cls}"><div class="in">
+  <div class="top"><span class="tag">[ INTERNAL USE ONLY ]</span><span></span><img class="tri" src="{tri}" alt="Triatra"></div>
+  <div class="kick">{KP}</div><h1 class="t">{title}</h1><div class="pb">{body}</div>
+  <div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>00</b> / 15</span></div></div></section>'''
+def kpi(n, l, hl=False): return f'<div class="c kpi{" me" if hl else ""}"><b>{n}</b><span>{l}</span></div>'
+p_div = f'''<section class="slide div"><div class="in">
+  <div class="top"><span class="tag">[ INTERNAL USE ONLY ]</span><span></span><img class="tri" src="{tri}" alt="Triatra"></div>
+  <div class="big">06</div><div class="sec">SECTION 06</div><h2>Project</h2>
+  <div class="subs" style="top:410px"><div class="a">F.lli Ferrari Crane Strategy</div><div>Truck-mounted knuckle boom crane · Indonesia</div></div><div class="haz"></div>
+  <div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>00</b> / 15</span></div></div></section>'''
+p1 = pslide("Background &amp; Market Size", f'''
+ <div class="pg2"><div>
+  <div class="lbl">PROJECT BACKGROUND</div>
+  <div class="c pbox"><ul class="b">
+   <li><b>Goal:</b> find where F.lli Ferrari truck-mounted cranes can win in Indonesia, and which models to stock</li>
+   <li><b>Data:</b> Indonesia import records (HS 84269100 + 84264900), Jan 2023 – 14 Aug 2026; Zoomlion &amp; Hyva excluded</li>
+   <li><b>Method:</b> size the market by lifting class (Light / Small / Medium / Heavy), find brand &amp; model leaders, then compare price head to head per 5-tm class</li>
+   <li><b>Price basis:</b> competitor import price + duty + PPN + PPh 22 vs F.lli Ferrari TSP price list, before distributor margin</li></ul></div>
+  <div class="lbl" style="margin-top:12px">WHY MEDIUM &amp; HEAVY (&gt; 25 tm)</div>
+  <div class="kpis">{kpi("41%","of units")}{kpi("64%","of import value", True)}{kpi("Rp 803 Jt","avg value / unit vs Rp 311 Jt Light+Small")}{kpi("67 / yr","Medium + Heavy units")}</div>
+ </div><div>
+  <div class="lbl">EVIDENCE · MARKET SIZE BY CLASS</div>
+  <div class="evbig"><img src="{photo("assets/evidence/s1_a.png", 1400)}"></div>
+  <div class="lbl" style="margin-top:12px">TOTAL 2023 – 14 AUG 2026</div>
+  <div class="kpis">{kpi("638","units imported")}{kpi("Rp 326,8 M","import value (IDR)")}</div>
+ </div></div>''')
+p2 = pslide("Competitor Landscape &amp; Price Comparison", f'''
+ <div class="pg2"><div>
+  <div class="lbl">BRAND LEADERS · 2025</div>
+  <div class="c pbox"><ul class="b">
+   <li><b>Medium (25–45 tm):</b> Sany Palfinger leads with 47% of value (30 units), then XCMG and Palfinger</li>
+   <li><b>Heavy (&gt; 45 tm):</b> Palfinger leads with 62% of value; PK 53002 alone is 63% of Heavy units</li>
+   <li>Each leader relies on one main model, so one well-priced alternative can take share</li></ul></div>
+  <div class="lbl" style="margin-top:12px">HEAD-TO-HEAD: WHERE F.LLI FERRARI IS CHEAPER</div>
+  <table class="ptab"><tr><th>Class</th><th>Cheaper head to head on</th><th>Units</th></tr>
+   <tr><td>Medium 25–35 tm</td><td>Amco Veba V825, Hiab X-CLX 388 / 328</td><td>41 of 111</td></tr>
+   <tr><td>Medium 35–45 tm</td><td>Palfinger PK 41002</td><td>21 of 85</td></tr>
+   <tr><td>Heavy 45–90 tm</td><td>Amco Veba V950, Hiab X-HIPRO B58, Fassi F485RA</td><td>14 of 65</td></tr></table>
+ </div><div>
+  <div class="lbl">EVIDENCE · PRICE COMPARISON (HEAVY)</div>
+  <div class="evbig"><img src="{photo("assets/evidence/s1_c.png", 1400)}"></div>
+ </div></div>''')
+CR = [("268 A4","25.4 tm","31","Amco Veba V825","−23%"),("7441C*","37.7 tm","21","Palfinger PK 41002","−14%"),
+      ("FBR450R A4","45.5 tm","13","Amco Veba V950 / Fassi F485RA","−32% / −16%"),("FBR350R A4","32.8 tm","10","Hiab X-CLX 388 / 328","−25% / −2%"),
+      ("9601CR A8","50.7 tm","1","Hiab X-HIPRO B58","−3%")]
+cards = "".join(f'<div class="c crc"><div class="crh"><b>{m}</b><span>{t}</span></div><div class="crn">{u}<small>units won</small></div><div class="crl">CHEAPER THAN</div><div class="crv">{c} <i>{d}</i></div></div>' for m,t,u,c,d in CR)
+p3 = pslide("Recommendation &amp; Next Steps", f'''
+ <div class="lbl">STOCK THE FIVE F.LLI FERRARI CRANES THAT WIN ON PRICE · SAME SIZE OR BIGGER, LOWER PRICE</div>
+ <div class="crs">{cards}</div>
+ <div class="pg3">
+  <div class="c pbox"><h4>Opportunity</h4><ul class="b"><li>76 competitor units (2023 – Aug 2026) were in classes where a cheaper, same-size F.lli Ferrari exists</li><li>Focus on Medium &amp; Heavy: fewer units, most of the value</li></ul></div>
+  <div class="c pbox"><h4>Next Steps</h4><ul class="b"><li>Confirm price for 7441C (estimate) and 9661C (not yet known)</li><li>Set stock plan &amp; lead time with UTPE / TSP</li><li>Build sales tools and target customers of V825, PK 41002 and V950</li></ul></div>
+  <div class="c pbox"><h4>Notes</h4><ul class="b"><li>No F.lli Ferrari model above 74 tm (80–90 tm class)</li><li>2026 data is partial (Jan – 14 Aug)</li><li>Prices rounded to Rp 10.000.000</li></ul></div>
+ </div>''')
+PROJECT = [p_div, p1, p2, p3]
+EXTRA_CSS += """
+.pb{position:absolute;left:44px;right:44px;top:150px;bottom:42px;display:flex;flex-direction:column;gap:10px}
+.pg2{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:20px;min-height:0}.pg2>div{display:flex;flex-direction:column;min-height:0}
+.pbox{padding:10px 14px}.pbox ul.b{font-size:11px;line-height:1.45}.pbox ul.b b{color:var(--tx)}.pbox h4{font-size:12.5px;margin-bottom:5px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:8px}
+.kpi{padding:10px 12px;display:flex;flex-direction:column;gap:3px}.kpi b{font-size:22px;color:var(--or)}.kpi span{font-size:10px;color:var(--tx2);line-height:1.3}
+.evbig{flex:1;min-height:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#050505}.evbig img{width:100%;height:100%;object-fit:contain;display:block}
+.ptab{width:100%;border-collapse:collapse;font-size:11px}.ptab th{text-align:left;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);padding:5px 8px;border-bottom:1px solid var(--line)}
+.ptab td{padding:7px 8px;border-bottom:1px solid var(--line);color:var(--tx2)}.ptab td:last-child{color:var(--or);font-weight:600;white-space:nowrap}
+.crs{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.crc{padding:12px 14px;border-top:3px solid var(--or)}.crh{display:flex;justify-content:space-between;align-items:baseline}.crh b{font-size:14px}.crh span{font-size:11px;color:var(--tx2)}
+.crn{font-size:40px;font-weight:700;color:var(--or);line-height:1.1;margin-top:6px}.crn small{font-size:11px;color:var(--tx2);font-weight:400;margin-left:6px}
+.crl{font-size:9px;letter-spacing:.14em;color:var(--mut);margin-top:8px;border-top:1px solid var(--line);padding-top:6px}
+.crv{font-size:11px;margin-top:4px}.crv i{font-style:normal;color:#5bd17a;font-weight:600;float:right}
+.pg3{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;min-height:0}
+"""
