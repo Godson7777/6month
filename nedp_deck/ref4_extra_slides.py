@@ -148,7 +148,7 @@ EXTRA_CSS = """
 
 # ---------- slide 09: product photos ----------
 PROD = [("ft_fuel_truck.webp","Fuel Truck (FT)"),("wt_water_truck_clean.png","Water Truck (WT)"),("lt_lube_truck.webp","Lube Truck (LT)"),
-        ("crane_truck.webp","Crane Truck"),("mixer_truck.webp","Mixer Truck"),("st_stemming_truck.webp","Stemming Truck")]
+        ("crane_truck_crop.png","Crane Truck"),("mixer_truck.webp","Mixer Truck"),("st_stemming_truck.webp","Stemming Truck")]
 def tiles(items):
     return "".join(f'<div class="pp"><img src="{photo("assets/products/" + f, 700)}"><span>{n}</span></div>' for f, n in items)
 pgrid = ('<div class="pgrid"><div class="pg pgl">' + tiles(PROD[:3]) + '</div><div class="pdiv"></div>'
@@ -163,4 +163,105 @@ EXTRA_CSS += """
 .pp{background:#050505}.pp img{width:100%;height:100%;object-fit:cover;object-position:50% 60%;display:block;position:absolute;inset:0}
 .pp::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.8))}
 .pp span{position:absolute;left:8px;bottom:6px;z-index:1;font-size:10px;font-weight:600}
+"""
+
+# ---------- Job Description Execution (slides 12-15): content from the reviewed PPT ----------
+PROD[PROD.index(("mixer_truck.webp", "Mixer Truck"))] = ("mixer_truck_v2.webp", "Mixer Truck")
+pgrid = ('<div class="pgrid"><div class="pg pgl">' + tiles(PROD[:3]) + '</div><div class="pdiv"></div>'
+         '<div class="pg pgr">' + tiles(PROD[3:]) + '</div></div>')
+TITLES[-1] = (TITLES[-1][0], pgrid)
+EXTRA_CSS += ".pgr .pp:first-child img{object-fit:contain}\n"
+
+def steps(items, color_cls="", start=1):
+    out = ""
+    for k, (t, pts) in enumerate(items):
+        out += (f'<div class="c jcard {color_cls}"><div class="sth"><span class="num">{start + k}</span><b>{t}</b></div>'
+                + ul(pts, "s" if color_cls else "") + '<div class="ev2">EVIDENCE</div></div>')
+    return out
+
+def jde(num, kicker, title, pill, cards, cols, bottom, scls=""):
+    kstyle = ' style="color:var(--steel)"' if scls else ""
+    return f'''<section class="slide jde"><div class="in">
+  <div class="top"><span class="tag">[ INTERNAL USE ONLY ]</span><span></span><img class="tri" src="{tri}" alt="Triatra"></div>
+  <div class="kick"{kstyle}>{kicker}</div>
+  <h1 class="t">{title}</h1>
+  <div class="pill {scls}">{pill}</div>
+  <div class="jb"><div class="jcards" style="grid-template-columns:repeat({cols},minmax(0,1fr))">{cards}</div>{bottom}</div>
+  <div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>{num}</b> / 15</span></div>
+</div></section>'''
+
+note = lambda t: f'<div class="jnote">{t}</div>'
+KA = "Section 05 · Job Description Execution · A"
+KB = "Section 05 · Job Description Execution · B"
+
+slide12 = jde(12, KA, "Strategic (1/2)", "STEPS 1–4", steps([
+  ("Define Market &amp; Objectives", ["Set the market objective for Small Suppeq and Truck Others", "Use it as the basis for growing market share"]),
+  ("Design Market Study Plan", ["Define the scope of the study", "Decide the data collection method and the output expected"]),
+  ("Collect Internal &amp; External Data", ["Internal: CRM, sales records, GP report", "External: industry data and competitor information"]),
+  ("Analyse Market &amp; Competitors", ["Market size and share, segmentation, positioning and targeting", "Map competitor products and look for new product opportunities"]),
+ ]), 4, note("Output of these four steps: a market study that management can act on."))
+
+info = ('<div class="jinfo">' + "".join(f'<div><b>{h}</b><span>{v}</span></div>' for h, v in [
+  ("Deliverables", "Market study report, competitor mapping, sales tools, GP and performance report"),
+  ("Departments Involved", "Sales, Marketing Communication, Marketing Parts, UTPE, Finance"),
+  ("Challenges", "Keeping market data current, validating competitor data, tight timelines"),
+  ("Improvements", "Standard report template, automate market data updates, review competitor data regularly")]) + '</div>')
+slide13 = jde(13, KA, "Strategic (2/2)", "STEPS 5–8", steps([
+  ("Build Sales Tools &amp; Programs", ["Pamphlets, dealer incentive programs, campaigns", "Seasonal promotions and bundling", "Maintain the standard price list in CRM"]),
+  ("Prepare Performance Reports", ["Gross Profit report and performance report", "PICA analysis as material for management review"]),
+  ("Interpret Results &amp; Recommend", ["Translate research findings into clear conclusions", "Give recommendations that support strategic decisions"]),
+  ("Innovation &amp; Development", ["Write the project charter for innovation projects", "Join related training such as Patria Mover", "Run site visits and report what was found"]),
+ ], start=5), 4, info)
+
+slide14 = jde(14, KB, "Supply Chain (1/2)", "MAIN PROCESS · STEPS 1–3", steps([
+  ("Demand Check", ["Look at which demands are rising in PCR", "Clarify with the Business Consultant why the customer is buying — expansion, new business or replacement",
+                    "Check where the project is located", "Check whether the customer wants it fast or cheap", "Check the expected price and when the PO is likely to come"]),
+  ("Preliminary Drawing Review", ["Check what the unit does and how it works", "Check the main components and find which ones are critical on price or lead time",
+                                  "Consult Application Engineering to understand the unit in more depth"]),
+  ("Request Quote to UTE", ["Attach the preliminary drawing, expected price and lead time, end customer name and expected delivery so UTE has the full picture",
+                            "Check the standard GP (13.6%, the price before negotiation)", "Check the SLA and escalate if it takes too long", "Enter the quote result into PCR"]),
+ ], "sc"), 3, note("The clearer the demand at this stage, the fewer revisions later."), "s")
+
+step4 = ul(["Check the PO, preliminary drawing and PJB in CRM", "Request QFD from UTE and collect special requests and painting style from the Business Consultant",
+            "The RFD date from QFD becomes the due date of the PO Interco", "Close won route: Sales Manager → Marketing Associate → Marketing Manager → GM Marketing",
+            "PO Interco approval: Marketing Manager → GM Marketing → Marketing Director"], "s")
+step5 = ul(["Follow production regularly and update sales — visit the plant or request photos from Nandu", "Compare the QFD plan against actual production",
+            "Escalate any production issue that puts the agreed RFD at risk", "Request and track painting style at least one month before RFD",
+            "Join the customer FAT together with the Business Consultant"], "s")
+MON = [("Pipeline–OSPO Dashboard", "Build it and update it every month."),
+       ("Staging Pipeline in CRM", "No preliminary yet means the deal is still far off; once there is one, validate it and request a quote from UTPE."),
+       ("Quote Price Dashboard", "Track the detail, average SLA and initial price of quotes from UTE."),
+       ("Billing Progress", "Check whether it sits in production, UTE administration or Triatra administration, and escalate any blockage.")]
+mon_html = "".join(f'<div class="c mo"><b>{k+1}. {h}</b><span>{d}</span></div>' for k, (h, d) in enumerate(MON))
+slide15 = f'''<section class="slide sc2"><div class="in">
+  <div class="top"><span class="tag">[ INTERNAL USE ONLY ]</span><span></span><img class="tri" src="{tri}" alt="Triatra"></div>
+  <div class="kick" style="color:var(--steel)">{KB}</div>
+  <h1 class="t">Supply Chain (2/2)</h1>
+  <div class="pill s">MAIN PROCESS · STEPS 4–5</div>
+  <div class="sc2b">
+   <div class="two">
+    <div class="c sc stp"><div class="sth"><span class="num">4</span><b>Close Won → CPO</b></div>{step4}</div>
+    <div class="c sc stp"><div class="sth"><span class="num">5</span><b>Monitoring</b></div>{step5}</div>
+   </div>
+   <div><div class="lbl">INTERNAL MONITORING</div><div class="mon">{mon_html}</div></div>
+   <div class="bill"><div class="lbl">BILLING PROCESS CHAIN</div>
+    <div class="crow"><div class="cl s">AT UTE</div><div class="cks">{chain(ute)}</div></div>
+    <div class="crow"><div class="cl o">AT TRIATRA</div><div class="cks">{chain(tri_chain, True)}</div></div>
+   </div>
+  </div>
+  <div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>15</b> / 15</span></div>
+</div></section>'''
+
+EXTRA_CSS += """
+.jb{position:absolute;left:44px;right:44px;top:150px;bottom:42px;display:flex;flex-direction:column;gap:10px}
+.jcards{flex:1;display:grid;gap:12px;min-height:0}
+.jcard{padding:12px 14px;display:flex;flex-direction:column;gap:8px;min-height:0}
+.jcard ul.b{font-size:11px;line-height:1.45}
+.ev2{flex:1;min-height:60px;border:1.5px dashed var(--dash);border-radius:10px;display:grid;place-items:center;font-size:9.5px;letter-spacing:.2em;color:var(--mut)}
+.jnote{font-size:12px;color:var(--tx2);border-left:3px solid var(--or);padding:6px 12px}
+.jinfo{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.jinfo div{padding:9px 12px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:3px}.jinfo div:last-child{border-right:none}
+.jinfo b{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--or)}.jinfo span{font-size:10.5px;color:var(--tx2);line-height:1.35}
+.sc2b{grid-template-rows:1.35fr auto 0.8fr!important}
+.sc2 .stp ul.b{font-size:11px!important;line-height:1.45!important}
 """
