@@ -460,3 +460,4 @@ slide14 = jde(14, KB, "Supply Chain (1/2)", "MAIN PROCESS · STEPS 1–3", steps
   ("Request Quote to UTE", ["Attach the preliminary drawing, expected price and lead time, end customer name and expected delivery so UTE has the full picture",
                             "Check the standard GP (13.6%, the price before negotiation)", "Check the SLA and escalate if it takes too long", "Enter the quote result into PCR"]),
  ], "sc"), 3, "", "s")
+PROJECT = PROJECT[:-1]  # summary slide removed
