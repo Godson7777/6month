@@ -289,3 +289,28 @@ EXTRA_CSS += """
 .endr b{display:block;font-size:8.5px;letter-spacing:.14em;color:var(--or)}
 .jde .jcards .jcard .sth b{font-size:13px;line-height:1.2}
 """
+
+# ---------- slide 12: no PD refs/note; evidence images for areas 1-2 ----------
+EVID = {0: ["s1_a.png", "s1_b.webp", "s1_c.png"], 1: ["s2_a.png", "s2_b.webp"]}
+def area_cards(items):
+    out = ""
+    for k, (t, ref, pts, er) in enumerate(items):
+        ev = ('<div class="evimg">' + "".join(f'<img src="{photo("assets/evidence/" + f, 1100)}">' for f in EVID[k]) + '</div>'
+              if k in EVID else '<div class="ev2">EVIDENCE</div>')
+        out += (f'<div class="c jcard"><div class="sth"><span class="num">{k+1}</span><b>{t}</b></div>' + ul(pts) +
+                f'<div class="endr"><b>END RESULT</b>{er}</div>{ev}</div>')
+    return out
+slide12 = jde(12, KA, "Strategic", "STEPS 1–5", area_cards([
+  ("Pricing &amp; Market Analysis", "", ["Price &amp; market analysis simulation"], "Basis for the pricing strategy"),
+  ("Market Study &amp; Program Development", "", ["Collect market data", "Map competitor products", "Analyse new product development", "Write the market study summary"],
+   "Market size / share, segmentation, positioning &amp; targeting"),
+  ("Market Program for Support Sales", "", ["Sales tools: pamphlet, dealer &amp; sales incentive", "Campaign, portfolio &amp; project showcase",
+   "Seasonal promo / bundling", "Standard price list in CRM", "Event support (mining expo)"], "Programs ready for the sales team"),
+  ("Performance Reporting", "", ["Gross Profit (GP) Report", "Performance Report", "PICA analysis"], "Input for performance evaluation &amp; management decisions"),
+  ("Innovation &amp; Development", "", ["Project Charter for innovation projects", "Patria Mover training", "Site visit &amp; visit report"],
+   "Innovation framework; field conditions documented"),
+ ]), 5, "")
+EXTRA_CSS += """
+.evimg{flex:1;min-height:0;display:flex;flex-direction:column;gap:5px}
+.evimg img{flex:1;min-height:0;width:100%;object-fit:contain;background:#050505;border:1px solid var(--line);border-radius:6px}
+"""
