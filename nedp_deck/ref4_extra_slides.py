@@ -265,3 +265,27 @@ EXTRA_CSS += """
 .sc2b{grid-template-rows:1.35fr auto 0.8fr!important}
 .sc2 .stp ul.b{font-size:11px!important;line-height:1.45!important}
 """
+
+# ---------- slide 12: Strategic rebuilt on the 5 Position Description areas ----------
+def area_cards(items):
+    return "".join(
+        f'<div class="c jcard"><div class="sth"><span class="num">{k+1}</span><b>{t}</b></div>'
+        f'<div class="pdref">PD {ref}</div>' + ul(pts) +
+        f'<div class="endr"><b>END RESULT</b>{er}</div><div class="ev2">EVIDENCE</div></div>'
+        for k, (t, ref, pts, er) in enumerate(items))
+slide12 = jde(12, KA, "Strategic", "5 AREAS · POSITION DESCRIPTION", area_cards([
+  ("Pricing &amp; Market Analysis", "1e", ["Price &amp; market analysis simulation"], "Basis for the pricing strategy"),
+  ("Market Study &amp; Program Development", "2a–d", ["Collect market data", "Map competitor products", "Analyse new product development", "Write the market study summary"],
+   "Market size / share, segmentation, positioning &amp; targeting"),
+  ("Market Program for Support Sales", "3a–f", ["Sales tools: pamphlet, dealer &amp; sales incentive", "Campaign, portfolio &amp; project showcase",
+   "Seasonal promo / bundling", "Standard price list in CRM", "Event support (mining expo)"], "Programs ready for the sales team"),
+  ("Performance Reporting", "4a", ["Gross Profit (GP) Report", "Performance Report", "PICA analysis"], "Input for performance evaluation &amp; management decisions"),
+  ("Innovation &amp; Development", "7a–c", ["Project Charter for innovation projects", "Patria Mover training", "Site visit &amp; visit report"],
+   "Innovation framework; field conditions documented"),
+ ]), 5, note("Every area is taken from the official Position Description — Marketing Strategic 2 Associate."))
+EXTRA_CSS += """
+.pdref{font-size:9px;letter-spacing:.12em;color:var(--mut);margin-top:-4px}
+.endr{font-size:10.5px;color:var(--tx);border-left:2px solid var(--or);padding:3px 8px;background:var(--or-dim);border-radius:4px;line-height:1.35}
+.endr b{display:block;font-size:8.5px;letter-spacing:.14em;color:var(--or)}
+.jde .jcards .jcard .sth b{font-size:13px;line-height:1.2}
+"""
