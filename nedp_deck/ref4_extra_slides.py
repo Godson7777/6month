@@ -429,3 +429,23 @@ EXTRA_CSS += """
 .crv{font-size:11px;margin-top:4px}.crv i{font-style:normal;color:#5bd17a;font-weight:600;float:right}
 .pg3{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;min-height:0}
 """
+
+# ---------- Section 06 Project: all slides of the F.lli Ferrari study, re-framed ----------
+def islide(title, img):
+    return pslide(title, f'<div class="evbig full"><img src="{photo("assets/project/" + img, 1800)}"></div>')
+PROJ_SLIDES = [
+ ("Market Size by Class", "p02.png"), ("Brand Leaders · 2025", "p04.png"), ("Models of the Brand Leaders · 2025", "p05.png"),
+ ("Price Comparison · Medium 25–35 tm", "p07.png"), ("Price Comparison · Medium 35–45 tm", "p08.png"),
+ ("Price Comparison · Heavy 45–90 tm", "p09.png"), ("F.lli Ferrari Crane Advantage", "p10.png"),
+ ("Appendix · Model Photos · Medium", "p11.png"), ("Appendix · Model Photos · Heavy &amp; F.lli Ferrari", "p12.png")]
+p_close = pslide("Project Summary &amp; Next Steps", '''
+ <div class="pg3" style="grid-template-columns:repeat(4,1fr)">
+  <div class="c pbox"><h4>Background</h4><ul class="b"><li><b>Goal:</b> find where F.lli Ferrari truck-mounted cranes can win in Indonesia and which models to stock</li><li><b>Data:</b> import records HS 84269100 + 84264900, Jan 2023 – 14 Aug 2026; Zoomlion &amp; Hyva excluded</li><li><b>Method:</b> market size by class → brand &amp; model leaders → head-to-head price per 5-tm class</li></ul></div>
+  <div class="c pbox"><h4>Key Findings</h4><ul class="b"><li>Medium &amp; Heavy = 41% of units, 64% of value</li><li>Leaders depend on one main model (Sany Palfinger, Palfinger PK 53002)</li><li>Five F.lli Ferrari cranes are same size or bigger and cheaper: 268 A4, 7441C, FBR450R A4, FBR350R A4, 9601CR A8</li></ul></div>
+  <div class="c pbox"><h4>Next Steps</h4><ul class="b"><li>Confirm price for 7441C (estimate) and 9661C (not yet known)</li><li>Set stock plan &amp; lead time with UTPE / TSP</li><li>Build sales tools and target customers of V825, PK 41002 and V950</li></ul></div>
+  <div class="c pbox"><h4>Notes</h4><ul class="b"><li>No F.lli Ferrari model above 74 tm</li><li>2026 data is partial (Jan – 14 Aug)</li><li>Prices before distributor margin, rounded to Rp 10.000.000</li></ul></div>
+ </div>''')
+PROJECT = [p_div] + [islide(t, f) for t, f in PROJ_SLIDES] + [p_close]
+EXTRA_CSS += ".evbig.full{flex:1;background:#0d1117}\n"
+
+EXTRA_CSS += ".prj .pg3{flex:none;align-items:start}.prj .pbox ul.b{font-size:12px}\n"
