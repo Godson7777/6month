@@ -148,17 +148,17 @@ EXTRA_CSS = """
 
 # ---------- slide 09: product photos ----------
 PROD = [("ft_fuel_truck.webp","Fuel Truck (FT)"),("wt_water_truck_clean.png","Water Truck (WT)"),("lt_lube_truck.webp","Lube Truck (LT)"),
-        ("crane_truck.webp","Crane Truck"),("mixer_truck.webp","Mixer Truck"),("unlabeled_hino_mixer.webp","Mixer Truck"),("st_stemming_truck.webp","Stemming Truck")]
+        ("crane_truck.webp","Crane Truck"),("mixer_truck.webp","Mixer Truck"),("st_stemming_truck.webp","Stemming Truck")]
 def tiles(items):
     return "".join(f'<div class="pp"><img src="{photo("assets/products/" + f, 700)}"><span>{n}</span></div>' for f, n in items)
-pgrid = ('<div class="pgrid"><div class="pg l">' + tiles(PROD[:3]) + '</div><div class="pdiv"></div>'
-         '<div class="pg r">' + tiles(PROD[3:]) + '</div></div>')
+pgrid = ('<div class="pgrid"><div class="pg pgl">' + tiles(PROD[:3]) + '</div><div class="pdiv"></div>'
+         '<div class="pg pgr">' + tiles(PROD[3:]) + '</div></div>')
 TITLES.append(('<div class="ev" style="flex:1;margin-top:14px">PRODUCT PHOTOS</div>', pgrid))
 EXTRA_CSS += """
 .pgrid{flex:1;margin-top:12px;display:grid;grid-template-columns:1fr 2px 1fr;gap:14px;min-height:0}
 .pdiv{background:linear-gradient(180deg,transparent,var(--or),transparent)}
-.pg{display:grid;gap:8px;min-height:0}.pg.l{grid-template-rows:repeat(3,minmax(0,1fr))}
-.pg.r{grid-template-columns:1fr 1fr;grid-template-rows:repeat(2,minmax(0,1fr))}
+.pg{display:grid;gap:8px;min-height:0}.pg.pgl{grid-template-rows:repeat(3,minmax(0,1fr))}
+.pg.pgr{grid-template-rows:repeat(3,minmax(0,1fr))}
 .pp{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--line);min-height:0}
 .pp{background:#050505}.pp img{width:100%;height:100%;object-fit:cover;object-position:50% 60%;display:block;position:absolute;inset:0}
 .pp::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.8))}
