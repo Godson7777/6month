@@ -145,3 +145,16 @@ EXTRA_CSS = """
 .ck i{font-style:normal;font-size:9px;color:var(--mut)}
 .ck.hl{border-color:var(--or);color:var(--or);background:var(--or-dim)}
 """
+
+# ---------- slide 09: product photos ----------
+PROD = [("ft_fuel_truck.webp","Fuel Truck (FT)"),("wt_water_truck_clean.png","Water Truck (WT)"),("lt_lube_truck.webp","Lube Truck (LT)"),
+        ("crane_truck.webp","Crane Truck"),("mixer_truck.webp","Mixer Truck"),("unlabeled_hino_mixer.webp","Mixer Truck"),("st_stemming_truck.webp","Stemming Truck")]
+pgrid = '<div class="pgrid">' + "".join(f'<div class="pp"><img src="{photo("assets/products/" + f, 700)}"><span>{n}</span></div>' for f, n in PROD) + '</div>'
+TITLES.append(('<div class="ev" style="flex:1;margin-top:14px">PRODUCT PHOTOS</div>', pgrid))
+EXTRA_CSS += """
+.pgrid{flex:1;margin-top:12px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:8px;min-height:0}
+.pp{position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+.pp{background:#050505}.pp img{width:100%;height:100%;object-fit:contain;display:block}
+.pp::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.8))}
+.pp span{position:absolute;left:8px;bottom:6px;z-index:1;font-size:10px;font-weight:600}
+"""
