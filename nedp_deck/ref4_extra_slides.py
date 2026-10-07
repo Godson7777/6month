@@ -627,3 +627,39 @@ EXTRA_CSS += """
 .ctag{font-size:11.5px;padding:4px 12px}.note2{font-size:11.5px}.src{font-size:9.5px}
 """
 EXTRA_CSS += ".pt.tight td{padding:4px 7px;line-height:1.3}.pt.tight{font-size:10.8px}\n"
+
+# ---------- slide 10 aligned with slides 12-14; new work challenges ----------
+STRAT = [
+ ("Pricing &amp; Market Analysis: price &amp; market analysis simulation", "Basis for the pricing strategy"),
+ ("Market Study &amp; Program Development: market data, competitor mapping, new product analysis, summary", "Market size / share, segmentation, positioning &amp; targeting"),
+ ("Market Program for Support Sales: sales tools (pamphlet), campaign &amp; project showcase, event support", "Programs ready for the sales team"),
+ ("Performance Reporting: PICA analysis, billing report", "Input for performance evaluation &amp; management decisions"),
+ ("Innovation &amp; Development: innovation project &amp; development", "Innovation framework; field conditions documented"),
+]
+SUPPLY = [
+ ("Demand Check: rising demand in PCR, buying reason, location, priority, expected price", "Clear demand before quoting"),
+ ("Preliminary Drawing Review: unit function, critical components, Application Engineering", "Critical price / lead-time items identified"),
+ ("Request Quote to UTE: full data, standard GP 13.6%, SLA, result into PCR", "Quote ready for the sales team"),
+ ("Close Won → CPO: PO / PJB in CRM, QFD, RFD = PO Interco due date, approval route", "PO Interco issued"),
+ ("Monitoring: production follow-up, QFD vs actual, painting style, FAT", "Unit delivered on RFD; billing documents complete"),
+]
+sides = ('<div class="two">' + ex_table("A. STRATEGIC", "Sets the direction · for management decisions", "o", STRAT)
+         + ex_table("B. SUPPLY CHAIN", "Runs the transaction · for operations", "s", SUPPLY) + '</div>')
+boxes = ('<div class="three">'
+  '<div class="c box"><h4>Dimensions</h4>' + ul(["<b>Financial:</b> non-Patria procurement budget, COGS per unit, target margin per PO", "<b>Non-financial:</b> vendors &amp; customers, documents verified, report frequency, meetings &amp; site visits"]) + '</div>'
+  '<div class="c box"><h4>Working Relationships</h4>' + ul(["<b>Internal:</b> Sales &amp; Marketing, Warehouse, Finance &amp; Accounting, Legal, Procurement", "<b>External:</b> customers, Patria &amp; non-Patria vendors, forwarders, UTPE"]) + '</div>'
+  '<div class="c box"><h4>Work Challenges</h4>' + ul(["Push UTPE marketing to send unit price quotes quickly", "Push UTPE marketing and escalate to superiors when production problems threaten the timeline",
+   "Sudden customer quote requests that need a price in a very short time"]) + '</div></div>')
+slide10 = f'''<section class="slide rr2"><div class="in">
+  <div class="top"><span class="tag">[ INTERNAL USE ONLY ]</span><span></span><img class="tri" src="{tri}" alt="Triatra"></div>
+  <div class="kick">Section 04 · Roles &amp; Responsibility · B</div>
+  <h1 class="t">Strategic vs Supply Chain</h1>
+  <div class="bands">{band(1, "Strategic vs Supply Chain", sides)}{band(2, "SIPOC", sip)}{band(3, "Dimensions, Working Relationships &amp; Work Challenges", boxes)}</div>
+  <div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>10</b> / 15</span></div>
+</div></section>'''
+
+# ---------- Monitoring evidence (Supply Chain 2/2) ----------
+ev5 = '<div class="evimg evrow">' + "".join(f'<img src="{photo(f"assets/evidence/sc5_{i}.webp", 700)}">' for i in (72, 73, 74, 75)) + '</div>'
+slide15 = slide15.replace('<b>Monitoring</b></div>' + step5 + '</div>', '<b>Monitoring</b></div>' + step5 + ev5 + '</div>')
+EXTRA_CSS += ".sc2 .stp .evimg{min-height:0}.sc2 .stp .evrow img{flex:1 1 22%;height:100%;object-fit:cover}\n"
+EXTRA_CSS += ".sc2b{grid-template-rows:minmax(0,1.6fr) auto minmax(0,.75fr)!important;gap:10px}.sc2 .two{min-height:0;overflow:hidden}.sc2 .stp{min-height:0;overflow:hidden;gap:6px;padding:10px 14px}.sc2 .stp ul.b{font-size:10.5px!important;line-height:1.35!important}.sc2 .stp .evimg{flex:1}.mo{padding:7px 12px}.mo span{font-size:10px}\n"
