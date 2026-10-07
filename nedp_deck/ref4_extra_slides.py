@@ -663,3 +663,21 @@ ev5 = '<div class="evimg evrow">' + "".join(f'<img src="{photo(f"assets/evidence
 slide15 = slide15.replace('<b>Monitoring</b></div>' + step5 + '</div>', '<b>Monitoring</b></div>' + step5 + ev5 + '</div>')
 EXTRA_CSS += ".sc2 .stp .evimg{min-height:0}.sc2 .stp .evrow img{flex:1 1 22%;height:100%;object-fit:cover}\n"
 EXTRA_CSS += ".sc2b{grid-template-rows:minmax(0,1.6fr) auto minmax(0,.75fr)!important;gap:10px}.sc2 .two{min-height:0;overflow:hidden}.sc2 .stp{min-height:0;overflow:hidden;gap:6px;padding:10px 14px}.sc2 .stp ul.b{font-size:10.5px!important;line-height:1.35!important}.sc2 .stp .evimg{flex:1}.mo{padding:7px 12px}.mo span{font-size:10px}\n"
+
+# ---------- Project: sub-section dividers + fuller pages ----------
+SUBS = ["A — Market Overview", "B — Price Comparison", "C — F.lli Ferrari Advantage", "D — Appendix"]
+def subdiv(k):
+    lst = "".join(f'<div class="{"a" if i == k else ""}">{s}</div>' for i, s in enumerate(SUBS))
+    return f'''<section class="slide div"><div class="in">
+  <div class="top"><span class="tag">[ INTERNAL USE ONLY ]</span><span></span><img class="tri" src="{tri}" alt="Triatra"></div>
+  <div class="big">06</div><div class="sec">SECTION 06 · PROJECT</div><h2>{SUBS[k][4:]}</h2>
+  <div class="subs" style="top:400px">{lst}</div><div class="haz"></div>
+  <div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>00</b> / 15</span></div></div></section>'''
+p_div = p_div.replace('<div class="subs" style="top:410px"><div class="a">F.lli Ferrari Crane Strategy</div><div>Truck-mounted knuckle boom crane · Indonesia</div></div>',
+  '<div class="subs" style="top:400px">' + "".join(f"<div>{s}</div>" for s in SUBS) + '</div>')
+PROJECT = [p_div, subdiv(0), q1, q2, q3, subdiv(1), q4, q5, q6, subdiv(2), q7, subdiv(3), qa1, qa2]
+EXTRA_CSS += """
+.prj .pb>.pg2{flex:1}.prj .hb{flex:1;justify-content:space-around}.prj .hbt{height:26px}.prj .hbr{font-size:14px}
+.prj .mrow{flex:1}.prj .mcard{justify-content:center}.prj .mcard .hbt{height:22px}
+.prj .pt{height:auto}.prj .vbars{height:290px}
+"""
