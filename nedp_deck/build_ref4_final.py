@@ -105,15 +105,27 @@ slide5 = f'''<section class="slide site"><div class="in">
   <div class="foot"><span>NEDP Mid Year Review 2026</span><span><b>05</b> / 15</span></div>
 </div></section>'''
 
+exec(open("ref4_extra_slides.py").read())
+
 # ---------- swap slides 2 and 3 ----------
 parts = re.split(r'(?=<!-- \d\d [^>]*-->\s*<section)', html)
 idx = [k for k, p in enumerate(parts) if re.match(r'<!-- 0[23] ', p)]
 i5 = [k for k, p in enumerate(parts) if re.match(r'<!-- 05 ', p)][0]
 parts[i5] = "<!-- 05 SITE -->\n" + slide5 + "\n\n"
+for tag, sl in (("10", slide10), ("15", slide15)):
+    k = [k for k, p in enumerate(parts) if re.match(rf'<!-- {tag} ', p)][0]
+    tail = parts[k].split("</section>", 1)[1]  # keep anything after the slide (nav, script on the last one)
+    parts[k] = f"<!-- {tag} -->\n" + sl + tail
 assert len(idx) == 2, idx
 parts[idx[0]] = "<!-- 02 OPENER -->\n" + slide2 + "\n\n"
 parts[idx[1]] = "<!-- 03 COMPANY -->\n" + slide3 + "\n\n"
 html = "".join(parts)
+
+# ---------- plain, consistent titles ----------
+for a, b in TITLES:
+    assert a in html, a
+    html = html.replace(a, b)
+html = re.sub(r'<span>SEC/[^<]*</span>', '<span></span>', html)
 
 # ---------- Triatra logo (no background) top-right on every slide ----------
 html = html.replace('<span class="brand"><i></i>TRIATRA</span>', f'<img class="tri" src="{tri}" alt="Triatra">')
@@ -218,7 +230,7 @@ html.present .frame.on{display:block}
 .cg .ind .n b{font-size:15px;color:var(--or);font-weight:600}.cg .ind .n span{font-size:12px;font-weight:600;line-height:1.25}
 .cg .newtag{position:absolute;top:8px;right:8px;z-index:2;background:var(--or);color:#fff;font:700 8px var(--sans);letter-spacing:.12em;padding:3px 7px;border-radius:999px}
 """
-html = html.replace("</style>\n</head>", EXTRA + "</style>\n</head>", 1)
+html = html.replace("</style>\n</head>", EXTRA + EXTRA_CSS + "</style>\n</head>", 1)
 
 JS = """<script>
 document.documentElement.classList.add('present');
