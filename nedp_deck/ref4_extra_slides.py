@@ -687,18 +687,29 @@ EXTRA_CSS += """
 KPI_ = "Personal Information"
 def perslide(title, body):
     return pslide(title, body).replace(KP, KPI_)
+def _lg(f, w=300): return png("assets/" + f, w)
+def _xp(logo, org, role, yr, now=False):
+    return (f'<div class="xp{" now" if now else ""}"><div class="xl"><img src="{_lg(logo)}"></div>'
+            f'<div class="xt"><b>{org}</b><span>{role}</span></div><div class="xy">{yr}</div></div>')
 info_rows = "".join(f'<div class="pi"><span>{k}</span><b>{v}</b></div>' for k, v in [
-  ("Position", "Marketing Strategic 2 Associate"), ("Division", "Marketing Unit &amp; Strategic · PT Triatra Sinergia Pratama"),
-  ("Products", "Small Suppeq · Truck Others"), ("Date of birth", "[ fill in ]"), ("Place of birth", "[ fill in ]"),
-  ("Email", "[ fill in ]@triatra.co.id"), ("LinkedIn", "[ fill in ]")])
+  ("Position", "Marketing Strategic 2 Associate"), ("Division", "Marketing Unit &amp; Strategic"),
+  ("Products", "Small Suppeq · Truck Others"), ("Place, date of birth", "Kupang, 22 April 2001"),
+  ("Phone", "0822 7222 2463")])
 about = perslide("About Me", f'''
- <div class="pg3" style="grid-template-columns:1fr 1.25fr 0.9fr;flex:1;align-items:stretch">
-  <div class="c pbox"><div class="pname">Tiberias Krisgaharu Simu</div><div class="prole">Marketing Strategic 2 Associate</div>{info_rows}</div>
-  <div class="c pbox"><h4>Education</h4><div class="tl"><b>[ University ]</b><span>[ Degree · Major ]</span><span>[ Year – Year ] · GPA [ x.xx / 4.00 ]</span></div>
-   <h4 style="margin-top:14px">Work Experience</h4>
-   <div class="tl"><b>PT Triatra Sinergia Pratama</b><span>Marketing Strategic 2 Associate · 2026 – now</span></div>
-   <div class="tl"><b>[ Company ]</b><span>[ Role · Period ]</span></div><div class="tl"><b>[ Company ]</b><span>[ Role · Period ]</span></div></div>
-  <div class="c pbox photo"><span>PROFILE PHOTO</span></div>
+ <div class="abt">
+  <div class="c pbox ab1"><div class="pkick">PROFILE</div><div class="pname">Tiberias Krisgaharu Simu</div><div class="prole">PT Triatra Sinergia Pratama</div>{info_rows}</div>
+  <div class="ab2">
+   <div class="c pbox"><h4>Education</h4>
+    <div class="edu"><div class="xl big2"><img src="{_lg("personal/logo_sanata_dharma.png")}"></div>
+     <div class="xt"><b>Universitas Sanata Dharma, Yogyakarta</b><span>Bachelor (S1) · Management · Faculty of Economics</span></div></div></div>
+   <div class="c pbox gr"><h4>Work Experience</h4>
+    {_xp("logos/triatra.webp", "PT Triatra Sinergia Pratama", "Marketing Strategic 2 Associate", "2026 – now", True)}
+    {_xp("personal/lg_outlier.png", "Outlier", "Team Lead Data Annotator", "2023 – 2025")}
+    {_xp("personal/lg_krishma.png", "Krishma International", "Marketing Coordinator", "2021 – 2023")}</div>
+   <div class="c pbox"><h4>Organization</h4>
+    {_xp("personal/lg_hmjm.png", "HMJM Universitas Sanata Dharma", "President", "2021 – 2022")}</div>
+  </div>
+  <div class="ab3"><img src="{png("assets/personal/profile_photo.webp", 900)}"></div>
  </div>''')
 PH = [("p3.png", "B-ONE · Basic Orientation for New Employee"), ("p1.webp", "Basic Technical Course"), ("p2.png", "Batch gathering"), ("p4.png", "Marketing HO presentation")]
 journey = perslide("Onboarding Journey", '<div class="jg">' + "".join(
@@ -712,6 +723,16 @@ EXTRA_CSS += """
 .pname{font-size:22px;font-weight:700;color:var(--tx)}.prole{color:var(--or);font-weight:600;margin:2px 0 12px}
 .pi{display:flex;flex-direction:column;padding:6px 0;border-top:1px solid var(--line)}.pi span{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut)}.pi b{font-size:13px;color:var(--tx);font-weight:500}
 .tl{border-left:2px solid var(--or);padding:4px 0 4px 10px;margin:8px 0;display:flex;flex-direction:column}.tl b{font-size:14px}.tl span{font-size:12px;color:var(--tx2)}
+.abt{flex:1;display:grid;grid-template-columns:1fr 1.45fr .95fr;gap:12px;min-height:0}
+.ab1{display:flex;flex-direction:column;justify-content:space-between}.pkick{font:700 10px var(--mono);letter-spacing:.25em;color:var(--or)}
+.ab2{display:flex;flex-direction:column;gap:10px;min-height:0}.ab2 .gr{flex:1;display:flex;flex-direction:column;justify-content:space-around}
+.ab2 h4{margin:0 0 6px}.edu,.xp{display:flex;align-items:center;gap:12px;padding:5px 0}
+.xl{width:74px;height:46px;flex:none;background:#fff;border-radius:7px;display:flex;padding:4px;box-sizing:border-box;overflow:hidden}.xl img{width:100%;height:100%;object-fit:contain;display:block}
+.xl.big2{width:74px;height:58px}.xt{flex:1;display:flex;flex-direction:column}.xt b{font-size:14px}.xt span{font-size:12px;color:var(--tx2)}
+.xy{font:600 12px var(--mono);color:var(--or);border:1px solid var(--or);border-radius:20px;padding:3px 10px;white-space:nowrap}
+.xp.now .xy{background:var(--or);color:#000}
+.ab3{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:radial-gradient(circle at 50% 75%,rgba(255,120,0,.55),rgba(255,120,0,.08) 60%,transparent)}
+.ab3 img{position:absolute;bottom:0;left:50%;transform:translateX(-50%);height:100%;width:auto}
 .photo{display:grid;place-items:center;border:1.5px dashed var(--dash)!important;color:var(--mut);letter-spacing:.2em;font-size:11px}
 .jg{flex:1;display:grid;grid-template-columns:1.4fr 1fr;grid-template-rows:1fr 1fr;gap:10px;min-height:0}.jg .ph2:first-child{grid-row:span 2}
 .ph2{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line)}.ph2 img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
