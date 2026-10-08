@@ -2,7 +2,8 @@
 import base64, io
 from PIL import Image, ImageChops
 
-def b64(path, maxw=None, trim=False, fmt="JPEG", q=82, edge=False):
+def b64(path, maxw=None, trim=False, fmt="JPEG", q=92, edge=False):
+    maxw = maxw and maxw * 2
     src = Image.open(path)
     if src.mode in ("RGBA", "LA", "P"):
         src = src.convert("RGBA"); white = Image.new("RGBA", src.size, (255, 255, 255, 255))

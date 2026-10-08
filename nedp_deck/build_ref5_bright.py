@@ -29,7 +29,7 @@ body,html{background:#E9E6E1!important}
 /* org / highlight cards */
 .cg .me{background:#FFF1EA!important;border:1.5px solid var(--or)!important;box-shadow:none!important}
 .cg .key{background:#FBF7F2!important}
-.cg .ind .n,.ph2 span{color:#fff!important}
+.cg .ind .n,.ph2 span,.pp span,.pp span *{color:#fff!important;-webkit-text-fill-color:#fff!important}
 .ab3{background:linear-gradient(180deg,#FFF4EE,#FFD9C7)!important}
 .xl{border:1px solid var(--line)}
 .slide:not(.div)::before,.slide.div::before{background:none!important}
@@ -44,6 +44,7 @@ body,html{background:#E9E6E1!important}
 .opener .ohorizon{background:radial-gradient(50% 50% at 50% 50%,rgba(0,0,0,.18),transparent 75%)!important}
 .opener .olineup img{filter:drop-shadow(0 12px 10px rgba(0,0,0,.18))!important;-webkit-box-reflect:unset!important}
 .evbig{background:#F5EFE6!important}
+.opener .mark{display:none!important}
 .opener .osub,.opener .foot,.opener .foot *{color:#5E5A55!important;-webkit-text-fill-color:#5E5A55!important;background:none!important}
 .cg .me .tt,.cg .me .tt b{color:#FF5A1F!important}
 .site .pin.R,.site .sn.R{background:#fff;color:var(--tx);}

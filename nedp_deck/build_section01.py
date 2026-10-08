@@ -13,13 +13,15 @@ def sharpen(im, minw):
     return im.filter(ImageFilter.UnsharpMask(radius=1.6, percent=120, threshold=2))
 
 def photo(path, w=900):
+    w = int(w * 2)
     im = sharpen(Image.open(path).convert("RGB"), w)
     if im.width > w:
         im = im.resize((w, round(im.height * w / im.width)), Image.LANCZOS)
-    buf = io.BytesIO(); im.save(buf, "JPEG", quality=88)
+    buf = io.BytesIO(); im.save(buf, "JPEG", quality=92)
     return "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
 
 def png(path, maxw):
+    maxw = int(maxw * 2)
     im = Image.open(path).convert("RGBA")
     rgb, a = sharpen(im.convert("RGB"), maxw), im.getchannel("A")
     im = rgb.convert("RGBA"); im.putalpha(a.resize(rgb.size, Image.LANCZOS))
