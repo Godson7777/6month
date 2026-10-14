@@ -23,9 +23,9 @@
     "Extension speed (RS)",
     "Oscillation (SDV)"
    ],
-   "place_c": "Italy-made; importer/dealer under assessment",
-   "place_ch": "Triatra + UTPE body & mounting; UT network: 5 site ops, 10 site reps; Italy-made",
-   "promo": "Bundle truck + crane + UTPE body + service package; trial-to-buy for key accounts",
+   "place_c": "Made in Europe",
+   "place_ch": "Ferrari stocks units in China (~14 weeks) and parts in Malaysia",
+   "promo": "Crane + flatdeck + installation + 2-year warranty; exhibition with Marcom sales kit",
    "note": "Sany Palfinger absent; 2nd-largest brand shown"
   },
   {
@@ -45,12 +45,11 @@
     "Electronic control (Load limiter* = Paltronic 50)"
    ],
    "win": [
-    "\u2212 Power boost (HPLS (MH), Top 1 only)",
-    "\u2212 Extension speed (High speed ext. (ROU), Top 1 only)"
+    "Parity: wins on price/delivery"
    ],
-   "place_c": "China-made; Palfinger Asia Pacific rep. office Jakarta, dealer network",
-   "place_ch": "Triatra + UTPE mounting (partnership needed: GM Tractors holds XCMG); China-made",
-   "promo": "Bundle truck + crane + UTPE body + service package; trial-to-buy for key accounts",
+   "place_c": "Made in China",
+   "place_ch": "Negotiate special price with XCMG",
+   "promo": "Crane + flatdeck + installation; exhibition with Marcom sales kit",
    "note": ""
   },
   {
@@ -70,12 +69,11 @@
     "Electronic control (Load limiter* = Paltronic 50)"
    ],
    "win": [
-    "\u2212 Power boost (HPLS (MH), Top 1 only)",
-    "\u2212 Extension speed (High speed ext. (ROU), Top 1 only)"
+    "Parity: wins on price/delivery"
    ],
-   "place_c": "China-made; Palfinger Asia Pacific rep. office Jakarta, dealer network",
-   "place_ch": "Triatra + UTPE mounting (partnership needed: GM Tractors holds XCMG); China-made",
-   "promo": "Bundle truck + crane + UTPE body + service package; trial-to-buy for key accounts",
+   "place_c": "Made in China",
+   "place_ch": "Negotiate special price with XCMG",
+   "promo": "Crane + flatdeck + installation; exhibition with Marcom sales kit",
    "note": ""
   },
   {
@@ -101,9 +99,9 @@
     "Oscillation (SDV)",
     "Auto fold (Magic Touch)"
    ],
-   "place_c": "China-made; Palfinger Asia Pacific rep. office Jakarta, dealer network",
-   "place_ch": "Triatra + UTPE body & mounting; UT network: 5 site ops, 10 site reps; Italy-made",
-   "promo": "Bundle truck + crane + UTPE body + service package; trial-to-buy for key accounts",
+   "place_c": "Made in China",
+   "place_ch": "Negotiate price with Ferrari. Ferrari stocks units in China (~14 weeks) and parts in Malaysia",
+   "promo": "Crane + flatdeck + installation + 2-year warranty; exhibition with Marcom sales kit",
    "note": ""
   }
  ],
@@ -131,9 +129,9 @@
     "Extension speed (RS)",
     "Oscillation (SDV)"
    ],
-   "place_c": "Italy-made; importer/dealer under assessment",
-   "place_ch": "Triatra + UTPE body & mounting; UT network: 5 site ops, 10 site reps; Italy-made",
-   "promo": "Bundle truck + crane + UTPE body + service package; trial-to-buy for key accounts",
+   "place_c": "Made in Europe",
+   "place_ch": "Ferrari stocks units in China (~14 weeks) and parts in Malaysia",
+   "promo": "Crane + flatdeck + installation + 2-year warranty; exhibition with Marcom sales kit",
    "note": "Palfinger absent; 2nd-largest brand shown"
   },
   {
@@ -152,10 +150,12 @@
    "eq": [
     "All 6 named features equal (linkage, power boost, extension speed, oscillation, electronic control, auto fold)"
    ],
-   "win": [],
-   "place_c": "Austria-made; dealer PT Sanggar Sarana Baja (ABM Group) for mining",
-   "place_ch": "Triatra + UTPE body & mounting; UT network: 5 site ops, 10 site reps; Italy-made",
-   "promo": "Bundle truck + crane + UTPE body + service package; trial-to-buy for key accounts",
+   "win": [
+    "Parity: wins on price/delivery"
+   ],
+   "place_c": "Made in Europe",
+   "place_ch": "Negotiate price with Ferrari. Ferrari stocks units in China (~14 weeks) and parts in Malaysia",
+   "promo": "Crane + flatdeck + installation + 2-year warranty; exhibition with Marcom sales kit",
    "note": ""
   },
   {
@@ -181,9 +181,9 @@
     "Oscillation (SDV)",
     "Auto fold (Magic Touch)"
    ],
-   "place_c": "China-made; Palfinger Asia Pacific rep. office Jakarta, dealer network",
-   "place_ch": "Triatra + UTPE body & mounting; UT network: 5 site ops, 10 site reps; Italy-made",
-   "promo": "Bundle truck + crane + UTPE body + service package; trial-to-buy for key accounts",
+   "place_c": "Made in China",
+   "place_ch": "Ferrari stocks units in China (~14 weeks) and parts in Malaysia",
+   "promo": "Crane + flatdeck + installation + 2-year warranty; exhibition with Marcom sales kit",
    "note": "Palfinger absent; Ferrari price TBC"
   },
   {
@@ -202,10 +202,12 @@
    "eq": [
     "All 6 named features equal (linkage, power boost, extension speed, oscillation, electronic control, auto fold)"
    ],
-   "win": [],
-   "place_c": "Austria-made; dealer PT Sanggar Sarana Baja (ABM Group) for mining",
-   "place_ch": "Triatra + UTPE body & mounting; UT network: 5 site ops, 10 site reps; Italy-made",
-   "promo": "Bundle truck + crane + UTPE body + service package; trial-to-buy for key accounts",
+   "win": [
+    "Parity: wins on price/delivery"
+   ],
+   "place_c": "Made in Europe",
+   "place_ch": "Negotiate price with Ferrari. Ferrari stocks units in China (~14 weeks) and parts in Malaysia",
+   "promo": "Crane + flatdeck + installation + 2-year warranty; exhibition with Marcom sales kit",
    "note": ""
   },
   {
@@ -224,10 +226,12 @@
    "eq": [
     "All 6 named features equal (linkage, power boost, extension speed, oscillation, electronic control, auto fold)"
    ],
-   "win": [],
-   "place_c": "Austria-made; dealer PT Sanggar Sarana Baja (ABM Group) for mining",
-   "place_ch": "Triatra + UTPE body & mounting; UT network: 5 site ops, 10 site reps; Italy-made",
-   "promo": "Bundle truck + crane + UTPE body + service package; trial-to-buy for key accounts",
+   "win": [
+    "Parity: wins on price/delivery"
+   ],
+   "place_c": "Made in Europe",
+   "place_ch": "Ferrari stocks units in China (~14 weeks) and parts in Malaysia",
+   "promo": "Crane + flatdeck + installation + 2-year warranty; exhibition with Marcom sales kit",
    "note": "Ferrari model from price list"
   },
   {
@@ -245,7 +249,7 @@
    "gap": null,
    "eq": [],
    "win": [],
-   "place_c": "China-made; official distributor PT Gaya Makmur Tractors (18 branches)",
+   "place_c": "Made in China",
    "place_ch": "\u2013",
    "promo": "\u2013",
    "note": "No challenger"

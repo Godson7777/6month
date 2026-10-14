@@ -27,19 +27,11 @@ def feats(top, ch):
     if len(eq)==6: eq=['All 6 named features equal (linkage, power boost, extension speed, oscillation, electronic control, auto fold)']
     return eq, win, lose
 
-PLACE = {
- 'Sany Palfinger': 'China-made; Palfinger Asia Pacific rep. office Jakarta, dealer network',
- 'Palfinger': 'Austria-made; dealer PT Sanggar Sarana Baja (ABM Group) for mining',
- 'Amco Veba': 'Italy-made; importer/dealer under assessment',
- 'XCMG': 'China-made; official distributor PT Gaya Makmur Tractors (18 branches)',
-}
-PROMO_C = {
- 'Palfinger': 'PALFINGER APAC Owners Club events (Jakarta 2024)', 'Sany Palfinger': 'Under assessment',
- 'Amco Veba': 'Under assessment', 'XCMG': 'Under assessment'}
-PLACE_CH = {
- 'Ferrari': 'Triatra + UTPE body & mounting; UT network: 5 site ops, 10 site reps; Italy-made',
- 'XCMG': 'Triatra + UTPE mounting (partnership needed: GM Tractors holds XCMG); China-made'}
-PROMO_CH = 'Bundle truck + crane + UTPE body + service package; trial-to-buy for key accounts'
+PLACE = {'Sany Palfinger': 'Made in China', 'Palfinger': 'Made in Europe', 'Amco Veba': 'Made in Europe', 'XCMG': 'Made in China'}
+PLACE_CH = {'Ferrari': 'Ferrari stocks units in China (~14 weeks) and parts in Malaysia',
+            'XCMG': 'Negotiate special price with XCMG'}
+PROMO = {'Ferrari': 'Crane + flatdeck + installation + 2-year warranty; exhibition with Marcom sales kit',
+         'XCMG': 'Crane + flatdeck + installation; exhibition with Marcom sales kit'}
 
 def mk(k, top, tm, ch, cm, cp, cls, note=''):
     units, val = tier(k); rows = {n: (u, p) for _, n, _, u, p in pos[k]}
@@ -47,8 +39,8 @@ def mk(k, top, tm, ch, cm, cp, cls, note=''):
     gap = None if cp is None or tp is None else cp/tp - 1
     eq, win, lose = feats(top, ch) if ch else ([], [], [])
     return dict(tm=k.replace('-', ' – '), qty=units, share=val/(MTOT if cls == 'M' else HTOT), top=top, tmodel=tm,
-                tqty=tu, tshare=tshare, tprice=tp, ch=ch, cm=cm, cp=cp, gap=gap, eq=eq, win=win+[f"− {x}" for x in lose],
-                place_c=PLACE[top], place_ch=PLACE_CH.get(ch, '–'), promo=PROMO_CH if ch else '–', note=note)
+                tqty=tu, tshare=tshare, tprice=tp, ch=ch, cm=cm, cp=cp, gap=gap, eq=eq, win=(win or ["Parity: wins on price/delivery"]) if ch else [],
+                place_c=PLACE[top], place_ch=(('Negotiate price with Ferrari. ' if gap is not None and gap > .3 else '') + PLACE_CH[ch]) if ch else '–', promo=PROMO.get(ch, '–'), note=note)
 
 MEDROWS = [
  mk('25-30', 'Amco Veba', 'V825', 'Ferrari', '268 A4', 500e6, 'M', 'Sany Palfinger absent; 2nd-largest brand shown'),
