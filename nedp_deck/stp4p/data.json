@@ -1,0 +1,254 @@
+{
+ "M": [
+  {
+   "tm": "25 \u2013 30",
+   "qty": 49,
+   "share": 0.1877637130801688,
+   "top": "Amco Veba",
+   "tmodel": "V825",
+   "tqty": 31,
+   "tshare": 0.6860742254000681,
+   "tprice": 650000000,
+   "ch": "Ferrari",
+   "cm": "268 A4",
+   "cp": 500000000.0,
+   "gap": -0.23076923076923073,
+   "eq": [
+    "Linkage (Red Power = Articulated Powerlink)",
+    "Power boost (PB = AVPS)",
+    "Electronic control (ECM = EBB)",
+    "Auto fold (Magic Touch = Magic Touch)"
+   ],
+   "win": [
+    "Extension speed (RS)",
+    "Oscillation (SDV)"
+   ],
+   "place_c": "Italy-made; importer/dealer under assessment",
+   "place_ch": "Triatra + UTPE body & mounting; UT network: 5 site ops, 10 site reps; Italy-made",
+   "promo": "Bundle truck + crane + UTPE body + service package; trial-to-buy for key accounts",
+   "note": "Sany Palfinger absent; 2nd-largest brand shown"
+  },
+  {
+   "tm": "30 \u2013 35",
+   "qty": 62,
+   "share": 0.31070195627157654,
+   "top": "Sany Palfinger",
+   "tmodel": "SPK32080",
+   "tqty": 33,
+   "tshare": 0.35987654320987655,
+   "tprice": 530000000,
+   "ch": "XCMG",
+   "cm": "SQZ325.4",
+   "cp": 550000000.0,
+   "gap": 0.037735849056603765,
+   "eq": [
+    "Electronic control (Load limiter* = Paltronic 50)"
+   ],
+   "win": [
+    "\u2212 Power boost (HPLS (MH), Top 1 only)",
+    "\u2212 Extension speed (High speed ext. (ROU), Top 1 only)"
+   ],
+   "place_c": "China-made; Palfinger Asia Pacific rep. office Jakarta, dealer network",
+   "place_ch": "Triatra + UTPE mounting (partnership needed: GM Tractors holds XCMG); China-made",
+   "promo": "Bundle truck + crane + UTPE body + service package; trial-to-buy for key accounts",
+   "note": ""
+  },
+  {
+   "tm": "35 \u2013 40",
+   "qty": 66,
+   "share": 0.3829433576269019,
+   "top": "Sany Palfinger",
+   "tmodel": "SPK36080",
+   "tqty": 37,
+   "tshare": 0.4076794657762938,
+   "tprice": 660000000,
+   "ch": "XCMG",
+   "cm": "SQZ365.4",
+   "cp": 600000000.0,
+   "gap": -0.09090909090909094,
+   "eq": [
+    "Electronic control (Load limiter* = Paltronic 50)"
+   ],
+   "win": [
+    "\u2212 Power boost (HPLS (MH), Top 1 only)",
+    "\u2212 Extension speed (High speed ext. (ROU), Top 1 only)"
+   ],
+   "place_c": "China-made; Palfinger Asia Pacific rep. office Jakarta, dealer network",
+   "place_ch": "Triatra + UTPE mounting (partnership needed: GM Tractors holds XCMG); China-made",
+   "promo": "Bundle truck + crane + UTPE body + service package; trial-to-buy for key accounts",
+   "note": ""
+  },
+  {
+   "tm": "40 \u2013 45",
+   "qty": 19,
+   "share": 0.11859097302135277,
+   "top": "Sany Palfinger",
+   "tmodel": "SPK42502",
+   "tqty": 18,
+   "tshare": 0.9315363881401617,
+   "tprice": 960000000,
+   "ch": "Ferrari",
+   "cm": "746 A4",
+   "cp": 1420000000.0,
+   "gap": 0.47916666666666674,
+   "eq": [
+    "Power boost (PB = HPLS (MH))",
+    "Extension speed (RS = High speed ext. (ROU))",
+    "Electronic control (ECM = Paltronic 50)"
+   ],
+   "win": [
+    "Linkage (Red Power)",
+    "Oscillation (SDV)",
+    "Auto fold (Magic Touch)"
+   ],
+   "place_c": "China-made; Palfinger Asia Pacific rep. office Jakarta, dealer network",
+   "place_ch": "Triatra + UTPE body & mounting; UT network: 5 site ops, 10 site reps; Italy-made",
+   "promo": "Bundle truck + crane + UTPE body + service package; trial-to-buy for key accounts",
+   "note": ""
+  }
+ ],
+ "H": [
+  {
+   "tm": "45 \u2013 50",
+   "qty": 17,
+   "share": 0.2560911938739993,
+   "top": "Amco Veba",
+   "tmodel": "V950",
+   "tqty": 12,
+   "tshare": 0.8114169215086646,
+   "tprice": 1990000000,
+   "ch": "Ferrari",
+   "cm": "FBR450R A4",
+   "cp": 1350000000.0,
+   "gap": -0.321608040201005,
+   "eq": [
+    "Linkage (Red Power = Articulated Powerlink)",
+    "Power boost (PB = AVPS)",
+    "Electronic control (ECM = EBB)",
+    "Auto fold (Magic Touch = Magic Touch)"
+   ],
+   "win": [
+    "Extension speed (RS)",
+    "Oscillation (SDV)"
+   ],
+   "place_c": "Italy-made; importer/dealer under assessment",
+   "place_ch": "Triatra + UTPE body & mounting; UT network: 5 site ops, 10 site reps; Italy-made",
+   "promo": "Bundle truck + crane + UTPE body + service package; trial-to-buy for key accounts",
+   "note": "Palfinger absent; 2nd-largest brand shown"
+  },
+  {
+   "tm": "50 \u2013 55",
+   "qty": 40,
+   "share": 0.6266098155238427,
+   "top": "Palfinger",
+   "tmodel": "PK 53002",
+   "tqty": 39,
+   "tshare": 0.9532009443132898,
+   "tprice": 1760000000,
+   "ch": "Ferrari",
+   "cm": "9601CR A8",
+   "cp": 3260000000.0,
+   "gap": 0.8522727272727273,
+   "eq": [
+    "All 6 named features equal (linkage, power boost, extension speed, oscillation, electronic control, auto fold)"
+   ],
+   "win": [],
+   "place_c": "Austria-made; dealer PT Sanggar Sarana Baja (ABM Group) for mining",
+   "place_ch": "Triatra + UTPE body & mounting; UT network: 5 site ops, 10 site reps; Italy-made",
+   "promo": "Bundle truck + crane + UTPE body + service package; trial-to-buy for key accounts",
+   "note": ""
+  },
+  {
+   "tm": "60 \u2013 65",
+   "qty": 1,
+   "share": 0.012182387747998607,
+   "top": "Sany Palfinger",
+   "tmodel": "SPK61502",
+   "tqty": 1,
+   "tshare": 1.0,
+   "tprice": 1400000000,
+   "ch": "Ferrari",
+   "cm": "9661C",
+   "cp": null,
+   "gap": null,
+   "eq": [
+    "Power boost (PB = HPLS (MH))",
+    "Extension speed (RS = High speed ext. (ROU))",
+    "Electronic control (ECM = Paltronic 50)"
+   ],
+   "win": [
+    "Linkage (Red Power)",
+    "Oscillation (SDV)",
+    "Auto fold (Magic Touch)"
+   ],
+   "place_c": "China-made; Palfinger Asia Pacific rep. office Jakarta, dealer network",
+   "place_ch": "Triatra + UTPE body & mounting; UT network: 5 site ops, 10 site reps; Italy-made",
+   "promo": "Bundle truck + crane + UTPE body + service package; trial-to-buy for key accounts",
+   "note": "Palfinger absent; Ferrari price TBC"
+  },
+  {
+   "tm": "70 \u2013 75",
+   "qty": 2,
+   "share": 0.03985381134702402,
+   "top": "Palfinger",
+   "tmodel": "PK 76002 EH D",
+   "tqty": 2,
+   "tshare": 1.0,
+   "tprice": 2290000000,
+   "ch": "Ferrari",
+   "cm": "990R",
+   "cp": 4110000000.0,
+   "gap": 0.794759825327511,
+   "eq": [
+    "All 6 named features equal (linkage, power boost, extension speed, oscillation, electronic control, auto fold)"
+   ],
+   "win": [],
+   "place_c": "Austria-made; dealer PT Sanggar Sarana Baja (ABM Group) for mining",
+   "place_ch": "Triatra + UTPE body & mounting; UT network: 5 site ops, 10 site reps; Italy-made",
+   "promo": "Bundle truck + crane + UTPE body + service package; trial-to-buy for key accounts",
+   "note": ""
+  },
+  {
+   "tm": "80 \u2013 85",
+   "qty": 1,
+   "share": 0.01931778628611208,
+   "top": "Palfinger",
+   "tmodel": "PK 88002 EH C",
+   "tqty": 1,
+   "tshare": 1.0,
+   "tprice": 2220000000,
+   "ch": "Ferrari",
+   "cm": "TBC (price list)",
+   "cp": null,
+   "gap": null,
+   "eq": [
+    "All 6 named features equal (linkage, power boost, extension speed, oscillation, electronic control, auto fold)"
+   ],
+   "win": [],
+   "place_c": "Austria-made; dealer PT Sanggar Sarana Baja (ABM Group) for mining",
+   "place_ch": "Triatra + UTPE body & mounting; UT network: 5 site ops, 10 site reps; Italy-made",
+   "promo": "Bundle truck + crane + UTPE body + service package; trial-to-buy for key accounts",
+   "note": "Ferrari model from price list"
+  },
+  {
+   "tm": "85 \u2013 90",
+   "qty": 4,
+   "share": 0.04594500522102332,
+   "top": "XCMG",
+   "tmodel": "GSQZ880.6",
+   "tqty": 2,
+   "tshare": 0.5,
+   "tprice": 1320000000,
+   "ch": null,
+   "cm": null,
+   "cp": null,
+   "gap": null,
+   "eq": [],
+   "win": [],
+   "place_c": "China-made; official distributor PT Gaya Makmur Tractors (18 branches)",
+   "place_ch": "\u2013",
+   "promo": "\u2013",
+   "note": "No challenger"
+  }
+ ]
+}
