@@ -396,46 +396,46 @@ for i, (h, r, ppl) in enumerate(COLS):
     for j, (n_, d) in enumerate(ppl):
         node(x, 332 + j * 66, w, n_, d, hl=(d == 'DEPUTY HEAD'), h=54 if True else 40, me='ME' in n_)
 
-# 07 roles flow: full detail from Draft_v2, translated to English
-s = new('Roles & responsibility · Supply chain', 'I take every order from *inquiry to delivery* for two product lines',
-        'Five steps from customer inquiry to factory acceptance test (FAT), for Small Suppeq and Truck Others.')
-STEPS = [('Inquiry & opportunity', ['Business Consultant', 'Application Engineering', 'Marketing Unit'],
-          ['Check spec and buying reason', 'Check project location', 'Check target price and lead time', 'Check urgency and PO date', 'Lead / opportunity in CRM']),
-         ('Preliminary', ['Business Consultant', 'Application Engineering', 'Marketing Unit Triatra'],
-          ['Repeat order or new drawing?', 'Request drawing in iServe; MKU Head assigns AE (same day)',
-           'AE drawing: repeat 1 day, minor 3 days, major 5 days', 'Check unit function and critical parts', 'Handle customer revisions']),
-         ('Pricing / Quotation', ['Marketing Unit Triatra', 'Marketing Unit UTPE'],
-          ['Request quote to UTPE: drawing, target price, lead time, customer info', 'UTPE quote: price/COGS, lead time, validity',
-           'Input standard price; check standard GP', 'Submit PCR for approval', 'Watch SLA; escalate if late']),
-         ('Negotiation & CPO', ['Business Consultant', 'Marketing Unit Triatra', 'Marketing Unit UTPE'],
-          ['Revise lead time and spec if asked', 'Check PO / PJB vs drawing', 'Validate order; fill SAP condition type',
-           'DP request or confirm order → SO', 'Extend PN, master data, sharing profit', 'PO interco: MKU Manager → GM → Director']),
-         ('Production & Delivery', ['Business Consultant', 'Marketing Unit Triatra', 'Marketing Unit UTPE', 'Warehouse'],
-          ['Build follows QFD', 'Weekly progress to BC', 'Escalate major problems', 'FAT and QC at warehouse',
-           'Delivery plan; BAST and SPB signed'])]
-cw, gap = (1168 - 4 * 14) / 5, 14
-for i, (t, pic_, L) in enumerate(STEPS):
-    x = 56 + i * (cw + gap)
-    ch_ = s.shapes.add_shape(MSO_SHAPE.PENTAGON if i == 0 else MSO_SHAPE.CHEVRON, E(x), E(158), E(cw + (gap + 6 if i < 4 else 0)), E(40))
-    _nostyle(ch_); ch_.fill.solid(); ch_.fill.fore_color.rgb = rgb(GREEN_D if i % 2 == 0 else '0A7F3F'); ch_.line.fill.background()
-    if i: ch_.adjustments[0] = 0.28
-    else: ch_.adjustments[0] = 0.28
-    tx(s, x + (22 if i else 12), 158, cw - 26, 40, [f'{i + 1:02d}  {t}'], 10.5, 'FFFFFF', True, anchor='m', emph=False)
-    card(s, x, 206, cw, 74, 'PIC')
-    tx(s, x + 14, 231, cw - 22, 48, pic_, 8, INK, True, lh=1.0)
-    card(s, x, 288, cw, 206, 'Detail')
-    tx(s, x + 14, 310, cw - 24, 182, L, 8.5, BODY, bullets=True, lh=1.05, emph=False)
-for g, (lbl, items) in enumerate([('Small Suppeq', [('ft_fuel_truck.webp', 'Fuel truck'), ('wt_water_truck_clean.png', 'Water truck'), ('lt_lube_truck.webp', 'Lube truck')]),
-                                  ('Truck Others', [('crane_truck_crop.png', 'Crane truck'), ('mixer_truck.webp', 'Mixer truck'), ('st_stemming_truck.webp', 'Stemming truck')])]):
-    gx = 56 + g * 592; pw = (576 - 16) / 3
-    kicker(s, gx, 504, f'Units I handle · {lbl}', GREEN_D); hline(s, gx, 520, 576)
+# 07 roles flow: main activity -> sub-activities -> PIC
+s = new('Roles & responsibility · Supply chain', 'I take every order from *inquiry to delivery* for two product lines')
+STEPS = [('Inquiry', ['Check spec and buying reason', 'Check project location', 'Check target price and lead time', 'Check urgency and PO date', 'Lead / opportunity in CRM'],
+          ['Business Consultant', 'Application Engineering', 'Marketing Unit']),
+         ('Preliminary drawing', ['Repeat order or new drawing?', 'Request in iServe; MKU Head assigns AE', 'AE drawing: repeat 1 day, minor 3, major 5', 'Check unit function, critical parts', 'Handle customer revisions'],
+          ['Business Consultant', 'Application Engineering', 'Marketing Unit Triatra']),
+         ('Quotation', ['Request quote to UTPE with drawing and target price', 'UTPE: price/COGS, lead time, validity', 'Input standard price; check GP', 'Submit PCR for approval', 'Watch SLA; escalate if late'],
+          ['Marketing Unit Triatra', 'Marketing Unit UTPE']),
+         ('Negotiation & CPO', ['Revise lead time / spec', 'Check PO / PJB vs drawing', 'Validate order; SAP condition type', 'DP request / confirm order → SO', 'Extend PN, master data, profit sharing', 'PO interco: MKU Mgr → GM → Dir.'],
+          ['Business Consultant', 'Marketing Unit Triatra', 'Marketing Unit UTPE']),
+         ('Production', ['Build follows QFD', 'Weekly progress to BC', 'Escalate major problems', 'Oversee FAT'],
+          ['Business Consultant', 'Marketing Unit Triatra', 'Marketing Unit UTPE']),
+         ('Delivery & handover', ['Warehouse receives unit; QC', 'UTPE repairs if needed', 'Delivery plan', 'BAST and SPB signed', 'Documents to Finance for invoice'],
+          ['Marketing Unit Triatra', 'Warehouse', 'Business Consultant'])]
+PH = [('PRE-SALES', 0, 3), ('SALES', 3, 5), ('AFTER-SALES', 5, 6)]
+g = 10; cw = (1168 - 5 * g) / 6
+for i, (t, a, b) in enumerate(PH):
+    x = 56 + a * (cw + g); w = (b - a) * cw + (b - a - 1) * g
+    sh = s.shapes.add_shape(MSO_SHAPE.PENTAGON if i == 0 else MSO_SHAPE.CHEVRON, E(x), E(148), E(w + (g + 6 if i < 2 else 0)), E(34))
+    _nostyle(sh); sh.fill.solid(); sh.fill.fore_color.rgb = rgb([GREEN_D, '0A7F3F', '0DA54F'][i]); sh.line.fill.background(); sh.adjustments[0] = 0.3
+    tx(s, x + (22 if i else 12), 148, w - 30, 34, t, 12, 'FFFFFF', True, anchor='m', spacing=1, emph=False)
+for i, (t, L, pic_) in enumerate(STEPS):
+    x = 56 + i * (cw + g)
+    rect(s, x, 190, cw, 30, INK, radius=6)
+    tx(s, x + 8, 190, cw - 12, 30, f'{i + 1:02d}  {t}', 9.5, 'FFFFFF', True, anchor='m', emph=False)
+    card(s, x, 226, cw, 176, 'Activities')
+    tx(s, x + 10, 254, cw - 16, 146, L, 8.5, INK, bullets=True, lh=1.02, emph=False)
+    card(s, x, 408, cw, 72, 'PIC', GREEN_L, lcolor=GREEN_D)
+    tx(s, x + 10, 434, cw - 16, 44, pic_, 8, INK, True, lh=1.0, emph=False)
+for g2, (lbl, items) in enumerate([('Small Suppeq', [('ft_fuel_truck.webp', 'Fuel truck'), ('wt_water_truck_clean.png', 'Water truck'), ('lt_lube_truck.webp', 'Lube truck')]),
+                                   ('Truck Others', [('crane_truck_crop.png', 'Crane truck'), ('mixer_truck.webp', 'Mixer truck'), ('st_stemming_truck.webp', 'Stemming truck')])]):
+    gx = 56 + g2 * 592; pw = (576 - 16) / 3
+    kicker(s, gx, 490, f'Units I handle · {lbl}', GREEN_D); hline(s, gx, 506, 576)
     for j, (f, n_) in enumerate(items):
         src = PROD + f
         if f.endswith('.webp'):
             src = f'/tmp/claude-0/v4img/{f}.png'; Image.open(PROD + f).convert('RGB').save(src)
         x = gx + j * (pw + 8)
-        pic(s, src, x, 528, pw, 150)
-        rect(s, x, 654, pw, 24, INK); tx(s, x + 8, 654, pw - 16, 24, n_, 9.5, 'FFFFFF', True, anchor='m')
+        pic(s, src, x, 514, pw, 166)
+        rect(s, x, 656, pw, 24, INK); tx(s, x + 8, 656, pw - 16, 24, n_, 9.5, 'FFFFFF', True, anchor='m')
 
 D = json.load(open(ROOT + 'stp4p/data.json'))
 # 08 strategic: 4C -> STP -> 4P exactly as agreed in discussion
