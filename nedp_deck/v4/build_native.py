@@ -27,7 +27,7 @@ AMB_L, AMB = 'FFF7C2', 'AB6400'
 RED_L, RED = 'FEEBEC', 'CE2C31'
 DARK, DARK2 = '11181C', '23343C'
 SERIF, SANS = 'Georgia', 'Arial'
-TOTAL = 15
+TOTAL = 18
 rgb = lambda h: RGBColor.from_string(h)
 
 P = Presentation(); P.slide_width, P.slide_height = 12192000, 6858000
@@ -140,7 +140,8 @@ def _border(cell, side, color, w=0.75):
     else: etree.SubElement(ln, qn('a:noFill'))
 
 
-def table(s, x, y, w, rows, colw, rowh=22, head=1, size=9, hsize=7.5, fills=None, styles=None, aligns=None, merges=(), group_row=False):
+def table(s, x, y, w, rows, colw, rowh=22, head=1, size=9, hsize=7.5, fills=None, styles=None, aligns=None, merges=(), group_row=False,
+          grid=None, upper=True, hfill=None, hcolor=MUTED, rowhs=None):
     """rows: list of lists of str ('*x*' = green italic serif-free emphasis not used; '**' ignored).
     styles[(r,c)] = dict(bold, color, size, font) ; fills[r] = hex for whole row ; aligns[c] = 'l'|'r'|'c'"""
     nr, nc = len(rows), len(rows[0])
@@ -153,17 +154,21 @@ def table(s, x, y, w, rows, colw, rowh=22, head=1, size=9, hsize=7.5, fills=None
     sid.text = '{5940675A-B579-460E-94D1-54222C63F5DA}'  # "No Style, Table Grid" -> we override borders
     tot = sum(colw)
     for i, cw in enumerate(colw): tbl.columns[i].width = E(w * cw / tot)
-    for r in range(nr): tbl.rows[r].height = E(rowh)
+    for r in range(nr): tbl.rows[r].height = E(rowhs[r] if rowhs else rowh)
     for (r0, c0, r1, c1) in merges: tbl.cell(r0, c0).merge(tbl.cell(r1, c1))
     for r in range(nr):
         for c in range(nc):
             cell = tbl.cell(r, c)
-            if cell.is_spanned: continue
+            if cell.is_spanned:
+                if grid:
+                    for side in 'LRTB': _border(cell, side, grid if r >= head else LINE2)
+                continue
             val = rows[r][c]; ishead = r < head
             cell.margin_left = cell.margin_right = Pt(4); cell.margin_top = cell.margin_bottom = Pt(2)
             cell.vertical_anchor = MSO_ANCHOR.MIDDLE
             st = (styles or {}).get((r, c), {})
-            fill = st.get('fill') or (fills or {}).get(r)
+            fill = st.get('fill') or (fills or {}).get(r) or (hfill if ishead else None)
+            if st.get('anchor'): cell.vertical_anchor = {'t': MSO_ANCHOR.TOP, 'm': MSO_ANCHOR.MIDDLE}[st['anchor']]
             if fill: cell.fill.solid(); cell.fill.fore_color.rgb = rgb(fill)
             else: cell.fill.background()
             tf = cell.text_frame; tf.word_wrap = True
@@ -176,15 +181,19 @@ def table(s, x, y, w, rows, colw, rowh=22, head=1, size=9, hsize=7.5, fills=None
                 if not line: continue
                 rr = p.add_run(); f = rr.font
                 if ishead:
-                    rr.text = line.upper(); f.size = Pt(st.get('size', hsize)); f.bold = True; f.name = SANS
-                    f.color.rgb = rgb(st.get('color', MUTED)); rr._r.get_or_add_rPr().set('spc', '50')
+                    rr.text = line.upper() if upper else line; f.size = Pt(st.get('size', hsize)); f.bold = True; f.name = SANS
+                    f.color.rgb = rgb(st.get('color', hcolor))
+                    if upper: rr._r.get_or_add_rPr().set('spc', '50')
                 else:
                     rr.text = line; f.name = st.get('font', SANS)
                     sub = li > 0 and st.get('sub', False)
                     f.size = Pt(st.get('size', size) - (1 if sub else 0)); f.bold = st.get('bold', False) and not sub
                     f.color.rgb = rgb(MUTED if sub else st.get('color', INK))
-            for side in 'LRT': _border(cell, side, None)
-            _border(cell, 'B', INK if r == head - 1 else (LINE2 if ishead else LINE), 1.25 if r == head - 1 else 0.75)
+            if grid:
+                for side in 'LRTB': _border(cell, side, LINE2 if ishead else grid)
+            else:
+                for side in 'LRT': _border(cell, side, None)
+                _border(cell, 'B', INK if r == head - 1 else (LINE2 if ishead else LINE), 1.25 if r == head - 1 else 0.75)
             tcPr = cell._tc.get_or_add_tcPr()
             for fe in [e for e in tcPr if e.tag in (qn('a:solidFill'), qn('a:noFill'))]: tcPr.remove(fe); tcPr.append(fe)
             for p in tf.paragraphs:
@@ -387,36 +396,47 @@ for i, (h, r, ppl) in enumerate(COLS):
     for j, (n_, d) in enumerate(ppl):
         node(x, 332 + j * 66, w, n_, d, hl=(d == 'DEPUTY HEAD'), h=54 if True else 40, me='ME' in n_)
 
-# 07 roles flow
+# 07 roles flow: full detail from Draft_v2, translated to English
 s = new('Roles & responsibility · Supply chain', 'I take every order from *inquiry to delivery* for two product lines',
-        'BC = Business Consultant  ·  AE = Application Engineering  ·  MKT = Marketing Unit (Triatra / UTPE)')
-STEPS = [('Inquiry', 'BC · AE · MKT', ['Spec, buying reason, site', 'Target price and lead time', 'Expected PO date']),
-         ('Preliminary', 'BC · AE · MKT', ['Repeat order or new drawing', 'Unit function', 'Critical parts: price, lead time']),
-         ('Quotation', 'MKT Triatra · MKT UTPE', ['Quote request to UTE', 'Check standard GP', 'Track SLA; log PCR in CRM']),
-         ('Negotiation & CPO', 'BC · MKT Triatra · UTPE', ['Check PO / PJB vs drawing', 'PN, QFD, painting style', 'CPO and PO interco approval']),
-         ('Production', 'BC · MKT Triatra · UTPE', ['Build vs QFD', 'Weekly update to BC', 'Escalate issues; run FAT'])]
-sw, gap = 208, 32
-for i, (t, pc, L) in enumerate(STEPS):
-    x = 56 + i * (sw + gap)
-    card(s, x, 166, sw, 236)
-    rect(s, x, 166, sw, 4, GREEN)
-    tx(s, x + 14, 180, 60, 26, f'{i + 1:02d}', 20, GREEN_D, font=SERIF)
-    tx(s, x + 14, 210, sw - 28, 18, t, 12, INK, True)
-    kicker(s, x + 14, 232, pc, MUTED, sw - 28)
-    hline(s, x + 14, 252, sw - 28)
-    tx(s, x + 14, 262, sw - 28, 130, L, 9.5, BODY, bullets=True, lh=1.1)
-    if i < 4: arrow(s, x + sw + 4, 284, x + sw + gap - 4, 284, GREEN, 2)
+        'Five steps from customer inquiry to factory acceptance test (FAT), for Small Suppeq and Truck Others.')
+STEPS = [('Inquiry & opportunity', ['Business Consultant', 'Application Engineering', 'Marketing Unit'],
+          ['Check spec', 'Check buying reason', 'Check project location', 'Check expected price and lead time', 'Check urgency and expected PO date']),
+         ('Preliminary', ['Business Consultant', 'Application Engineering', 'Marketing Unit Triatra'],
+          ['Check if repeat order or new preliminary', 'Check unit function', 'Check main components: find the critical ones for price and lead time']),
+         ('Pricing / Quotation', ['Marketing Unit Triatra', 'Marketing Unit UTPE'],
+          ['Request quote from UTE with preliminary, expected price, expected lead time and customer info',
+           'Check UTE standard GP (signed by marketing associate and manager = standard GP)',
+           'Check actual SLA (repeat, minor, major); escalate to the superior if too long', 'Fill PCR in CRM']),
+         ('Negotiation & CPO', ['Business Consultant', 'Marketing Unit Triatra', 'Marketing Unit UTPE'],
+          ['Check PO / PJB', 'Check PO matches the preliminary', 'Request PN', 'Request QFD and painting style',
+           'CPO: Sales Manager → Mkt Unit Triatra → Mkt Unit Manager → GM Marketing Triatra',
+           'PO interco approval: Mkt Unit Triatra → GM Mkt Unit → Director Mkt Unit Triatra']),
+         ('Production', ['Business Consultant', 'Marketing Unit Triatra', 'Marketing Unit UTPE'],
+          ['Make sure production follows the QFD', 'Weekly production update to BC', 'Escalate major production problems',
+           'Oversee FAT and report issues to Marketing Unit UTPE'])]
+cw, gap = (1168 - 4 * 14) / 5, 14
+for i, (t, pic_, L) in enumerate(STEPS):
+    x = 56 + i * (cw + gap)
+    ch_ = s.shapes.add_shape(MSO_SHAPE.PENTAGON if i == 0 else MSO_SHAPE.CHEVRON, E(x), E(158), E(cw + (gap + 6 if i < 4 else 0)), E(40))
+    _nostyle(ch_); ch_.fill.solid(); ch_.fill.fore_color.rgb = rgb(GREEN_D if i % 2 == 0 else '0A7F3F'); ch_.line.fill.background()
+    if i: ch_.adjustments[0] = 0.28
+    else: ch_.adjustments[0] = 0.28
+    tx(s, x + (22 if i else 12), 158, cw - 26, 40, [f'{i + 1:02d}  {t}'], 10.5, 'FFFFFF', True, anchor='m', emph=False)
+    card(s, x, 206, cw, 74, 'PIC')
+    tx(s, x + 14, 228, cw - 22, 50, pic_, 8.5, INK, True, lh=1.05)
+    card(s, x, 288, cw, 206, 'Detail')
+    tx(s, x + 14, 310, cw - 24, 182, L, 8.5, BODY, bullets=True, lh=1.05, emph=False)
 for g, (lbl, items) in enumerate([('Small Suppeq', [('ft_fuel_truck.webp', 'Fuel truck'), ('wt_water_truck_clean.png', 'Water truck'), ('lt_lube_truck.webp', 'Lube truck')]),
                                   ('Truck Others', [('crane_truck_crop.png', 'Crane truck'), ('mixer_truck.webp', 'Mixer truck'), ('st_stemming_truck.webp', 'Stemming truck')])]):
-    gx = 56 + g * 596
-    kicker(s, gx, 418, lbl); hline(s, gx, 434, 572)
+    gx = 56 + g * 592; pw = (576 - 16) / 3
+    kicker(s, gx, 504, f'Units I handle · {lbl}', GREEN_D); hline(s, gx, 520, 576)
     for j, (f, n_) in enumerate(items):
         src = PROD + f
         if f.endswith('.webp'):
             src = f'/tmp/claude-0/v4img/{f}.png'; Image.open(PROD + f).convert('RGB').save(src)
-        x = gx + j * 196
-        p = pic(s, src, x, 444, 184, 200); round_pic(p, .05)
-        tx(s, x, 650, 184, 16, n_, 10, INK, True, align='c')
+        x = gx + j * (pw + 8)
+        pic(s, src, x, 528, pw, 150)
+        rect(s, x, 654, pw, 24, INK); tx(s, x + 8, 654, pw - 16, 24, n_, 9.5, 'FFFFFF', True, anchor='m')
 
 # 08 strategic
 D = json.load(open(ROOT + 'stp4p/data.json'))
@@ -467,7 +487,7 @@ rows = [['#', 'Milestone', 'Due'], ['1', '4C, STP, 4P approved', 'Aug 2026'], ['
 table(s, 70, 462, 332, rows, [18, 200, 70], rowh=32, size=9.5, styles={(5, 1): {'bold': True, 'color': GREEN_D}, (5, 2): {'bold': True, 'color': GREEN_D}})
 rect(s, 428, 436, 188, 244, GREEN_L, radius=10)
 kicker(s, 442, 448, 'Target', GREEN_D)
-tx(s, 442, 520, 164, 100, ['First unit sold', '*March 2027*'], 20, INK, font=SERIF, lh=1.1)
+tx(s, 442, 476, 164, 180, ['First unit sold', '*March 2027*'], 24, INK, font=SERIF, lh=1.1)
 kicker(s, 640, 160, 'Timeline · Jun 2026 – Mar 2027')
 G = ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar']
 ACT = [('Market study (4C)', 0, 3), ('STP and challenger choice', 3, 5), ('Negotiate with Ferrari and XCMG', 4, 7), ('Sales kit with Marcom', 5, 7),
@@ -543,65 +563,138 @@ card(s, 56, 618, 1168, 62)
 tx(s, 72, 628, 1136, 44, ['Both leaders are far ahead of the next brand in value: Sany Palfinger 1.8× XCMG in Medium, Palfinger 2.7× Amco Veba in Heavy.',
                           'Scope is 2025 only, so figures are smaller than the 2023 – 2026 totals.'], 10, INK, bullets=True)
 
-# 12 / 13 STP + 4P tables (native)
-F = {'Palfinger': {'Linkage': 'Power Link Plus', 'Power boost': 'HPLS', 'Ext. speed': 'High Speed Ext.', 'Oscillation': 'AOS', 'Control': 'PALTRONIC 150', 'Auto fold': 'P-Fold'},
-     'Sany Palfinger': {'Power boost': 'HPLS', 'Ext. speed': 'High speed ext.', 'Control': 'Paltronic 50'},
-     'Amco Veba': {'Linkage': 'Articulated Powerlink', 'Power boost': 'AVPS', 'Control': 'EBB', 'Auto fold': 'Magic Touch'},
-     'Ferrari': {'Linkage': 'Red Power', 'Power boost': 'PB', 'Ext. speed': 'RS', 'Oscillation': 'SDV', 'Control': 'ECM', 'Auto fold': 'Magic Touch'},
-     'XCMG': {'Control': 'Load limiter'}}
-rp = lambda v: 'TBC' if not v else f"Rp {v / 1e6:,.0f} jt".replace(',', '.')
-for key, kick, head in [('M', 'STP + 4P · Medium class 25–45 tm', 'Use XCMG at 30–40 tm and Ferrari at 25–30 tm; *renegotiate Ferrari* for 40–45 tm'),
-                        ('H', 'STP + 4P · Heavy class > 45 tm', 'Win Heavy on *delivery time*; cut Ferrari\'s price to compete at 50–55 tm')]:
-    s = new(kick, head)
-    rows = [['Segmentation', '', '', 'Targeting · Top 1', '', '', '', 'Positioning · Challenger', '', '', 'Product', '', 'Place', 'Promotion'],
-            ['tm', 'Qty', 'Value', 'Brand · model', 'Qty', 'Share', 'Price', 'Brand · model', 'Price', 'vs Top 1', 'Equal', 'Only challenger', '', '']]
-    st = {}
-    for c in range(14): st[(0, c)] = {'color': GREEN_D if c >= 10 else INK, 'size': 8}
-    for d in D[key]:
-        top = d['top'] + ('*' if 'absent' in d.get('note', '') else '')
-        g = d['gap']; r = len(rows)
-        if d['ch']:
-            a, b = F.get(d['top'], {}), F.get(d['ch'], {})
-            eq = ', '.join(k for k in b if k in a) or '–'
-            win = ', '.join(b[k] for k in b if k not in a) or 'Parity: wins on price / delivery'
-            gs = 'TBC' if g is None else f"{g * 100:+.0f}%".replace('-', '−')
-            if d['ch'] == 'Ferrari':
-                place = ('Negotiate price with Ferrari. ' if g is not None and g > .3 else '') + 'Stock units in China (~14 wks), parts in Malaysia'
-                promo = 'Crane + flatdeck + install + 2-yr warranty; exhibition with sales kit'
-            else:
-                place = 'Negotiate special price with XCMG'; promo = 'Crane + flatdeck + install; exhibition with sales kit'
-            chv, cp = f"{d['ch']}\n{d['cm']}", rp(d['cp'])
-        else:
-            eq = win = place = promo = gs = cp = '–'; chv = 'No challenger'
-        rows.append([d['tm'], str(d['qty']), f"{d['share'] * 100:.0f}%", f"{top}\n{d['tmodel']}", str(d['tqty']), f"{d['tshare'] * 100:.0f}%", rp(d['tprice']),
-                     chv, cp, gs, eq, win, place, promo])
-        fill = RED_L if (g is not None and g > .3) else (AMB_L if (g is not None and g > 0) else None)
-        for c in range(14):
-            st[(r, c)] = {'fill': fill, 'size': 8}
-        st[(r, 0)].update(bold=True); st[(r, 3)].update(bold=True, sub=True, size=8.5); st[(r, 7)].update(bold=True, sub=True, size=8.5)
-        st[(r, 11)].update(bold=True, color=GREEN_D)
-        if g is not None: st[(r, 9)].update(bold=True, color=GREEN_D if g <= 0 else (AMB if g <= .3 else RED), size=9)
-        if not d['ch']: st[(r, 7)].update(color=MUTED, bold=True, sub=False)
-    n = len(rows)
-    table(s, 56, 160, 1168, rows, [48, 34, 42, 104, 34, 44, 64, 92, 64, 50, 104, 124, 160, 170], rowh=56 if key == 'M' else 44, head=2,
-          size=8, hsize=7, styles=st, aligns={1: 'r', 2: 'r', 4: 'r', 5: 'r', 6: 'r', 8: 'r', 9: 'r'},
-          merges=[(0, 0, 0, 2), (0, 3, 0, 6), (0, 7, 0, 9), (0, 10, 0, 11)])
-    ly = 636
-    for i, (c, l) in enumerate([(GREEN_L, 'Cheaper than Top 1'), (AMB_L, 'Up to +30%'), (RED_L, 'Over +30%: negotiate price with Ferrari')]):
-        x = 56 + i * 170; rect(s, x, ly + 2, 10, 10, c, LINE2 if c == GREEN_L else None, radius=2); tx(s, x + 16, ly, 300, 14, l, 8.5, MUTED)
-    tx(s, 56, ly + 20, 1168, 28, 'Value = units × highest import price per model (estimate), share of class value. * Top 1 brand has no model in this tier: next-largest brand shown. '
-       'Only challenger = named features the challenger has and the Top 1 lacks.', 8, SUB, emph=False)
+# 12–16 STP + 4P tables: header follows template_excle_penyajian_data_v2 exactly; split over slides where it does not fit
+import math
+rpf = lambda v: 'TBC' if not v else f"Rp {v:,.0f}".replace(',', '.')
+pct = lambda v: f"{v * 100:.0f}%"
+def gapfill(g): return None if g is None else (RED_L if g > .3 else AMB_L if g > 0 else GREEN_L)
+def gapcol(g): return MUTED if g is None else (RED if g > .3 else AMB if g > 0 else GREEN_D)
+TITLE = {'M': 'Medium Class Crane', 'H': 'Heavy Class Crane'}
+CW = 5.5  # px per char at 8 pt Arial (estimate)
+def est_lines(txt, w, cw=CW):
+    return sum(max(1, math.ceil(len(l) * cw / max(w - 12, 20))) for l in str(txt).split('\n'))
 
-# 14 conclusion
+def legend_notes(s, y, note):
+    for i, (c, l) in enumerate([(GREEN_L, 'Green = challenger cheaper than Top 1'), (AMB_L, 'Yellow = up to +30%'), (RED_L, 'Red = over +30%: negotiate price with F.lli Ferrari')]):
+        x = 56 + [0, 230, 400][i]; rect(s, x, y + 2, 11, 11, c, LINE2, radius=2); tx(s, x + 17, y, 300, 14, l, 8.5, BODY)
+    tx(s, 56, y + 18, 1168, 30, note, 8, MUTED, emph=False, lh=1.05)
+
+def stp_slide(key, kick, head, stp):
+    s = new(kick, head)
+    R = D[key]
+    rows = [[TITLE[key]] + [''] * 10,
+            ['TM Class', 'Market Size', '', 'Top 1 Competitor', '', '', '', '', 'Challenger', '', ''],
+            ['', 'Qty', 'Market Share', 'Brand', 'Type', 'Qty', 'Share', 'Price/unit', 'Brand', 'Type', 'Price/Unit']]
+    st = {(0, 0): {'color': 'FFFFFF', 'fill': INK, 'size': 10.5, 'align': 'c'}}
+    for c in range(11):
+        for r in (1, 2): st.setdefault((r, c), {'align': 'c'})
+    for d in R:
+        r = len(rows); g = d['gap']
+        top = d['top'] + ('*' if 'absent' in d.get('note', '') else '')
+        rows.append([d['tm'], str(d['qty']), pct(d['share']), top, d['tmodel'], str(d['tqty']), pct(d['tshare']), rpf(d['tprice']),
+                     d['ch'] or 'No challenger', d['cm'] or '–', rpf(d['cp']) if d['ch'] else '–'])
+        for c in range(11): st[(r, c)] = {'size': 10.5, 'align': 'c' if c in (0, 1, 2, 5, 6) else ('r' if c in (7, 10) else 'l')}
+        st[(r, 0)]['bold'] = True; st[(r, 3)]['bold'] = True; st[(r, 8)]['bold'] = True
+        for c in (8, 9, 10): st[(r, c)]['fill'] = gapfill(g)
+        if not d['ch']: st[(r, 8)].update(color=MUTED)
+    n = len(R); hh = [26, 24, 32]; body = (510 - 160 - sum(hh)) / n
+    table(s, 56, 160, 1168, rows, [62, 48, 72, 118, 118, 48, 62, 128, 98, 120, 128], head=3, size=10.5, hsize=9,
+          styles=st, merges=[(0, 0, 0, 10), (1, 0, 2, 0), (1, 1, 1, 2), (1, 3, 1, 7), (1, 8, 1, 10)],
+          grid=LINE, upper=False, hfill='F0F2F4', hcolor=INK, rowhs=hh + [body] * n)
+    cw = (1168 - 32) / 3
+    for i, (k_, v) in enumerate(stp):
+        x = 56 + i * (cw + 16)
+        card(s, x, 528, cw, 116, k_, GREEN_L if k_ == 'Positioning' else WASH, lcolor=GREEN_D)
+        tx(s, x + 14, 552, cw - 28, 88, v, 11.5, INK, lh=1.12, emph=False)
+    tx(s, 56, 652, 1168, 34, 'Period Jan 2023 – 14 Aug 2026. Market share = tier value / class value; value = units × highest import unit price per model (estimate, incl. duty & tax). '
+       'Top 1 share = Top 1 model value / tier value. * Top 1 brand has no model in this tier: next-largest brand shown. Fill: green = challenger cheaper, yellow = up to +30%, red = over +30%.',
+       8, MUTED, emph=False, lh=1.05)
+
+def mix_slide(key, kick, head, R, summary=None):
+    s = new(kick, head)
+    colw = [60, 74, 66, 98, 254, 232, 72, 78, 116, 118]
+    rows = [[TITLE[key]] + [''] * 9,
+            ['TM Class', 'Challenger', '', '', 'Product', '', 'Price', 'Place', '', 'Promotion'],
+            ['', 'Brand', 'Type', 'Price/Unit', 'Special features', '', '', '', '', ''],
+            ['', '', '', '', 'Equal features', 'Winning features', '', 'Competitor', 'Challenger', '']]
+    st = {(0, 0): {'color': 'FFFFFF', 'fill': INK, 'size': 10.5, 'align': 'c'}}
+    for c in range(10):
+        for r in (1, 2, 3): st.setdefault((r, c), {'align': 'c'})
+    est = []
+    for d in R:
+        r = len(rows); g = d['gap']
+        if d['ch']:
+            gs = 'TBC' if g is None else f"{g * 100:+.0f}%".replace('-', '−') + '\nvs Top 1'
+            vals = [d['tm'], d['ch'], d['cm'], rpf(d['cp']), '\n'.join(d['eq']) or '–', '\n'.join(d['win']) or '–', gs, d['place_c'], d['place_ch'], d['promo']]
+        else:
+            vals = [d['tm'], 'No challenger', '–', '–', '–', '–', '–', d['place_c'], '–', '–']
+        rows.append(vals)
+        for c in range(10): st[(r, c)] = {'size': 8, 'anchor': 't' if c in (4, 5, 8, 9) else 'm', 'align': 'c' if c in (0, 6) else ('r' if c == 3 else 'l')}
+        st[(r, 0)].update(bold=True, size=10); st[(r, 1)]['bold'] = True; st[(r, 5)].update(bold=True, color=GREEN_D)
+        st[(r, 6)].update(bold=True, color=gapcol(g), size=10)
+        for c in range(1, 7): st[(r, c)]['fill'] = gapfill(g)
+        if not d['ch']: st[(r, 1)].update(color=MUTED)
+        est.append(max(est_lines(v, colw[c] * 1168 / sum(colw), CW * (1.08 if c == 5 else 1)) for c, v in enumerate(vals)) * 12.8 + 10)
+    hh = [24, 22, 22, 22]; top = 160
+    if summary and top + sum(hh) + sum(est) > 520: summary = None
+    bottom = 600 if summary is None else 520
+    avail = bottom - top - sum(hh); k = max(1, avail / sum(est))
+    table(s, 56, top, 1168, rows, colw, head=4, size=8, hsize=9, styles=st,
+          merges=[(0, 0, 0, 9), (1, 0, 3, 0), (1, 1, 1, 3), (1, 4, 1, 5), (1, 6, 3, 6), (1, 7, 2, 8), (1, 9, 3, 9),
+                  (2, 1, 3, 1), (2, 2, 3, 2), (2, 3, 3, 3), (2, 4, 2, 5)],
+          grid=LINE, upper=False, hfill='F0F2F4', hcolor=INK, rowhs=hh + [e * k for e in est])
+    if summary:
+        cw = (1168 - 48) / 4
+        for i, (k_, v) in enumerate(summary):
+            x = 56 + i * (cw + 16); card(s, x, 532, cw, 104, k_, WASH, lcolor=GREEN_D)
+            tx(s, x + 14, 554, cw - 28, 80, v, 9.5, INK, lh=1.1, emph=False)
+    legend_notes(s, 648, 'Price = challenger price vs Top 1 model price. Equal features = both brands have the system (challenger name = Top 1 name). '
+                 'Winning features = only the challenger has it. * XCMG feature names to be verified with the XCMG datasheet.')
+
+H_ = D['H']
+stp_slide('M', 'STP · Medium class 25–45 tm · 1 / 2', 'Medium: target *Sany Palfinger* with XCMG at 30–40 tm and Ferrari at 25–30 tm',
+          [('Segmentation', 'Medium class split into 4 tm tiers. 30–40 tm holds 65% of Medium units (128 of 196) and 69% of value.'),
+           ('Targeting', 'Top 1 model of each tier: Sany Palfinger at 30–45 tm. At 25–30 tm Sany Palfinger has no model, so Amco Veba V825 is the target.'),
+           ('Positioning', 'XCMG: same capacity as Sany Palfinger at a lower price. Ferrari 268 A4: European features, 23% cheaper than Amco Veba V825.')])
+mix_slide('M', '4P · Medium class 25–45 tm · 2 / 2', 'Medium: XCMG wins on price; *renegotiate Ferrari* before selling 40–45 tm', D['M'])
+stp_slide('H', 'STP · Heavy class > 45 tm · 1 / 3', 'Heavy: Ferrari is the only challenger and is *cheaper only at 45–50 tm*',
+          [('Segmentation', 'Heavy class split into 6 tm tiers. 50–55 tm holds 62% of Heavy units (40 of 65), almost all Palfinger PK 53002.'),
+           ('Targeting', 'Top 1 model of each tier: Palfinger at 50–55, 70–75 and 80–85 tm. Amco Veba (45–50) and Sany Palfinger (60–65) where Palfinger has no model.'),
+           ('Positioning', 'Ferrari: the same European features as Palfinger, delivered faster from stock in China (~14 weeks) against Europe-built leaders.')])
+mix_slide('H', '4P · Heavy class 45–65 tm · 2 / 3', 'Heavy 45–65 tm: Ferrari *matches or beats* the leader on features', H_[:3])
+mix_slide('H', '4P · Heavy class 70–90 tm · 3 / 3', 'Heavy 70–90 tm: same features as Palfinger, so win on *delivery time*', H_[3:],
+          summary=[('Product', 'Ferrari only. Extra features at 45–50 tm (RS, SDV) and 60–65 tm (Red Power, SDV, Magic Touch); equal to Palfinger at 50–85 tm.'),
+                   ('Price', 'Cheaper only at 45–50 tm (−32%). +79% to +85% at 50–55 and 70–75 tm: negotiate price with F.lli Ferrari.'),
+                   ('Place', 'Ferrari stocks units in China (~14 weeks) and parts in Malaysia, against Palfinger built in Europe.'),
+                   ('Promotion', 'Crane + flatdeck + installation + 2-year warranty. Exhibitions with Marcom sales kit.')])
+
+# conclusion
 s = new('Conclusion', 'Partner with *F.lli Ferrari and XCMG*; keep Fassi for Petrosea')
-for i, (h, sub, L, hl) in enumerate([('XCMG', 'Medium · price buyers', ['Challenger at 30–35 and 35–40 tm', 'SQZ365.4 is 9% cheaper than SPK36080', 'Ask XCMG for a special price', 'Bundle crane + flatdeck + installation'], False),
-                                     ('F.lli Ferrari', 'Heavy · quality buyers', ['Cheaper at 25–30 tm (−23%) and 45–50 tm (−32%)', 'Stock units in China (~14 weeks), parts in Malaysia', 'Cut price at 40–45, 50–55 and 70–75 tm', 'Bundle + 2-year warranty'], True),
-                                     ('Fassi', 'Key account', ['Petrosea buys Fassi only', 'Keep supply for this account'], False)]):
-    w = 440 if i < 2 else 256; x = 56 + i * 456
-    card(s, x, 160, w, 330, None, GREEN_L if hl else WASH)
-    tx(s, x + 20, 178, w - 40, 36, h, 26, INK, font=SERIF)
-    kicker(s, x + 20, 220, sub); hline(s, x + 20, 240, w - 40)
-    tx(s, x + 20, 254, w - 40, 220, L, 12, INK, bullets=True, lh=1.25)
+def brand_card(x, w, name, sub, rows, notes, hl=False):
+    card(s, x, 156, w, 340, None, GREEN_L if hl else WASH)
+    tx(s, x + 16, 168, w - 32, 32, name, 22, INK, font=SERIF)
+    kicker(s, x + 16, 204, sub, GREEN_D)
+    yy = 224
+    if rows:
+        st = {}
+        for r in range(1, len(rows)):
+            g = rows[r][3]
+            st[(r, 2)] = {'bold': True, 'color': gapcol(g) if isinstance(g, float) else MUTED}
+        body = [[a, b_, (f"{g * 100:+.0f}%".replace('-', '−') if isinstance(g, float) else g)] for a, b_, _, g in [(*r_[:2], None, r_[3]) for r_ in rows[1:]]]
+        table(s, x + 16, yy, w - 32, [rows[0][:3]] + body, [60, 150, 70], rowh=19, size=9, hsize=7.5, styles=st, aligns={2: 'r'})
+        yy += 19 * len(rows) + 10
+    tx(s, x + 16, yy, w - 32, 490 - yy, notes, 10, INK, bullets=True, lh=1.1, emph=False)
+DM = {d['tm']: d for d in D['M'] + D['H']}
+xr = [['tm', 'Model', 'vs Top 1', None]] + [[d['tm'], f"{d['cm']} vs {d['tmodel']}", None, d['gap']] for d in D['M'] if d['ch'] == 'XCMG']
+fr = [['tm', 'Model', 'vs Top 1', None]] + [[d['tm'], f"{d['cm']} vs {d['tmodel']}", None, d['gap'] if d['gap'] is not None else 'TBC'] for d in D['M'] + D['H'] if d['ch'] == 'Ferrari']
+brand_card(56, 360, 'XCMG', 'Medium · price buyers', xr,
+           ['30–40 tm is 65% of Medium units and 69% of value', 'Ask XCMG for a special price at both tiers', 'Partnership terms needed: GM Tractors is XCMG\'s official distributor in Indonesia',
+            'Bundle crane + flatdeck + installation; exhibitions with Marcom sales kit'])
+brand_card(432, 520, 'F.lli Ferrari', 'Heavy · quality buyers · plus 25–30 and 40–45 tm', fr,
+           ['Negotiate price at the red tiers: 40–45, 50–55 and 70–75 tm', 'Stock units in China (~14 weeks) and parts in Malaysia',
+            'Bundle + 2-year warranty; exhibitions with Marcom sales kit'], hl=True)
+brand_card(968, 256, 'Fassi', 'Key account', None,
+           ['Petrosea buys Fassi only', 'Keep Fassi supply for this account', 'Outside the Ferrari + XCMG challenger plan'])
 bx = rect(s, 56, 510, 1168, 170, DARK, radius=10); grad(bx, DARK, DARK2)
 kicker(s, 80, 530, 'Decisions needed', GREEN_T)
 for i, t in enumerate(['Approve partnership talks with F.lli Ferrari and XCMG', 'Mandate Ferrari price and stock negotiation', 'Budget for exhibitions and Marcom sales kit']):

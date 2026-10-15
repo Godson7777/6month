@@ -14,14 +14,14 @@
    "cp": 500000000.0,
    "gap": -0.23076923076923073,
    "eq": [
-    "Linkage (Red Power = Articulated Powerlink)",
-    "Power boost (PB = AVPS)",
-    "Electronic control (ECM = EBB)",
-    "Auto fold (Magic Touch = Magic Touch)"
+    "Linkage: Ferrari Red Power = Amco Veba Articulated Powerlink",
+    "Power boost: Ferrari PB = Amco Veba AVPS",
+    "Electronic control: Ferrari ECM = Amco Veba EBB",
+    "Auto fold: Ferrari Magic Touch = Amco Veba Magic Touch"
    ],
    "win": [
-    "Extension speed (RS)",
-    "Oscillation (SDV)"
+    "Extension speed: Ferrari RS; Amco Veba: none",
+    "Oscillation: Ferrari SDV (Smooth Descent Valve: less boom flex and dynamic load); Amco Veba: none"
    ],
    "place_c": "Made in Europe",
    "place_ch": "Ferrari stocks units in China (~14 weeks) and parts in Malaysia",
@@ -42,10 +42,10 @@
    "cp": 550000000.0,
    "gap": 0.037735849056603765,
    "eq": [
-    "Electronic control (Load limiter* = Paltronic 50)"
+    "Electronic control: XCMG Load limiter* = Sany Palfinger Paltronic 50"
    ],
    "win": [
-    "Parity: wins on price/delivery"
+    "No extra named feature. Needs a special price to beat Sany Palfinger (now +4%)"
    ],
    "place_c": "Made in China",
    "place_ch": "Negotiate special price with XCMG",
@@ -66,10 +66,10 @@
    "cp": 600000000.0,
    "gap": -0.09090909090909094,
    "eq": [
-    "Electronic control (Load limiter* = Paltronic 50)"
+    "Electronic control: XCMG Load limiter* = Sany Palfinger Paltronic 50"
    ],
    "win": [
-    "Parity: wins on price/delivery"
+    "No extra named feature. Wins on price: \u22129% vs Sany Palfinger"
    ],
    "place_c": "Made in China",
    "place_ch": "Negotiate special price with XCMG",
@@ -90,14 +90,14 @@
    "cp": 1420000000.0,
    "gap": 0.47916666666666674,
    "eq": [
-    "Power boost (PB = HPLS (MH))",
-    "Extension speed (RS = High speed ext. (ROU))",
-    "Electronic control (ECM = Paltronic 50)"
+    "Power boost: Ferrari PB = Sany Palfinger HPLS (MH)",
+    "Extension speed: Ferrari RS = Sany Palfinger High speed ext. (ROU)",
+    "Electronic control: Ferrari ECM = Sany Palfinger Paltronic 50"
    ],
    "win": [
-    "Linkage (Red Power)",
-    "Oscillation (SDV)",
-    "Auto fold (Magic Touch)"
+    "Linkage: Ferrari Red Power; Sany Palfinger: none",
+    "Oscillation: Ferrari SDV (Smooth Descent Valve: less boom flex and dynamic load); Sany Palfinger: none",
+    "Auto fold: Ferrari Magic Touch (opens and stows the crane automatically); Sany Palfinger: none"
    ],
    "place_c": "Made in China",
    "place_ch": "Negotiate price with Ferrari. Ferrari stocks units in China (~14 weeks) and parts in Malaysia",
@@ -120,14 +120,14 @@
    "cp": 1350000000.0,
    "gap": -0.321608040201005,
    "eq": [
-    "Linkage (Red Power = Articulated Powerlink)",
-    "Power boost (PB = AVPS)",
-    "Electronic control (ECM = EBB)",
-    "Auto fold (Magic Touch = Magic Touch)"
+    "Linkage: Ferrari Red Power = Amco Veba Articulated Powerlink",
+    "Power boost: Ferrari PB = Amco Veba AVPS",
+    "Electronic control: Ferrari ECM = Amco Veba EBB",
+    "Auto fold: Ferrari Magic Touch = Amco Veba Magic Touch"
    ],
    "win": [
-    "Extension speed (RS)",
-    "Oscillation (SDV)"
+    "Extension speed: Ferrari RS; Amco Veba: none",
+    "Oscillation: Ferrari SDV (Smooth Descent Valve: less boom flex and dynamic load); Amco Veba: none"
    ],
    "place_c": "Made in Europe",
    "place_ch": "Ferrari stocks units in China (~14 weeks) and parts in Malaysia",
@@ -148,10 +148,15 @@
    "cp": 3260000000.0,
    "gap": 0.8522727272727273,
    "eq": [
-    "All 6 named features equal (linkage, power boost, extension speed, oscillation, electronic control, auto fold)"
+    "Linkage: Ferrari Red Power = Palfinger Power Link Plus",
+    "Power boost: Ferrari PB = Palfinger HPLS",
+    "Extension speed: Ferrari RS = Palfinger High Speed Extension",
+    "Oscillation: Ferrari SDV = Palfinger AOS",
+    "Electronic control: Ferrari ECM = Palfinger PALTRONIC 150",
+    "Auto fold: Ferrari Magic Touch = Palfinger P-Fold"
    ],
    "win": [
-    "Parity: wins on price/delivery"
+    "No extra named feature. Wins on delivery: stock in China (~14 weeks) vs Palfinger built in Europe"
    ],
    "place_c": "Made in Europe",
    "place_ch": "Negotiate price with Ferrari. Ferrari stocks units in China (~14 weeks) and parts in Malaysia",
@@ -172,14 +177,14 @@
    "cp": null,
    "gap": null,
    "eq": [
-    "Power boost (PB = HPLS (MH))",
-    "Extension speed (RS = High speed ext. (ROU))",
-    "Electronic control (ECM = Paltronic 50)"
+    "Power boost: Ferrari PB = Sany Palfinger HPLS (MH)",
+    "Extension speed: Ferrari RS = Sany Palfinger High speed ext. (ROU)",
+    "Electronic control: Ferrari ECM = Sany Palfinger Paltronic 50"
    ],
    "win": [
-    "Linkage (Red Power)",
-    "Oscillation (SDV)",
-    "Auto fold (Magic Touch)"
+    "Linkage: Ferrari Red Power; Sany Palfinger: none",
+    "Oscillation: Ferrari SDV (Smooth Descent Valve: less boom flex and dynamic load); Sany Palfinger: none",
+    "Auto fold: Ferrari Magic Touch (opens and stows the crane automatically); Sany Palfinger: none"
    ],
    "place_c": "Made in China",
    "place_ch": "Ferrari stocks units in China (~14 weeks) and parts in Malaysia",
@@ -200,10 +205,15 @@
    "cp": 4110000000.0,
    "gap": 0.794759825327511,
    "eq": [
-    "All 6 named features equal (linkage, power boost, extension speed, oscillation, electronic control, auto fold)"
+    "Linkage: Ferrari Red Power = Palfinger Power Link Plus",
+    "Power boost: Ferrari PB = Palfinger HPLS",
+    "Extension speed: Ferrari RS = Palfinger High Speed Extension",
+    "Oscillation: Ferrari SDV = Palfinger AOS",
+    "Electronic control: Ferrari ECM = Palfinger PALTRONIC 150",
+    "Auto fold: Ferrari Magic Touch = Palfinger P-Fold"
    ],
    "win": [
-    "Parity: wins on price/delivery"
+    "No extra named feature. Wins on delivery: stock in China (~14 weeks) vs Palfinger built in Europe"
    ],
    "place_c": "Made in Europe",
    "place_ch": "Negotiate price with Ferrari. Ferrari stocks units in China (~14 weeks) and parts in Malaysia",
@@ -224,10 +234,15 @@
    "cp": null,
    "gap": null,
    "eq": [
-    "All 6 named features equal (linkage, power boost, extension speed, oscillation, electronic control, auto fold)"
+    "Linkage: Ferrari Red Power = Palfinger Power Link Plus",
+    "Power boost: Ferrari PB = Palfinger HPLS",
+    "Extension speed: Ferrari RS = Palfinger High Speed Extension",
+    "Oscillation: Ferrari SDV = Palfinger AOS",
+    "Electronic control: Ferrari ECM = Palfinger PALTRONIC 150",
+    "Auto fold: Ferrari Magic Touch = Palfinger P-Fold"
    ],
    "win": [
-    "Parity: wins on price/delivery"
+    "No extra named feature. Wins on delivery: stock in China (~14 weeks) vs Palfinger built in Europe"
    ],
    "place_c": "Made in Europe",
    "place_ch": "Ferrari stocks units in China (~14 weeks) and parts in Malaysia",

@@ -18,13 +18,20 @@ F = {
  'Ferrari': {'Linkage': 'Red Power', 'Power boost': 'PB', 'Extension speed': 'RS', 'Oscillation': 'SDV', 'Electronic control': 'ECM', 'Auto fold': 'Magic Touch'},
  'XCMG': {'Electronic control': 'Load limiter*'},
 }
-def feats(top, ch):
+DESC = {'Oscillation': 'Smooth Descent Valve: less boom flex and dynamic load', 'Auto fold': 'opens and stows the crane automatically'}
+def feats(top, ch, gap=None):
+    """Equal = feature both have (challenger name = Top 1 name). Winning = only the challenger has it. Brand names written in full."""
     a, b = F.get(top, {}), F.get(ch, {}); eq, win, lose = [], [], []
     for f in ['Linkage', 'Power boost', 'Extension speed', 'Oscillation', 'Electronic control', 'Auto fold']:
-        if f in a and f in b: eq.append(f"{f} ({b[f]} = {a[f]})")
-        elif f in b: win.append(f"{f} ({b[f]})")
+        if f in a and f in b: eq.append(f"{f}: {ch} {b[f]} = {top} {a[f]}")
+        elif f in b: win.append(f"{f}: {ch} {b[f]}" + (f" ({DESC[f]})" if f in DESC else '') + f"; {top}: none")
         elif f in a: lose.append(f"{f} ({a[f]}, Top 1 only)")
-    if len(eq)==6: eq=['All 6 named features equal (linkage, power boost, extension speed, oscillation, electronic control, auto fold)']
+    if not win:
+        if ch == 'XCMG':
+            win = [f"No extra named feature. Wins on price: {gap*100:+.0f}% vs {top}".replace('-', '−') if gap is not None and gap <= 0
+                   else f"No extra named feature. Needs a special price to beat {top} (now {gap*100:+.0f}%)".replace('-', '−')]
+        else:
+            win = [f"No extra named feature. Wins on delivery: stock in China (~14 weeks) vs {top} built in Europe"]
     return eq, win, lose
 
 PLACE = {'Sany Palfinger': 'Made in China', 'Palfinger': 'Made in Europe', 'Amco Veba': 'Made in Europe', 'XCMG': 'Made in China'}
@@ -37,9 +44,10 @@ def mk(k, top, tm, ch, cm, cp, cls, note=''):
     units, val = tier(k); rows = {n: (u, p) for _, n, _, u, p in pos[k]}
     tu, tp = rows[tm]; tshare = tu*tp/val
     gap = None if cp is None or tp is None else cp/tp - 1
-    eq, win, lose = feats(top, ch) if ch else ([], [], [])
+    gap0 = None if cp is None or tp is None else cp/tp - 1
+    eq, win, lose = feats(top, ch, gap0) if ch else ([], [], [])
     return dict(tm=k.replace('-', ' – '), qty=units, share=val/(MTOT if cls == 'M' else HTOT), top=top, tmodel=tm,
-                tqty=tu, tshare=tshare, tprice=tp, ch=ch, cm=cm, cp=cp, gap=gap, eq=eq, win=(win or ["Parity: wins on price/delivery"]) if ch else [],
+                tqty=tu, tshare=tshare, tprice=tp, ch=ch, cm=cm, cp=cp, gap=gap, eq=eq, win=win,
                 place_c=PLACE[top], place_ch=(('Negotiate price with Ferrari. ' if gap is not None and gap > .3 else '') + PLACE_CH[ch]) if ch else '–', promo=PROMO.get(ch, '–'), note=note)
 
 MEDROWS = [
