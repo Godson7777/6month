@@ -447,38 +447,57 @@ def blk(x, y, w, h, label, lines, fill=WASH):
     rect(s, x, y, w, h, fill)
     tx(s, x + 8, y + 5, w - 16, 14, label, 9, GREEN_D, True, caps=True, spacing=0.5, emph=False)
     tx(s, x + 8, y + 20, w - 16, h - 22, lines, 9.5, INK, bullets=True, lh=1.02, emph=False)
-C1, W1, C2, W2, C3, W3 = 56, 420, 498, 330, 850, 374
+C1, W1, C2, W2, C3, W3 = 56, 374, 453, 374, 850, 374
 y0 = 152
 bar8(C1, y0, W1, '4C · Business landscape')
-blk(C1, y0 + 28, W1, 135, 'Change (PESTLE · Market)', [
-    'HYVA stopped making truck cranes, so Triatra has no crane brand.',
-    'Medium + Heavy = 41% of units but 64% of value (2023 – Aug 2026). Value per unit ≈ 2.6× Light + Small (Rp 803 jt vs Rp 311 jt).',
-    'Heavy units rose 12 → 17 → 35 (2023 – 2025); 2026 slower (2 Heavy units to Aug).'])
-blk(C1, y0 + 174, W1, 107, 'Competitor', [
-    'Two players lead (2025): Sany Palfinger in Medium (47% of value, 30 units), Palfinger in Heavy (62% of value, 22 units).',
-    'One model, Palfinger PK 53002, sold 39 of 65 Heavy units (2023 – 2026).'])
-blk(C1, y0 + 288, W1, 153, 'Customer', [
-    'Buyers count price and uptime, not brand. 88% of Medium + Heavy cranes go on trucks GVW ≥ 24 t (mining, construction, heavy logistics).',
-    'Medium = price oriented: China brands hold 73% of value. Heavy = quality oriented: European brands hold 85% of value.',
-    'Want: lower price than Europe, right capacity, fast site service. Worry: Europe too expensive; China doubted on durability and after-sales.'])
-blk(C1, y0 + 448, W1, 77, 'Company', ['Triatra must partner F.lli Ferrari and XCMG to serve price-oriented (XCMG) and quality-oriented (Ferrari) customers.'], GREEN_L)
-arrow(s, C1 + W1 + 3, 430, C2 - 3, 430)
-bar8(C2, y0, W2, 'STP · Who we fight, with what')
-blk(C2, y0 + 28, W2, 107, 'Segmentation', ['Medium (25 – 45 tm, 4 tiers) and Heavy (> 45 tm, 6 tiers), analysed separately.', 'Each 5-tm tier: units and value 2023 – Aug 2026.'])
-blk(C2, y0 + 146, W2, 121, 'Targeting', ['Top 1 model of each tier: Sany Palfinger in Medium, Palfinger in Heavy.', 'Top 1 brand has no model in the tier: next-largest brand (Amco Veba 25–30, 45–50; Sany Palfinger 60–65).'])
-blk(C2, y0 + 274, W2, 251, 'Positioning · challenger rule', [
-    'Ferrari first, if cheaper than the Top 1.',
-    'Otherwise XCMG with the closest price and the highest qty.',
-    'No challenger yet: suggest a Ferrari model from the price list.',
-    'No model at all: "No challenger" (85 – 90 tm).',
-    'Result: XCMG at 30–35 and 35–40 tm; Ferrari at 25–30, 40–45 tm and all Heavy tiers.'])
-arrow(s, C2 + W2 + 3, 430, C3 - 3, 430)
-bar8(C3, y0, W3, '4P · Per challenger')
-blk(C3, y0 + 28, W3, 62, 'Product', ['Winning features = only features the challenger has and the Top 1 lacks. Never list competitor-only features.'])
-blk(C3, y0 + 96, W3, 138, 'Price', ['Green = cheaper, yellow = up to +30%, red = over +30% (≈2×).', 'Red tiers (40–45, 50–55, 70–75 tm): negotiate price with Ferrari.', 'XCMG: negotiate a special price, also at 35–40 tm (already −9%).'])
-blk(C3, y0 + 240, W3, 123, 'Place', ['Ferrari: sell on availability, mainly Heavy (leaders are built in Europe). Ferrari stocks units at its China factory (~14 weeks) and parts in Malaysia.', 'XCMG: special-price deal (official distributor: GM Tractors).'])
-blk(C3, y0 + 369, W3, 155, 'Promotion', ['Ferrari: crane + flatdeck + installation + 2-year warranty.', 'XCMG: crane + flatdeck + installation (no warranty).', 'Both: exhibitions with a Marcom sales kit.', 'Fassi stays for Petrosea only (key account).'])
-tx(s, 56, 676, 1168, 14, 'Detail per tier: slides 12 – 16 (Medium and Heavy STP + 4P tables) and the Excel file.', 9, MUTED, emph=False)
+def blk2(x, y, w, h, label, head, lines, fill=WASH):
+    rect(s, x, y, w, h, fill)
+    tx(s, x + 8, y + 5, w - 16, 14, label, 8.5, GREEN_D, True, caps=True, spacing=0.5, emph=False)
+    t = tx(s, x + 8, y + 20, w - 16, h - 22, head, 10.5, INK, True, lh=1.0, emph=False)
+    tf = t.text_frame
+    for ln in lines:
+        p = tf.add_paragraph(); p.space_before = Pt(3)
+        pPr = p._p.get_or_add_pPr(); pPr.set('marL', str(int(Pt(10)))); pPr.set('indent', str(-int(Pt(10))))
+        etree.SubElement(pPr, qn('a:buChar')).set('char', '•')
+        r = p.add_run(); r.text = ln; r.font.size = Pt(9.5); r.font.name = SANS; r.font.color.rgb = rgb(BODY)
+blk2(C1, y0 + 28, W1, 119, 'Change', 'HYVA has left; value sits in Medium + Heavy.', [
+    'Triatra has no crane brand since HYVA stopped.',
+    '41% of units, 64% of value (2023 – 2026).',
+    'Heavy units: 12 → 17 → 35 (2023 – 2025).'])
+blk2(C1, y0 + 154, W1, 119, 'Competitor', 'Two leaders, one per class.', [
+    'Medium: Sany Palfinger, 38% of value (2023 – 2026).',
+    'Heavy: Palfinger, 66% of value; PK 53002 alone 39 units.'])
+blk2(C1, y0 + 280, W1, 119, 'Customer', 'Medium buys on price, Heavy buys on quality.', [
+    'Medium: China brands take 73% of value.',
+    'Heavy: European brands take 85% of value.',
+    '88% go on trucks ≥ 24 t GVW (mining, construction).'])
+blk2(C1, y0 + 406, W1, 119, 'Company', 'Triatra partners two brands to serve both buyers.', [
+    'XCMG for price-oriented buyers.', 'F.lli Ferrari for quality-oriented buyers.'], GREEN_L)
+arrow(s, C1 + W1 + 2, 430, C2 - 2, 430)
+bar8(C2, y0, W2, 'STP · Where we play')
+blk2(C2, y0 + 28, W2, 161, 'Segmentation', 'Two classes, ten 5-tm tiers.', [
+    'Medium 25 – 45 tm: 196 units, Rp 156 M.', 'Heavy > 45 tm: 65 units, Rp 115 M.'])
+blk2(C2, y0 + 196, W2, 161, 'Targeting', 'Take share from the Top 1 model in each tier.', [
+    'Medium: Sany Palfinger SPK32080, SPK36080, SPK42502.', 'Heavy: Palfinger PK 53002, PK 76002, PK 88002.'])
+blk2(C2, y0 + 364, W2, 161, 'Positioning', 'Two clear promises.', [
+    'XCMG: same capacity as Sany Palfinger, lower price (SQZ365.4: −9% vs SPK36080).',
+    'Ferrari: European features at a lower price where it wins (−23% at 25 – 30 tm, −32% at 45 – 50 tm).',
+    'Ferrari: faster delivery than Europe-built leaders, from stock in China (~14 weeks).'])
+arrow(s, C2 + W2 + 2, 430, C3 - 2, 430)
+blk2(C3, y0 + 28, W3, 119, 'Product', 'One challenger model per tier.', [
+    'XCMG: 30–40 tm. Ferrari: 25–30, 40–45 tm, all Heavy.',
+    'Ferrari adds what leaders lack: RS, SDV, Red Power, Magic Touch.'])
+blk2(C3, y0 + 154, W3, 119, 'Price', 'Sell where cheaper; negotiate the rest.', [
+    'Cheaper now: 25–30 (−23%), 35–40 (−9%), 45–50 tm (−32%).',
+    'Ferrari cut: 40–45 (+48%), 50–55 (+85%), 70–75 tm (+79%).',
+    'XCMG: special price for Triatra.'])
+blk2(C3, y0 + 280, W3, 119, 'Place', 'Win on availability.', [
+    'Ferrari stocks units in China (~14 weeks) and parts in Malaysia.',
+    'XCMG through its official distributor, GM Tractors.'])
+blk2(C3, y0 + 406, W3, 119, 'Promotion', 'Sell a ready-to-work package.', [
+    'Crane + flatdeck + installation (+2-yr warranty, Ferrari).',
+    'Exhibitions and customer visits with a Marcom sales kit.'])
+bar8(C3, y0, W3, '4P · How we win')
 
 # 09 charter: old layout with section divider bars
 s = new('Project charter', 'Sell the first *Ferrari and XCMG* challenger cranes by March 2027')
