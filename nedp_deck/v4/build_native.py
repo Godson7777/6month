@@ -543,34 +543,36 @@ tx(s, 744, 308, 466, 260, ['Medium + Heavy: 41% of units, 64% of import value', 
 tx(s, 728, 596, 496, 80, '*2026 annualised (Jan – 14 Aug × 1.61). Source: Indonesia import records HS 84269100 + 84264900; truck-mounted knuckle boom cranes; Zoomlion and Hyva excluded; USD 1 = Rp 17.803.',
    8, SUB, lh=1.1, emph=False)
 
-# 11 brand leaders (native bar charts + tables)
-s = new('Study · Brand leaders 2025', 'Two leaders to beat: *Sany Palfinger* in Medium, *Palfinger* in Heavy')
-for i, (lbl, cats, vals, rows, tot) in enumerate([
-        ('Medium · 25 – 45 tm · 2025: 54 units · Rp 28,0 M', ['Amco Veba', 'Palfinger', 'XCMG', 'Sany Palfinger'], [5, 5, 14, 30],
-         [['#', 'Brand', 'Units', 'Import value (IDR)', 'Share'], ['1', 'Sany Palfinger', '30', 'Rp 13.226.000.000', '47%'], ['2', 'XCMG', '14', 'Rp 7.197.000.000', '26%'], ['3', 'Palfinger', '5', 'Rp 4.869.000.000', '17%'], ['', 'Total Medium 2025', '54', 'Rp 28.000.000.000', '100%']],
-         'Share = share of import value. Sany Palfinger = Sany–Palfinger JV, made in China.'),
-        ('Heavy · > 45 tm · 2025: 35 units · Rp 48,0 M', ['XCMG', 'Amco Veba', 'Palfinger'], [4, 7, 22],
-         [['#', 'Brand', 'Units', 'Import value (IDR)', 'Share'], ['1', 'Palfinger', '22', 'Rp 29.738.000.000', '62%'], ['2', 'Amco Veba', '7', 'Rp 11.065.000.000', '23%'], ['3', 'XCMG', '4', 'Rp 4.647.000.000', '10%'], ['', 'Total Heavy 2025', '35', 'Rp 48.000.000.000', '100%']],
-         'Share = share of import value.')]):
+# 11 brand leaders 2025: top 3 brands, tables first then qty charts
+s = new('Study · Brand leaders 2025 only', 'Two leaders to beat: *Sany Palfinger* in Medium, *Palfinger* in Heavy')
+rect(s, 56, 150, 1168, 50, GREEN_L, radius=8)
+tx(s, 72, 150, 1136, 50, ['Why only the top 3 brands: in 2025 they hold 90% of Medium value (49 of 54 units, 91%) and 95% of Heavy value (33 of 35 units, 94%).'],
+   12, GREEN_D, True, anchor='m', align='c', emph=False)
+for i, (lbl, cats, vals, rows, top3) in enumerate([
+        ('Medium · 25 – 45 tm', ['Amco Veba', 'Palfinger', 'XCMG', 'Sany Palfinger'], [5, 5, 14, 30],
+         [['#', 'Brand', 'Units', 'Import value (IDR)', 'Share'], ['1', 'Sany Palfinger', '30', 'Rp 13.226.000.000', '47%'], ['2', 'XCMG', '14', 'Rp 7.197.000.000', '26%'],
+          ['3', 'Palfinger', '5', 'Rp 4.869.000.000', '17%'], ['', 'Top 3 brands', '49 of 54', 'Rp 25.292.000.000', '90%'], ['', 'Total Medium 2025', '54', 'Rp 28.000.000.000', '100%']], None),
+        ('Heavy · > 45 tm', ['XCMG', 'Amco Veba', 'Palfinger'], [4, 7, 22],
+         [['#', 'Brand', 'Units', 'Import value (IDR)', 'Share'], ['1', 'Palfinger', '22', 'Rp 29.738.000.000', '62%'], ['2', 'Amco Veba', '7', 'Rp 11.065.000.000', '23%'],
+          ['3', 'XCMG', '4', 'Rp 4.647.000.000', '10%'], ['', 'Top 3 brands', '33 of 35', 'Rp 45.450.000.000', '95%'], ['', 'Total Heavy 2025', '35', 'Rp 48.000.000.000', '100%']], None)]):
     x = 56 + i * 596
-    rect(s, x, 158, 572, 26, GREEN_L, radius=6); tx(s, x + 12, 158, 548, 26, lbl.upper(), 9, GREEN_D, True, anchor='m', spacing=1)
-    kicker(s, x, 196, 'Units sold by brand · 2025 · qty')
-    cd = CategoryChartData(); cd.categories = cats; cd.add_series('Rp M', vals)
-    ch = s.shapes.add_chart(XL_CHART_TYPE.BAR_CLUSTERED, E(x), E(212), E(572), E(230), cd).chart
-    ch.has_legend = False; ch.has_title = False; pl = ch.plots[0]; pl.gap_width = 70; pl.has_data_labels = True
+    kicker(s, x, 214, lbl, GREEN_D)
+    st = {(1, c): {'bold': True, 'color': GREEN_D, 'fill': GREEN_L} for c in range(5)}
+    st.update({(4, c): {'bold': True, 'color': GREEN_D} for c in range(5)})
+    st.update({(5, c): {'bold': True, 'fill': 'F0F2F4'} for c in range(5)})
+    table(s, x, 232, 572, rows, [24, 170, 70, 200, 60], rowh=26, size=10, styles=st, aligns={2: 'r', 3: 'r', 4: 'r'})
+    kicker(s, x, 402, 'Units sold by brand · 2025')
+    cd = CategoryChartData(); cd.categories = cats; cd.add_series('Units', vals)
+    ch = s.shapes.add_chart(XL_CHART_TYPE.BAR_CLUSTERED, E(x), E(418), E(572), E(196), cd).chart
+    ch.has_legend = False; ch.has_title = False; pl = ch.plots[0]; pl.gap_width = 60; pl.has_data_labels = True
     pl.data_labels.font.size = Pt(9); pl.data_labels.font.bold = True; pl.data_labels.number_format = '0" units"'; pl.data_labels.number_format_is_linked = False
-    sr = ch.series[0]
     for j in range(len(cats)):
-        pt = sr.points[j]; pt.format.fill.solid(); pt.format.fill.fore_color.rgb = rgb(GREEN_D if j == len(cats) - 1 else 'C1C8CD')
+        pt = ch.series[0].points[j]; pt.format.fill.solid(); pt.format.fill.fore_color.rgb = rgb(GREEN_D if j == len(cats) - 1 else 'C1C8CD')
     ch.value_axis.visible = False; ch.value_axis.has_major_gridlines = False
     ch.category_axis.tick_labels.font.size = Pt(9.5); ch.category_axis.tick_labels.font.color.rgb = rgb(INK); ch.category_axis.format.line.color.rgb = rgb(LINE2)
-    st = {(1, c): {'bold': True, 'color': GREEN_D, 'fill': GREEN_L} for c in range(5)}
-    st.update({(4, c): {'bold': True, 'fill': 'F0F2F4'} for c in range(5)})
-    table(s, x, 452, 572, rows, [24, 170, 60, 200, 60], rowh=26, size=10, styles=st, aligns={2: 'r', 3: 'r', 4: 'r'})
-    tx(s, x, 586, 572, 30, tot, 8.5, MUTED)
-card(s, 56, 618, 1168, 62)
-tx(s, 72, 628, 1136, 44, ['Medium 2025: 54 units, Rp 28,0 M. Sany Palfinger sold 30 units, 2.1× XCMG (14). Heavy 2025: 35 units, Rp 48,0 M. Palfinger sold 22 units, 3.1× Amco Veba (7).',
-                          'Scope is 2025 only, so figures are smaller than the 2023 – 2026 totals.'], 10, INK, bullets=True)
+card(s, 56, 624, 1168, 58)
+tx(s, 72, 632, 1136, 44, ['Leaders are far ahead: Sany Palfinger sold 2.1× XCMG in Medium (30 vs 14 units); Palfinger sold 3.1× Amco Veba in Heavy (22 vs 7 units).',
+                          'Share = share of import value. Scope is 2025 only, so figures are smaller than the 2023 – 2026 totals.'], 10, INK, bullets=True, emph=False)
 
 # 12–16 STP + 4P tables: header follows template_excle_penyajian_data_v2 exactly; split over slides where it does not fit
 import math
