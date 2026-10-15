@@ -400,20 +400,19 @@ for i, (h, r, ppl) in enumerate(COLS):
 s = new('Roles & responsibility · Supply chain', 'I take every order from *inquiry to delivery* for two product lines',
         'Five steps from customer inquiry to factory acceptance test (FAT), for Small Suppeq and Truck Others.')
 STEPS = [('Inquiry & opportunity', ['Business Consultant', 'Application Engineering', 'Marketing Unit'],
-          ['Check spec', 'Check buying reason', 'Check project location', 'Check expected price and lead time', 'Check urgency and expected PO date']),
+          ['Check spec and buying reason', 'Check project location', 'Check target price and lead time', 'Check urgency and PO date', 'Lead / opportunity in CRM']),
          ('Preliminary', ['Business Consultant', 'Application Engineering', 'Marketing Unit Triatra'],
-          ['Check if repeat order or new preliminary', 'Check unit function', 'Check main components: find the critical ones for price and lead time']),
+          ['Repeat order or new drawing?', 'Request drawing in iServe; MKU Head assigns AE (same day)',
+           'AE drawing: repeat 1 day, minor 3 days, major 5 days', 'Check unit function and critical parts', 'Handle customer revisions']),
          ('Pricing / Quotation', ['Marketing Unit Triatra', 'Marketing Unit UTPE'],
-          ['Request quote from UTE with preliminary, expected price, expected lead time and customer info',
-           'Check UTE standard GP (signed by marketing associate and manager = standard GP)',
-           'Check actual SLA (repeat, minor, major); escalate to the superior if too long', 'Fill PCR in CRM']),
+          ['Request quote to UTPE: drawing, target price, lead time, customer info', 'UTPE quote: price/COGS, lead time, validity',
+           'Input standard price; check standard GP', 'Submit PCR for approval', 'Watch SLA; escalate if late']),
          ('Negotiation & CPO', ['Business Consultant', 'Marketing Unit Triatra', 'Marketing Unit UTPE'],
-          ['Check PO / PJB', 'Check PO matches the preliminary', 'Request PN', 'Request QFD and painting style',
-           'CPO: Sales Manager → Mkt Unit Triatra → Mkt Unit Manager → GM Marketing Triatra',
-           'PO interco approval: Mkt Unit Triatra → GM Mkt Unit → Director Mkt Unit Triatra']),
-         ('Production', ['Business Consultant', 'Marketing Unit Triatra', 'Marketing Unit UTPE'],
-          ['Make sure production follows the QFD', 'Weekly production update to BC', 'Escalate major production problems',
-           'Oversee FAT and report issues to Marketing Unit UTPE'])]
+          ['Revise lead time and spec if asked', 'Check PO / PJB vs drawing', 'Validate order; fill SAP condition type',
+           'DP request or confirm order → SO', 'Extend PN, master data, sharing profit', 'PO interco: MKU Manager → GM → Director']),
+         ('Production & Delivery', ['Business Consultant', 'Marketing Unit Triatra', 'Marketing Unit UTPE', 'Warehouse'],
+          ['Build follows QFD', 'Weekly progress to BC', 'Escalate major problems', 'FAT and QC at warehouse',
+           'Delivery plan; BAST and SPB signed'])]
 cw, gap = (1168 - 4 * 14) / 5, 14
 for i, (t, pic_, L) in enumerate(STEPS):
     x = 56 + i * (cw + gap)
@@ -423,7 +422,7 @@ for i, (t, pic_, L) in enumerate(STEPS):
     else: ch_.adjustments[0] = 0.28
     tx(s, x + (22 if i else 12), 158, cw - 26, 40, [f'{i + 1:02d}  {t}'], 10.5, 'FFFFFF', True, anchor='m', emph=False)
     card(s, x, 206, cw, 74, 'PIC')
-    tx(s, x + 14, 228, cw - 22, 50, pic_, 8.5, INK, True, lh=1.05)
+    tx(s, x + 14, 231, cw - 22, 48, pic_, 8, INK, True, lh=1.0)
     card(s, x, 288, cw, 206, 'Detail')
     tx(s, x + 14, 310, cw - 24, 182, L, 8.5, BODY, bullets=True, lh=1.05, emph=False)
 for g, (lbl, items) in enumerate([('Small Suppeq', [('ft_fuel_truck.webp', 'Fuel truck'), ('wt_water_truck_clean.png', 'Water truck'), ('lt_lube_truck.webp', 'Lube truck')]),
