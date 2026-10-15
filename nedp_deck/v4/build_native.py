@@ -438,41 +438,47 @@ for g, (lbl, items) in enumerate([('Small Suppeq', [('ft_fuel_truck.webp', 'Fuel
         pic(s, src, x, 528, pw, 150)
         rect(s, x, 654, pw, 24, INK); tx(s, x + 8, 654, pw - 16, 24, n_, 9.5, 'FFFFFF', True, anchor='m')
 
-# 08 strategic
 D = json.load(open(ROOT + 'stp4p/data.json'))
-s = new('Strategic · 4C → STP → 4P', 'Sell two challenger brands to take share from *Sany Palfinger and Palfinger*')
-C4 = [('Change', 'HYVA stopped making cranes. Medium and Heavy hold 64% of value on 41% of units.'),
-      ('Competitor', '2025 leaders: Sany Palfinger 47% of Medium, Palfinger 62% of Heavy.'),
-      ('Customer', 'Medium buyers pick on price (China brands 73%). Heavy buyers pick on quality (Europe 85%).'),
-      ('Company', 'Partner F.lli Ferrari and XCMG to serve both buyer types.')]
-P4 = [('Product', 'One challenger model per tier; show features the leader lacks.'),
-      ('Price', 'XCMG: get a special price. Ferrari: cut price where the gap is over 30%.'),
-      ('Place', 'Ferrari stocks units in China (~14 weeks) and parts in Malaysia.'),
-      ('Promotion', 'Crane + flatdeck + installation bundle (+2-year warranty on Ferrari). Exhibitions with Marcom sales kit.')]
-kicker(s, 56, 160, '4C · Situation', GREEN_D); kicker(s, 944, 160, '4P · Marketing mix', GREEN_D); kicker(s, 340, 160, 'STP · Who we fight, with what', GREEN_D)
-for i, (k_, v) in enumerate(C4):
-    yy = 180 + i * 126
-    card(s, 56, yy, 256, 114, k_, GREEN_L if k_ == 'Company' else WASH)
-    tx(s, 70, yy + 30, 228, 80, v, 10, INK, lh=1.15)
-for i, (k_, v) in enumerate(P4):
-    yy = 180 + i * 126
-    card(s, 968 - 24, yy, 280, 114, k_)
-    tx(s, 958, yy + 30, 252, 80, v, 10, INK, lh=1.15)
-arrow(s, 316, 420, 336, 420); arrow(s, 920, 420, 940, 420)
-card(s, 340, 180, 576, 92)
-for i, (k_, v) in enumerate([('S', 'Two classes, 10 tm tiers'), ('T', 'Top 1 model in each tier'), ('P', 'XCMG: same capacity, lower price · Ferrari: European features, faster delivery')]):
-    tx(s, 354, 192 + i * 24, 20, 20, k_, 14, GREEN_D, font=SERIF); tx(s, 378, 195 + i * 24, 528, 18, v, 10, INK)
-rows = [['tm', 'Class', 'Top 1 (target)', 'Challenger', 'vs Top 1']]; st = {}
-for cls, R in (('Medium', D['M']), ('Heavy', [d for d in D['H'] if d['ch']])):
-    for d in R:
-        g = d['gap']; gs = 'TBC' if g is None else f"{g * 100:+.0f}%".replace('-', '−')
-        rows.append([d['tm'], cls, f"{d['top']} {d['tmodel']}", f"{d['ch']} {d['cm']}", gs])
-        r = len(rows) - 1
-        if g is not None:
-            st[(r, 4)] = {'bold': True, 'color': GREEN_D if g <= 0 else (AMB if g <= .3 else RED)}
-            if g > .3: st.update({(r, c): {**st.get((r, c), {}), 'fill': RED_L} for c in range(5)})
-            elif g > 0: st.update({(r, c): {**st.get((r, c), {}), 'fill': AMB_L} for c in range(5)})
-table(s, 340, 284, 576, rows, [52, 50, 170, 170, 52], rowh=24.5, size=8.5, aligns={4: 'r'}, styles=st)
+# 08 strategic: 4C -> STP -> 4P exactly as agreed in discussion
+s = new('Strategic · 4C → STP → 4P', 'Partner *F.lli Ferrari* for quality buyers and *XCMG* for price buyers')
+def bar8(x, y, w, t):
+    rect(s, x, y, w, 24, GREEN_D); tx(s, x + 10, y, w - 20, 24, t, 10, 'FFFFFF', True, anchor='m', caps=True, spacing=0.5, emph=False)
+def blk(x, y, w, h, label, lines, fill=WASH):
+    rect(s, x, y, w, h, fill)
+    tx(s, x + 8, y + 5, w - 16, 14, label, 9, GREEN_D, True, caps=True, spacing=0.5, emph=False)
+    tx(s, x + 8, y + 20, w - 16, h - 22, lines, 9.5, INK, bullets=True, lh=1.02, emph=False)
+C1, W1, C2, W2, C3, W3 = 56, 420, 498, 330, 850, 374
+y0 = 152
+bar8(C1, y0, W1, '4C · Business landscape')
+blk(C1, y0 + 28, W1, 135, 'Change (PESTLE · Market)', [
+    'HYVA stopped making truck cranes, so Triatra has no crane brand.',
+    'Medium + Heavy = 41% of units but 64% of value (2023 – Aug 2026). Value per unit ≈ 2.6× Light + Small (Rp 803 jt vs Rp 311 jt).',
+    'Heavy units rose 12 → 17 → 35 (2023 – 2025); 2026 slower (2 Heavy units to Aug).'])
+blk(C1, y0 + 174, W1, 107, 'Competitor', [
+    'Two players lead (2025): Sany Palfinger in Medium (47% of value, 30 units), Palfinger in Heavy (62% of value, 22 units).',
+    'One model, Palfinger PK 53002, sold 39 of 65 Heavy units (2023 – 2026).'])
+blk(C1, y0 + 288, W1, 153, 'Customer', [
+    'Buyers count price and uptime, not brand. 88% of Medium + Heavy cranes go on trucks GVW ≥ 24 t (mining, construction, heavy logistics).',
+    'Medium = price oriented: China brands hold 73% of value. Heavy = quality oriented: European brands hold 85% of value.',
+    'Want: lower price than Europe, right capacity, fast site service. Worry: Europe too expensive; China doubted on durability and after-sales.'])
+blk(C1, y0 + 448, W1, 77, 'Company', ['Triatra must partner F.lli Ferrari and XCMG to serve price-oriented (XCMG) and quality-oriented (Ferrari) customers.'], GREEN_L)
+arrow(s, C1 + W1 + 3, 430, C2 - 3, 430)
+bar8(C2, y0, W2, 'STP · Who we fight, with what')
+blk(C2, y0 + 28, W2, 107, 'Segmentation', ['Medium (25 – 45 tm, 4 tiers) and Heavy (> 45 tm, 6 tiers), analysed separately.', 'Each 5-tm tier: units and value 2023 – Aug 2026.'])
+blk(C2, y0 + 146, W2, 121, 'Targeting', ['Top 1 model of each tier: Sany Palfinger in Medium, Palfinger in Heavy.', 'Top 1 brand has no model in the tier: next-largest brand (Amco Veba 25–30, 45–50; Sany Palfinger 60–65).'])
+blk(C2, y0 + 274, W2, 251, 'Positioning · challenger rule', [
+    'Ferrari first, if cheaper than the Top 1.',
+    'Otherwise XCMG with the closest price and the highest qty.',
+    'No challenger yet: suggest a Ferrari model from the price list.',
+    'No model at all: "No challenger" (85 – 90 tm).',
+    'Result: XCMG at 30–35 and 35–40 tm; Ferrari at 25–30, 40–45 tm and all Heavy tiers.'])
+arrow(s, C2 + W2 + 3, 430, C3 - 3, 430)
+bar8(C3, y0, W3, '4P · Per challenger')
+blk(C3, y0 + 28, W3, 62, 'Product', ['Winning features = only features the challenger has and the Top 1 lacks. Never list competitor-only features.'])
+blk(C3, y0 + 96, W3, 138, 'Price', ['Green = cheaper, yellow = up to +30%, red = over +30% (≈2×).', 'Red tiers (40–45, 50–55, 70–75 tm): negotiate price with Ferrari.', 'XCMG: negotiate a special price, also at 35–40 tm (already −9%).'])
+blk(C3, y0 + 240, W3, 123, 'Place', ['Ferrari: sell on availability, mainly Heavy (leaders are built in Europe). Ferrari stocks units at its China factory (~14 weeks) and parts in Malaysia.', 'XCMG: special-price deal (official distributor: GM Tractors).'])
+blk(C3, y0 + 369, W3, 155, 'Promotion', ['Ferrari: crane + flatdeck + installation + 2-year warranty.', 'XCMG: crane + flatdeck + installation (no warranty).', 'Both: exhibitions with a Marcom sales kit.', 'Fassi stays for Petrosea only (key account).'])
+tx(s, 56, 676, 1168, 14, 'Detail per tier: slides 12 – 16 (Medium and Heavy STP + 4P tables) and the Excel file.', 9, MUTED, emph=False)
 
 # 09 charter: old layout with section divider bars
 s = new('Project charter', 'Sell the first *Ferrari and XCMG* challenger cranes by March 2027')
