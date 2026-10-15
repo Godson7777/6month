@@ -474,34 +474,50 @@ for cls, R in (('Medium', D['M']), ('Heavy', [d for d in D['H'] if d['ch']])):
             elif g > 0: st.update({(r, c): {**st.get((r, c), {}), 'fill': AMB_L} for c in range(5)})
 table(s, 340, 284, 576, rows, [52, 50, 170, 170, 52], rowh=24.5, size=8.5, aligns={4: 'r'}, styles=st)
 
-# 09 charter
+# 09 charter: old layout with section divider bars
 s = new('Project charter', 'Sell the first *Ferrari and XCMG* challenger cranes by March 2027')
-for i, (k_, v) in enumerate([('Background', 'HYVA no longer makes cranes, so Triatra has no crane brand. Medium and Heavy cranes are 64% of import value, led by Sany Palfinger and Palfinger.'),
-                             ('Goal', 'Put a cheaper or faster challenger against the Top 1 in each tm tier, and close the first sale.'),
-                             ('Scope', 'Medium and Heavy (> 25 tm)  ·  4C → STP → 4P  ·  F.lli Ferrari and XCMG (Fassi for Petrosea only)')]):
-    yy = 160 + i * 92
-    card(s, 56, yy, 560, 82, k_); tx(s, 70, yy + 30, 532, 48, v, 10.5, INK, lh=1.15)
-card(s, 56, 436, 360, 244, 'KPI')
-rows = [['#', 'Milestone', 'Due'], ['1', '4C, STP, 4P approved', 'Aug 2026'], ['2', 'Ferrari and XCMG terms signed', 'Dec 2026'],
-        ['3', 'Sales kit ready', 'Dec 2026'], ['4', 'Quotations sent', 'Feb 2027'], ['5', 'First unit sold', 'Mar 2027']]
-table(s, 70, 462, 332, rows, [18, 200, 70], rowh=32, size=9.5, styles={(5, 1): {'bold': True, 'color': GREEN_D}, (5, 2): {'bold': True, 'color': GREEN_D}})
-rect(s, 428, 436, 188, 244, GREEN_L, radius=10)
-kicker(s, 442, 448, 'Target', GREEN_D)
-tx(s, 442, 476, 164, 180, ['First unit sold', '*March 2027*'], 24, INK, font=SERIF, lh=1.1)
-kicker(s, 640, 160, 'Timeline · Jun 2026 – Mar 2027')
+def bar(x, y, w, t, sub=None, h=24):
+    rect(s, x, y, w, h, GREEN_D)
+    tx(s, x + 10, y, w - 20, h, t, 10.5, 'FFFFFF', True, anchor='m', caps=True, spacing=0.5, emph=False)
+def body(x, y, w, h, text, size=9.5, bullets=False, num=False):
+    rect(s, x, y, w, h, WASH)
+    if num: text = [f'{i + 1}. {t}' for i, t in enumerate(text)]
+    tx(s, x + 10, y + 5, w - 20, h - 8, text, size, INK, lh=1.08, bullets=bullets, emph=False)
+L, LW, R0, RW = 56, 566, 638, 586
+y = 150
+bar(L, y, LW, 'Project name'); body(L, y + 24, LW, 26, 'Multi-brand Crane Challenger: F.lli Ferrari and XCMG', 10.5); y += 58
+bar(L, y, LW, 'Background'); body(L, y + 24, LW, 86, 'HYVA stopped making cranes, so Triatra has no crane brand. From Jan 2023 to Aug 2026 Indonesia imported 638 knuckle boom cranes; Medium and Heavy (> 25 tm) are 41% of units but 64% of value, led by Sany Palfinger (Medium) and Palfinger (Heavy). This project puts a challenger brand against the Top 1 of each tm tier.'); y += 116
+bar(L, y, LW, 'Objectives'); body(L, y + 24, LW, 60, ['Map Medium and Heavy cranes by tm tier, brand and model (4C)', 'Pick one challenger per tier: XCMG for price buyers, Ferrari for quality buyers (STP)', 'Set Product, Price, Place and Promotion per tier and sell the first unit (4P)'], num=True); y += 90
+bar(L, y, LW, 'Project scope · Medium and Heavy class (> 25 tm)'); body(L, y + 24, LW, 38, ['1. Market size and brand leaders   2. Top 1 vs challenger per tier   3. Feature and price comparison', '4. Brand negotiation (Ferrari, XCMG)   5. Sales kit, exhibition and first sale'], 9); y += 74
+bar(L, y, 410, 'KPI / metric'); bar(L + 416, y, LW - 416, 'Target')
+body(L, y + 24, 410, 92, ['4C, STP, 4P approved (Aug 2026)', 'Ferrari and XCMG terms signed (Dec 2026)', 'Sales kit ready (Dec 2026)', 'Quotations sent (Feb 2027)', 'First unit sold (Mar 2027)'], 9.5, num=True)
+body(L + 416, y + 24, LW - 416, 92, ['First Ferrari or XCMG challenger crane sold by March 2027'], 11); y += 122
+bar(L, y, LW, 'Support required'); body(L, y + 24, LW, 26, 'Marcom (sales kit, exhibition) · F.lli Ferrari (stock, parts, price) · XCMG (special price) · UTPE', 9)
+y = 150
+bar(R0, y, RW, 'Project timeframe')
 G = ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar']
 ACT = [('Market study (4C)', 0, 3), ('STP and challenger choice', 3, 5), ('Negotiate with Ferrari and XCMG', 4, 7), ('Sales kit with Marcom', 5, 7),
        ('Exhibition and customer visits', 7, 9), ('Quotation → PO → first unit sold', 8, 10)]
-rows = [['Activity'] + G] + [[a] + [''] * 10 for a, _, _ in ACT]
-st = {(r + 1, k + 1): {'fill': GREEN} for r, (_, a, b) in enumerate(ACT) for k in range(a, b)}
-table(s, 640, 178, 584, rows, [204] + [38] * 10, rowh=22, size=8.5, styles=st, aligns={k: 'c' for k in range(1, 11)})
-kicker(s, 640, 362, 'Team')
-rows = [['Role', 'Name'], ['Executive sponsor', 'Ricardo Tanada'], ['Advisor', 'Ricardo Tanada · Ignatius Indrawan'], ['Coordinator', 'Ignatius Indrawan'],
-        ['Project lead', 'Tiberias Krisgaharu Simu'], ['Team members', 'Marketing Unit · Application Engineering · UTPE · Business Consultant']]
-table(s, 640, 380, 584, rows, [130, 454], rowh=24, size=9.5, styles={(r, 0): {'color': MUTED} for r in range(1, 6)})
-card(s, 640, 556, 584, 124, 'Support needed')
-tx(s, 654, 586, 556, 80, ['Marcom: sales kit and exhibition material', 'F.lli Ferrari: stock in China, parts in Malaysia, price cut on red tiers', 'XCMG: special price for Triatra'],
-   10.5, INK, bullets=True)
+rows = [['Activity', '2026'] + [''] * 6 + ['2027', '', ''], [''] + G] + [[a] + [''] * 10 for a, _, _ in ACT]
+st = {(r + 2, k + 1): {'fill': GREEN} for r, (_, a, b) in enumerate(ACT) for k in range(a, b)}
+table(s, R0, y + 24, RW, rows, [190] + [39.6] * 10, rowh=20, head=2, size=8.5, hsize=8.5, styles=st, aligns={k: 'c' for k in range(1, 11)},
+      merges=[(0, 0, 1, 0), (0, 1, 0, 7), (0, 8, 0, 10)], grid=LINE, upper=False, hfill=WASH, hcolor=INK)
+y += 24 + 160 + 8
+bar(R0, y, RW, 'Benefit of project'); body(R0, y + 24, RW, 40, 'Triatra gets a crane brand for every Medium and Heavy tier again: XCMG for price buyers, Ferrari for quality buyers, with a clear 4P to win units from the Top 1.'); y += 72
+bar(R0, y, RW, 'Project team')
+rows = [['Executive sponsor', ': Ricardo Tanada'], ['Advisor', ': Ricardo Tanada / Ignatius Indrawan'], ['Coordinator', ': Ignatius Indrawan'],
+        ['Project lead', ': Tiberias Krisgaharu Simu'], ['Team members', ': Marketing Unit · Application Engineering · UTPE · Business Consultant']]
+rect(s, R0, y + 24, RW, 92, WASH)
+for i, (a, b_) in enumerate(rows):
+    tx(s, R0 + 10, y + 28 + i * 17, 140, 16, a, 9.5, INK); tx(s, R0 + 150, y + 28 + i * 17, RW - 160, 16, b_, 9.5, INK, emph=False)
+y += 122
+bar(R0, y, RW, 'Project approval')
+aw = (RW - 18) / 4
+for i, (role, nm) in enumerate([('Lead', 'Tiberias Krisgaharu Simu'), ('Coordinator', 'Ignatius Indrawan'), ('Advisor', 'Ricardo Tanada'), ('Executive Sponsor', 'Ricardo Tanada')]):
+    x = R0 + i * (aw + 6)
+    tx(s, x + 4, y + 28, aw, 14, role, 9, INK, True); tx(s, x + 4, y + 42, aw, 12, 'Date:', 8.5, MUTED)
+    rect(s, x, y + 58, aw, 50, 'FFFFFF', LINE2); rect(s, x, y + 108, aw, 22, WASH, LINE2)
+    tx(s, x + 6, y + 108, aw - 8, 22, nm, 8.5, INK, anchor='m')
 
 # 10 market size (native chart + table)
 s = new('Study · Market size', 'Focus on Medium and Heavy: *64% of value* from 41% of units')
