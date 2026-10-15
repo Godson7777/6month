@@ -27,7 +27,7 @@ AMB_L, AMB = 'FFF7C2', 'AB6400'
 RED_L, RED = 'FEEBEC', 'CE2C31'
 DARK, DARK2 = '11181C', '23343C'
 SERIF, SANS = 'Georgia', 'Arial'
-TOTAL = 18
+TOTAL = 19
 rgb = lambda h: RGBColor.from_string(h)
 
 P = Presentation(); P.slide_width, P.slide_height = 12192000, 6858000
@@ -441,63 +441,59 @@ for g, (lbl, items) in enumerate([('Small Suppeq', [('ft_fuel_truck.webp', 'Fuel
 D = json.load(open(ROOT + 'stp4p/data.json'))
 # 08 strategic: 4C -> STP -> 4P exactly as agreed in discussion
 s = new('Strategic · 4C → STP → 4P', 'Partner *F.lli Ferrari* for quality buyers and *XCMG* for price buyers')
-def bar8(x, y, w, t):
-    rect(s, x, y, w, 24, GREEN_D); tx(s, x + 10, y, w - 20, 24, t, 10, 'FFFFFF', True, anchor='m', caps=True, spacing=0.5, emph=False)
-def blk(x, y, w, h, label, lines, fill=WASH):
-    rect(s, x, y, w, h, fill)
-    tx(s, x + 8, y + 5, w - 16, 14, label, 9, GREEN_D, True, caps=True, spacing=0.5, emph=False)
-    tx(s, x + 8, y + 20, w - 16, h - 22, lines, 9.5, INK, bullets=True, lh=1.02, emph=False)
-C1, W1, C2, W2, C3, W3 = 56, 374, 453, 374, 850, 374
-y0 = 152
-bar8(C1, y0, W1, '4C · Business landscape')
-def blk2(x, y, w, h, label, head, lines, fill=WASH):
-    rect(s, x, y, w, h, fill)
-    tx(s, x + 8, y + 5, w - 16, 14, label, 8.5, GREEN_D, True, caps=True, spacing=0.5, emph=False)
-    t = tx(s, x + 8, y + 20, w - 16, h - 22, head, 10.5, INK, True, lh=1.0, emph=False)
-    tf = t.text_frame
-    for ln in lines:
-        p = tf.add_paragraph(); p.space_before = Pt(3)
-        pPr = p._p.get_or_add_pPr(); pPr.set('marL', str(int(Pt(10)))); pPr.set('indent', str(-int(Pt(10))))
-        etree.SubElement(pPr, qn('a:buChar')).set('char', '•')
-        r = p.add_run(); r.text = ln; r.font.size = Pt(9.5); r.font.name = SANS; r.font.color.rgb = rgb(BODY)
-blk2(C1, y0 + 28, W1, 119, 'Change', 'HYVA has left; value sits in Medium + Heavy.', [
-    'Triatra has no crane brand since HYVA stopped.',
-    '41% of units, 64% of value (2023 – 2026).',
-    'Heavy units: 12 → 17 → 35 (2023 – 2025).'])
-blk2(C1, y0 + 154, W1, 119, 'Competitor', 'Two leaders, one per class.', [
-    'Medium: Sany Palfinger, 38% of value (2023 – 2026).',
-    'Heavy: Palfinger, 66% of value; PK 53002 alone 39 units.'])
-blk2(C1, y0 + 280, W1, 119, 'Customer', 'Medium buys on price, Heavy buys on quality.', [
-    'Medium: China brands take 73% of value.',
-    'Heavy: European brands take 85% of value.',
-    '88% go on trucks ≥ 24 t GVW (mining, construction).'])
-blk2(C1, y0 + 406, W1, 119, 'Company', 'Triatra partners two brands to serve both buyers.', [
-    'XCMG for price-oriented buyers.', 'F.lli Ferrari for quality-oriented buyers.'], GREEN_L)
-arrow(s, C1 + W1 + 2, 430, C2 - 2, 430)
-bar8(C2, y0, W2, 'STP · Where we play')
-blk2(C2, y0 + 28, W2, 161, 'Segmentation', 'Two classes, ten 5-tm tiers.', [
-    'Medium 25 – 45 tm: 196 units, Rp 156 M.', 'Heavy > 45 tm: 65 units, Rp 115 M.'])
-blk2(C2, y0 + 196, W2, 161, 'Targeting', 'Take share from the Top 1 model in each tier.', [
-    'Medium: Sany Palfinger SPK32080, SPK36080, SPK42502.', 'Heavy: Palfinger PK 53002, PK 76002, PK 88002.'])
-blk2(C2, y0 + 364, W2, 161, 'Positioning', 'Two clear promises.', [
-    'XCMG: same capacity as Sany Palfinger, lower price (SQZ365.4: −9% vs SPK36080).',
-    'Ferrari: European features at a lower price where it wins (−23% at 25 – 30 tm, −32% at 45 – 50 tm).',
-    'Ferrari: faster delivery than Europe-built leaders, from stock in China (~14 weeks).'])
-arrow(s, C2 + W2 + 2, 430, C3 - 2, 430)
-blk2(C3, y0 + 28, W3, 119, 'Product', 'One challenger model per tier.', [
-    'XCMG: 30–40 tm. Ferrari: 25–30, 40–45 tm, all Heavy.',
-    'Ferrari adds what leaders lack: RS, SDV, Red Power, Magic Touch.'])
-blk2(C3, y0 + 154, W3, 119, 'Price', 'Sell where cheaper; negotiate the rest.', [
-    'Cheaper now: 25–30 (−23%), 35–40 (−9%), 45–50 tm (−32%).',
-    'Ferrari cut: 40–45 (+48%), 50–55 (+85%), 70–75 tm (+79%).',
-    'XCMG: special price for Triatra.'])
-blk2(C3, y0 + 280, W3, 119, 'Place', 'Win on availability.', [
-    'Ferrari stocks units in China (~14 weeks) and parts in Malaysia.',
-    'XCMG through its official distributor, GM Tractors.'])
-blk2(C3, y0 + 406, W3, 119, 'Promotion', 'Sell a ready-to-work package.', [
-    'Crane + flatdeck + installation (+2-yr warranty, Ferrari).',
-    'Exhibitions and customer visits with a Marcom sales kit.'])
-bar8(C3, y0, W3, '4P · How we win')
+rows = [['Step', 'Item', 'Key point', 'Supporting data']]
+G = [('4C', [('Change', 'HYVA has left; value sits in Medium + Heavy', 'Triatra has no crane brand since HYVA stopped. Medium + Heavy = 41% of units, 64% of value (2023 – 2026). Heavy units 12 → 17 → 35 (2023 – 2025).'),
+             ('Competitor', 'Two leaders, one per class', 'Medium: Sany Palfinger, 38% of value. Heavy: Palfinger, 66% of value; PK 53002 alone sold 39 of 65 units (2023 – 2026).'),
+             ('Customer', 'Medium buys on price, Heavy buys on quality', 'China brands take 73% of Medium value; European brands take 85% of Heavy value. 88% go on trucks ≥ 24 t GVW (mining, construction).'),
+             ('Company', 'Partner two brands to serve both buyers', 'XCMG for price-oriented buyers. F.lli Ferrari for quality-oriented buyers.')]),
+     ('STP', [('Segmentation', 'Two classes, ten 5-tm tiers', 'Medium 25 – 45 tm: 196 units, Rp 156 M. Heavy > 45 tm: 65 units, Rp 115 M.'),
+              ('Targeting', 'Take share from the Top 1 model in each tier', 'Medium: Sany Palfinger SPK32080, SPK36080, SPK42502. Heavy: Palfinger PK 53002, PK 76002, PK 88002.'),
+              ('Positioning', 'Two clear promises', 'XCMG: same capacity, lower price (SQZ365.4 −9% vs SPK36080). Ferrari: European features, cheaper where it wins (−23% at 25 – 30 tm, −32% at 45 – 50 tm) and faster delivery from China stock (~14 weeks).')])]
+merges = []; st = {}
+for name, items in G:
+    r0 = len(rows)
+    for it, k, d in items: rows.append([name, it, k, d])
+    r1 = len(rows) - 1; merges.append((r0, 0, r1, 0))
+    st[(r0, 0)] = {'bold': True, 'color': GREEN_D, 'size': 12, 'anchor': 'm', 'align': 'c'}
+    for r in range(r0, r1 + 1):
+        st[(r, 1)] = {'bold': True, 'size': 10.5}; st[(r, 2)] = {'bold': True, 'size': 10.5}; st[(r, 3)] = {'size': 10}
+        if rows[r][1] == 'Company':
+            for c in (1, 2, 3): st[(r, c)]['fill'] = GREEN_L
+table(s, 56, 158, 1168, rows, [80, 140, 330, 618], rowh=66, size=10, hsize=9.5, styles=st, merges=merges,
+      grid=LINE, upper=False, hfill='F0F2F4', hcolor=INK, rowhs=[28] + [70] * 7)
+
+# 08b 4P action table
+s = new('4P · Action plan', 'Four actions to *win the first sale*: features, price, stock and package')
+rows = [['4P', 'To do', 'Item', 'Detail']]
+P4 = [('Product', 'Offer Ferrari models that beat the Top 1 on features', [
+        ('Red Power', 'Articulated linkage that adds working range and versatility. Amco Veba and Palfinger have their own version; Sany Palfinger has none.'),
+        ('SDV (Smooth Descent Valve)', 'Cuts boom flex and dynamic load when lowering. Amco Veba and Sany Palfinger have no equal.'),
+        ('Magic Touch', 'Opens and stows the crane automatically from the cab. Sany Palfinger has no equal.'),
+        ('PB (Power Boost)*', 'Extra lifting capacity on demand. Equal to Palfinger HPLS and Amco Veba AVPS.'),
+        ('RS*', 'Faster boom extension. Equal to Palfinger High Speed Extension; Amco Veba has none.'),
+        ('ECM*', 'Electronic control and overload protection. Equal to Palfinger PALTRONIC and Amco Veba EBB.')]),
+     ('Price', 'Negotiate a better price with F.lli Ferrari and XCMG', [
+        ('Ferrari 746 A4 · 9601CR A8 · 990R', 'Ask for a lower price: 40–45 tm (+48%), 50–55 tm (+85%), 70–75 tm (+79%) vs the Top 1.'),
+        ('XCMG SQZ325.4 · SQZ365.4', 'Ask for a Triatra special price: 30–35 tm (+4%), 35–40 tm (−9%).')]),
+     ('Place', 'Negotiate stock to cut lead time', [
+        ('Ferrari 268 A4 · FBR450R A4', 'Stock at the Ferrari China factory for a 14-week lead time (25–30 tm −23%, 45–50 tm −32%).'),
+        ('Ferrari main components', 'Stock main components and spare parts in Malaysia.'),
+        ('XCMG', 'Agree supply terms with its official distributor, GM Tractors.')]),
+     ('Promotion', 'Sell a ready-to-work package', [
+        ('Package', 'Crane + flatdeck + installation as one offer; add a 2-year warranty on Ferrari.'),
+        ('Exhibition and visits', 'Show 268 A4 and FBR450R A4 at mining exhibitions and customer visits with a Marcom sales kit.')])]
+merges = []; st = {}
+for name, todo, items in P4:
+    r0 = len(rows)
+    for it, d in items: rows.append([name, todo, it, d])
+    r1 = len(rows) - 1
+    if r1 > r0: merges += [(r0, 0, r1, 0), (r0, 1, r1, 1)]
+    st[(r0, 0)] = {'bold': True, 'color': GREEN_D, 'size': 11, 'anchor': 'm'}
+    st[(r0, 1)] = {'bold': True, 'size': 10.5, 'anchor': 'm'}
+    for r in range(r0, r1 + 1): st[(r, 2)] = {'bold': True, 'size': 9.5}; st[(r, 3)] = {'size': 9.5}
+table(s, 56, 158, 1168, rows, [110, 260, 230, 568], rowh=34, size=9.5, hsize=9, styles=st, merges=merges,
+      grid=LINE, upper=False, hfill='F0F2F4', hcolor=INK)
+tx(s, 56, 662, 1168, 20, '* Meaning of PB, RS and ECM to be confirmed with the F.lli Ferrari datasheet. Price gaps vs the Top 1 model in each tm tier (2023 – Aug 2026 import prices).', 8.5, MUTED, emph=False)
 
 # 09 charter: old layout with section divider bars
 s = new('Project charter', 'Sell the first *Ferrari and XCMG* challenger cranes by March 2027')
