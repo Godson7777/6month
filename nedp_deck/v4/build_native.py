@@ -27,7 +27,7 @@ AMB_L, AMB = 'FFF7C2', 'AB6400'
 RED_L, RED = 'FEEBEC', 'CE2C31'
 DARK, DARK2 = '11181C', '23343C'
 SERIF, SANS = 'Georgia', 'Arial'
-TOTAL = 19
+TOTAL = 18
 rgb = lambda h: RGBColor.from_string(h)
 
 P = Presentation(); P.slide_width, P.slide_height = 12192000, 6858000
@@ -448,7 +448,11 @@ G = [('4C', [('Change', 'HYVA has left; value sits in Medium + Heavy', 'Triatra 
              ('Company', 'Partner two brands to serve both buyers', 'XCMG for price-oriented buyers. F.lli Ferrari for quality-oriented buyers.')]),
      ('STP', [('Segmentation', 'Two classes, ten 5-tm tiers', 'Medium 25 – 45 tm: 196 units, Rp 156 M. Heavy > 45 tm: 65 units, Rp 115 M.'),
               ('Targeting', 'Take share from the Top 1 model in each tier', 'Medium: Sany Palfinger SPK32080, SPK36080, SPK42502. Heavy: Palfinger PK 53002, PK 76002, PK 88002.'),
-              ('Positioning', 'Two clear promises', 'XCMG: same capacity, lower price (SQZ365.4 −9% vs SPK36080). Ferrari: European features, cheaper where it wins (−23% at 25 – 30 tm, −32% at 45 – 50 tm) and faster delivery from China stock (~14 weeks).')])]
+              ('Positioning', 'Two clear promises', 'XCMG: same capacity, lower price (SQZ365.4 −9% vs SPK36080). Ferrari: European features, cheaper where it wins (−23% at 25 – 30 tm, −32% at 45 – 50 tm) and faster delivery from China stock (~14 weeks).')]),
+     ('4P', [('Product', 'Offer Ferrari models that beat the Top 1 on features', 'Red Power (more working range), SDV (less boom flex), Magic Touch (auto open/stow): Sany Palfinger has none. PB, RS, ECM: equal to Palfinger.'),
+             ('Price', 'Negotiate a better price with Ferrari and XCMG', 'Ferrari: lower price on 746 A4 (+48%), 9601CR A8 (+85%), 990R (+79%). XCMG: Triatra special price on SQZ325.4 and SQZ365.4.'),
+             ('Place', 'Negotiate stock to cut lead time', 'Ferrari stocks 268 A4 and FBR450R A4 in China (14-week lead time) and main components in Malaysia. XCMG via GM Tractors.'),
+             ('Promotion', 'Sell a ready-to-work package', 'Crane + flatdeck + installation (+2-year warranty on Ferrari). Exhibitions and customer visits with a Marcom sales kit.')])]
 merges = []; st = {}
 for name, items in G:
     r0 = len(rows)
@@ -456,44 +460,11 @@ for name, items in G:
     r1 = len(rows) - 1; merges.append((r0, 0, r1, 0))
     st[(r0, 0)] = {'bold': True, 'color': GREEN_D, 'size': 12, 'anchor': 'm', 'align': 'c'}
     for r in range(r0, r1 + 1):
-        st[(r, 1)] = {'bold': True, 'size': 10.5}; st[(r, 2)] = {'bold': True, 'size': 10.5}; st[(r, 3)] = {'size': 10}
+        st[(r, 1)] = {'bold': True, 'size': 10}; st[(r, 2)] = {'bold': True, 'size': 10}; st[(r, 3)] = {'size': 9.5}
         if rows[r][1] == 'Company':
             for c in (1, 2, 3): st[(r, c)]['fill'] = GREEN_L
-table(s, 56, 158, 1168, rows, [80, 140, 330, 618], rowh=66, size=10, hsize=9.5, styles=st, merges=merges,
-      grid=LINE, upper=False, hfill='F0F2F4', hcolor=INK, rowhs=[28] + [70] * 7)
-
-# 08b 4P action table
-s = new('4P · Action plan', 'Four actions to *win the first sale*: features, price, stock and package')
-rows = [['4P', 'To do', 'Item', 'Detail']]
-P4 = [('Product', 'Offer Ferrari models that beat the Top 1 on features', [
-        ('Red Power', 'Articulated linkage that adds working range and versatility. Amco Veba and Palfinger have their own version; Sany Palfinger has none.'),
-        ('SDV (Smooth Descent Valve)', 'Cuts boom flex and dynamic load when lowering. Amco Veba and Sany Palfinger have no equal.'),
-        ('Magic Touch', 'Opens and stows the crane automatically from the cab. Sany Palfinger has no equal.'),
-        ('PB (Power Boost)*', 'Extra lifting capacity on demand. Equal to Palfinger HPLS and Amco Veba AVPS.'),
-        ('RS*', 'Faster boom extension. Equal to Palfinger High Speed Extension; Amco Veba has none.'),
-        ('ECM*', 'Electronic control and overload protection. Equal to Palfinger PALTRONIC and Amco Veba EBB.')]),
-     ('Price', 'Negotiate a better price with F.lli Ferrari and XCMG', [
-        ('Ferrari 746 A4 · 9601CR A8 · 990R', 'Ask for a lower price: 40–45 tm (+48%), 50–55 tm (+85%), 70–75 tm (+79%) vs the Top 1.'),
-        ('XCMG SQZ325.4 · SQZ365.4', 'Ask for a Triatra special price: 30–35 tm (+4%), 35–40 tm (−9%).')]),
-     ('Place', 'Negotiate stock to cut lead time', [
-        ('Ferrari 268 A4 · FBR450R A4', 'Stock at the Ferrari China factory for a 14-week lead time (25–30 tm −23%, 45–50 tm −32%).'),
-        ('Ferrari main components', 'Stock main components and spare parts in Malaysia.'),
-        ('XCMG', 'Agree supply terms with its official distributor, GM Tractors.')]),
-     ('Promotion', 'Sell a ready-to-work package', [
-        ('Package', 'Crane + flatdeck + installation as one offer; add a 2-year warranty on Ferrari.'),
-        ('Exhibition and visits', 'Show 268 A4 and FBR450R A4 at mining exhibitions and customer visits with a Marcom sales kit.')])]
-merges = []; st = {}
-for name, todo, items in P4:
-    r0 = len(rows)
-    for it, d in items: rows.append([name, todo, it, d])
-    r1 = len(rows) - 1
-    if r1 > r0: merges += [(r0, 0, r1, 0), (r0, 1, r1, 1)]
-    st[(r0, 0)] = {'bold': True, 'color': GREEN_D, 'size': 11, 'anchor': 'm'}
-    st[(r0, 1)] = {'bold': True, 'size': 10.5, 'anchor': 'm'}
-    for r in range(r0, r1 + 1): st[(r, 2)] = {'bold': True, 'size': 9.5}; st[(r, 3)] = {'size': 9.5}
-table(s, 56, 158, 1168, rows, [110, 260, 230, 568], rowh=34, size=9.5, hsize=9, styles=st, merges=merges,
-      grid=LINE, upper=False, hfill='F0F2F4', hcolor=INK)
-tx(s, 56, 662, 1168, 20, '* Meaning of PB, RS and ECM to be confirmed with the F.lli Ferrari datasheet. Price gaps vs the Top 1 model in each tm tier (2023 – Aug 2026 import prices).', 8.5, MUTED, emph=False)
+table(s, 56, 158, 1168, rows, [80, 140, 330, 618], rowh=46, size=9.5, hsize=9.5, styles=st, merges=merges,
+      grid=LINE, upper=False, hfill='F0F2F4', hcolor=INK, rowhs=[26] + [44.5] * 11)
 
 # 09 charter: old layout with section divider bars
 s = new('Project charter', 'Sell the first *Ferrari and XCMG* challenger cranes by March 2027')
