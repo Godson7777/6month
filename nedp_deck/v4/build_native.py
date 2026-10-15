@@ -546,29 +546,30 @@ tx(s, 728, 596, 496, 80, '*2026 annualised (Jan – 14 Aug × 1.61). Source: Ind
 # 11 brand leaders (native bar charts + tables)
 s = new('Study · Brand leaders 2025', 'Two leaders to beat: *Sany Palfinger* in Medium, *Palfinger* in Heavy')
 for i, (lbl, cats, vals, rows, tot) in enumerate([
-        ('Medium · 25 – 45 tm', ['Amco Veba', 'Palfinger', 'XCMG', 'Sany Palfinger'], [2.7, 4.9, 7.2, 13.2],
-         [['#', 'Brand', 'Units', 'Import value (IDR)', 'Share'], ['1', 'Sany Palfinger', '30', 'Rp 13.226.000.000', '47%'], ['2', 'XCMG', '14', 'Rp 7.197.000.000', '26%'], ['3', 'Palfinger', '5', 'Rp 4.869.000.000', '17%']],
-         'Total Medium 2025: 54 units · Rp 28,0 M. Sany Palfinger = Sany–Palfinger JV, made in China.'),
-        ('Heavy · > 45 tm', ['XCMG', 'Amco Veba', 'Palfinger'], [4.6, 11.1, 29.7],
-         [['#', 'Brand', 'Units', 'Import value (IDR)', 'Share'], ['1', 'Palfinger', '22', 'Rp 29.738.000.000', '62%'], ['2', 'Amco Veba', '7', 'Rp 11.065.000.000', '23%'], ['3', 'XCMG', '4', 'Rp 4.647.000.000', '10%']],
-         'Total Heavy 2025: 35 units · Rp 48,0 M.')]):
+        ('Medium · 25 – 45 tm · 2025: 54 units · Rp 28,0 M', ['Amco Veba', 'Palfinger', 'XCMG', 'Sany Palfinger'], [5, 5, 14, 30],
+         [['#', 'Brand', 'Units', 'Import value (IDR)', 'Share'], ['1', 'Sany Palfinger', '30', 'Rp 13.226.000.000', '47%'], ['2', 'XCMG', '14', 'Rp 7.197.000.000', '26%'], ['3', 'Palfinger', '5', 'Rp 4.869.000.000', '17%'], ['', 'Total Medium 2025', '54', 'Rp 28.000.000.000', '100%']],
+         'Share = share of import value. Sany Palfinger = Sany–Palfinger JV, made in China.'),
+        ('Heavy · > 45 tm · 2025: 35 units · Rp 48,0 M', ['XCMG', 'Amco Veba', 'Palfinger'], [4, 7, 22],
+         [['#', 'Brand', 'Units', 'Import value (IDR)', 'Share'], ['1', 'Palfinger', '22', 'Rp 29.738.000.000', '62%'], ['2', 'Amco Veba', '7', 'Rp 11.065.000.000', '23%'], ['3', 'XCMG', '4', 'Rp 4.647.000.000', '10%'], ['', 'Total Heavy 2025', '35', 'Rp 48.000.000.000', '100%']],
+         'Share = share of import value.')]):
     x = 56 + i * 596
     rect(s, x, 158, 572, 26, GREEN_L, radius=6); tx(s, x + 12, 158, 548, 26, lbl.upper(), 9, GREEN_D, True, anchor='m', spacing=1)
-    kicker(s, x, 196, 'Import value by brand · 2025 · Rp M')
+    kicker(s, x, 196, 'Units sold by brand · 2025 · qty')
     cd = CategoryChartData(); cd.categories = cats; cd.add_series('Rp M', vals)
     ch = s.shapes.add_chart(XL_CHART_TYPE.BAR_CLUSTERED, E(x), E(212), E(572), E(230), cd).chart
     ch.has_legend = False; ch.has_title = False; pl = ch.plots[0]; pl.gap_width = 70; pl.has_data_labels = True
-    pl.data_labels.font.size = Pt(9); pl.data_labels.font.bold = True; pl.data_labels.number_format = '"Rp "0.0" M"'; pl.data_labels.number_format_is_linked = False
+    pl.data_labels.font.size = Pt(9); pl.data_labels.font.bold = True; pl.data_labels.number_format = '0" units"'; pl.data_labels.number_format_is_linked = False
     sr = ch.series[0]
     for j in range(len(cats)):
         pt = sr.points[j]; pt.format.fill.solid(); pt.format.fill.fore_color.rgb = rgb(GREEN_D if j == len(cats) - 1 else 'C1C8CD')
     ch.value_axis.visible = False; ch.value_axis.has_major_gridlines = False
     ch.category_axis.tick_labels.font.size = Pt(9.5); ch.category_axis.tick_labels.font.color.rgb = rgb(INK); ch.category_axis.format.line.color.rgb = rgb(LINE2)
     st = {(1, c): {'bold': True, 'color': GREEN_D, 'fill': GREEN_L} for c in range(5)}
-    table(s, x, 456, 572, rows, [24, 170, 60, 200, 60], rowh=28, size=10, styles=st, aligns={2: 'r', 3: 'r', 4: 'r'})
-    tx(s, x, 576, 572, 30, tot, 8.5, MUTED)
+    st.update({(4, c): {'bold': True, 'fill': 'F0F2F4'} for c in range(5)})
+    table(s, x, 452, 572, rows, [24, 170, 60, 200, 60], rowh=26, size=10, styles=st, aligns={2: 'r', 3: 'r', 4: 'r'})
+    tx(s, x, 586, 572, 30, tot, 8.5, MUTED)
 card(s, 56, 618, 1168, 62)
-tx(s, 72, 628, 1136, 44, ['Both leaders are far ahead of the next brand in value: Sany Palfinger 1.8× XCMG in Medium, Palfinger 2.7× Amco Veba in Heavy.',
+tx(s, 72, 628, 1136, 44, ['Medium 2025: 54 units, Rp 28,0 M. Sany Palfinger sold 30 units, 2.1× XCMG (14). Heavy 2025: 35 units, Rp 48,0 M. Palfinger sold 22 units, 3.1× Amco Veba (7).',
                           'Scope is 2025 only, so figures are smaller than the 2023 – 2026 totals.'], 10, INK, bullets=True)
 
 # 12–16 STP + 4P tables: header follows template_excle_penyajian_data_v2 exactly; split over slides where it does not fit
