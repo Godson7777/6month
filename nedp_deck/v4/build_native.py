@@ -373,28 +373,38 @@ for half in range(2):
     table(s, 56 + half * 592, 528, 576, rows, [20, 100, 66, 300], rowh=17.5, size=8, hsize=7, styles=st)
 
 # 06 org
-s = new('Organization', 'I work in Marketing Strategic 2, under *Ignatius Indrawan S.*')
-def node(x, y, w, name, role, hl=False, h=40, me=False):
-    rect(s, x, y, w, h, GREEN_L if me else ('FFFFFF' if not hl else WASH), GREEN if me else LINE2, radius=6, lw=1.25 if me else .75)
-    tx(s, x + 6, y + 6, w - 12, 14, name, 9.5, INK, True, align='c')
-    tx(s, x + 6, y + 21, w - 12, 14, role, 7.5, GREEN_D if (me or hl) else MUTED, me or hl, align='c')
-node(530, 150, 220, 'Ceisar Centiaga', 'DIRECTOR IN CHARGE', True)
-arrow(s, 640, 190, 640, 202, LINE2, 1)
-node(530, 202, 220, 'Ricardo Tanada', 'MKT UNIT & STRATEGIC DIV HEAD', True)
-hline(s, 152, 262, 976, LINE2, 1); arrow(s, 640, 242, 640, 262, LINE2, 1)
+s = new('Organization', 'Organization')
+LC = '4D555C'
+def vline(x, y1, y2): c = s.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, E(x), E(y1), E(x), E(y2)); _nostyle(c); c.line.color.rgb = rgb(LC); c.line.width = Pt(1.5)
+def hl(x1, x2, y): c = s.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, E(x1), E(y), E(x2), E(y)); _nostyle(c); c.line.color.rgb = rgb(LC); c.line.width = Pt(1.5)
+def node(x, y, w, h, name, role, kind='p'):
+    fill = {'top': GREEN_D, 'head': INK, 'me': GREEN_L, 'p': 'FFFFFF'}[kind]
+    rect(s, x, y, w, h, fill, GREEN_D if kind == 'me' else (None if kind in ('top', 'head') else '889096'), radius=5, lw=1.5 if kind == 'me' else 0.75)
+    dark = kind in ('top', 'head')
+    tx(s, x + 6, y + 5, w - 12, 16, name, 10, 'FFFFFF' if dark else INK, True, align='c', emph=False)
+    tx(s, x + 6, y + 21, w - 12, h - 22, role, 7.5, GREEN_T if dark else (GREEN_D if kind == 'me' else MUTED), dark or kind == 'me', align='c', lh=1.0, emph=False)
+node(530, 146, 220, 40, 'Ceisar Centiaga', 'DIRECTOR IN CHARGE', 'top'); vline(640, 186, 200)
+node(530, 200, 220, 40, 'Ricardo Tanada', 'MKT UNIT & STRATEGIC DIV HEAD', 'top'); vline(640, 240, 256)
 COLS = [('Kresnanto A.W.', 'MKT STRATEGIC 1 HEAD', [('Satrio F.R.', 'Big Suppeq, Big Vessel, Bucket'), ('M. Fawwaz J.', 'Cabin, Forestry, Agro, Forklift, Towerlamp, Pump')]),
-        ('Ricardo Tanada (c)', 'MKT STRATEGIC 2 HEAD', [('Ignatius Indrawan S.', 'DEPUTY HEAD'), ('Ervin Bahar P.', 'Medium Vessel, Man Hauler, Bus Scania'),
-                                                       ('Tiberias K.S.  ◄ ME', 'Small Suppeq, Truck Others'), ('Eurico', 'Mining / Non-mining Trailer, Overseas Zone'),
-                                                       ('Nandu Narpati', 'Admin')]),
+        ('Ricardo Tanada (c)', 'MKT STRATEGIC 2 HEAD', [('Ignatius Indrawan S.', 'Deputy Head'), ('Ervin Bahar P.', 'Medium Vessel, Man Hauler, Bus Scania'),
+            ('Tiberias K.S.  ◄ ME', 'Small Suppeq, Truck Others'), ('Eurico', 'Mining / Non-mining Trailer, Overseas Zone'), ('Nandu Narpati', 'Admin'), ('Fitri Royani', 'Admin')]),
         ('Ugik Praseno', 'MKT STRATEGIC 3 HEAD', [('Baihaqi', 'Mineral Processing, EPC'), ('Yuda Prana', 'Maritime, Renewable Energy'), ('Celine', 'Ultra Product Support'), ('Hanifa', 'Automation, EV')]),
+        ('Kresnanto A.W.', 'APPLICATION ENGINEERING HEAD', [('Agi Yogiansyah', 'Offroad Trailer (SST, SDT, LBT), Big Vessel'), ('M. Sugeng Riadi', 'Supporting Equipment (WT, FT, LT), Mixer, EV'),
+            ('Angger Suryo Prastowo', 'Manhauler, Towerlamp, Industrial (Crane truck, Tire handler)'), ('Muhammad Fadlan', 'On-road Trailer (FBT, SCT), Medium Vessel, Crusher, Bucket')]),
         ('Marketing Communication', 'MARCOMM', [('Karina Audina E.', 'Marcomm'), ('Adinda Siti K.', 'Marcomm'), ('Rahma', 'Graphic Designer')])]
+w = 220; g = (1168 - 5 * w) / 4; hy = 256
+hl(56 + w / 2, 56 + 4 * (w + g) + w / 2, hy)
 for i, (h, r, ppl) in enumerate(COLS):
-    x = 56 + i * 296; w = 280
-    arrow(s, x + w / 2, 262, x + w / 2, 278, LINE2, 1)
-    if i == 1: rect(s, x - 8, 272, w + 16, 412, None, GREEN, radius=8, lw=1.25)
-    node(x, 280, w, h, r, True)
+    x = 56 + i * (w + g); cx = x + w / 2
+    vline(cx, hy, 272)
+    if i == 1: rect(s, x - 6, 266, w + 12, 372, None, GREEN_D, radius=8, lw=1.5)
+    node(x, 272, w, 42, h, r, 'head')
+    ph = 46 if len(ppl) > 4 else 50; gap = 6
+    vline(x + 10, 314, 324 + (len(ppl) - 1) * (ph + gap) + ph / 2)
     for j, (n_, d) in enumerate(ppl):
-        node(x, 332 + j * 66, w, n_, d, hl=(d == 'DEPUTY HEAD'), h=54 if True else 40, me='ME' in n_)
+        yy = 324 + j * (ph + gap)
+        hl(x + 10, x + 18, yy + ph / 2)
+        node(x + 18, yy, w - 18, ph, n_, d, 'me' if 'ME' in n_ else 'p')
 
 # 07 roles flow: main activity -> sub-activities -> PIC
 s = new('Roles & responsibility · Supply chain', 'I take every order from *inquiry to delivery* for two product lines')
