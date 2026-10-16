@@ -386,23 +386,24 @@ def node(x, y, w, h, name, role, kind='p'):
 node(530, 146, 220, 40, 'Ceisar Centiaga', 'DIRECTOR IN CHARGE', 'top'); vline(640, 186, 200)
 node(530, 200, 220, 40, 'Ricardo Tanada', 'MKT UNIT & STRATEGIC DIV HEAD', 'top'); vline(640, 240, 256)
 COLS = [('Kresnanto A.W.', 'MKT STRATEGIC 1 HEAD', [('Satrio F.R.', 'Big Suppeq, Big Vessel, Bucket'), ('M. Fawwaz J.', 'Cabin, Forestry, Agro, Forklift, Towerlamp, Pump')]),
-        ('Ricardo Tanada (c)', 'MKT STRATEGIC 2 HEAD', [('Ignatius Indrawan S.', 'Deputy Head'), ('Ervin Bahar P.', 'Medium Vessel, Man Hauler, Bus Scania'),
+        ('Ignatius Indrawan S.', 'MKT STRATEGIC 2 DEPUTY HEAD', [('Ervin Bahar P.', 'Medium Vessel, Man Hauler, Bus Scania'),
             ('Tiberias K.S.  ◄ ME', 'Small Suppeq, Truck Others'), ('Eurico', 'Mining / Non-mining Trailer, Overseas Zone'), ('Nandu Narpati', 'Admin'), ('Fitri Royani', 'Admin')]),
         ('Ugik Praseno', 'MKT STRATEGIC 3 HEAD', [('Baihaqi', 'Mineral Processing, EPC'), ('Yuda Prana', 'Maritime, Renewable Energy'), ('Celine', 'Ultra Product Support'), ('Hanifa', 'Automation, EV')]),
         ('Kresnanto A.W.', 'APPLICATION ENGINEERING HEAD', [('Agi Yogiansyah', 'Offroad Trailer (SST, SDT, LBT), Big Vessel'), ('M. Sugeng Riadi', 'Supporting Equipment (WT, FT, LT), Mixer, EV'),
-            ('Angger Suryo Prastowo', 'Manhauler, Towerlamp, Industrial (Crane truck, Tire handler)'), ('Muhammad Fadlan', 'On-road Trailer (FBT, SCT), Medium Vessel, Crusher, Bucket')]),
-        ('Marketing Communication', 'MARCOMM', [('Karina Audina E.', 'Marcomm'), ('Adinda Siti K.', 'Marcomm'), ('Rahma', 'Graphic Designer')])]
-w = 220; g = (1168 - 5 * w) / 4; hy = 256
-hl(56 + w / 2, 56 + 4 * (w + g) + w / 2, hy)
+            ('Angger Suryo Prastowo', 'Manhauler, Towerlamp, Industrial (Crane truck, Tire handler)'), ('Muhammad Fadlan', 'On-road Trailer (FBT, SCT), Medium Vessel, Crusher, Bucket')])]
+# Marcomm reports directly to Ricardo Tanada (outside the strategic chart)
+hl(750, 880, 220); node(880, 196, 344, 48, 'Marketing Communication', 'Karina Audina E. · Adinda Siti K. (Marcomm) · Rahma (Graphic Designer)', 'p')
+w = 266; g = (1168 - 4 * w) / 3; hy = 256
+hl(56 + w / 2, 56 + 3 * (w + g) + w / 2, hy)
 for i, (h, r, ppl) in enumerate(COLS):
     x = 56 + i * (w + g); cx = x + w / 2
     vline(cx, hy, 272)
-    if i == 1: rect(s, x - 6, 266, w + 12, 372, None, GREEN_D, radius=8, lw=1.5)
-    node(x, 272, w, 42, h, r, 'head')
-    ph = 46 if len(ppl) > 4 else 50; gap = 6
-    vline(x + 10, 314, 324 + (len(ppl) - 1) * (ph + gap) + ph / 2)
+    if i == 1: rect(s, x - 6, 266, w + 12, 342, None, GREEN_D, radius=8, lw=1.5)
+    node(x, 272, w, 44, h, r, 'head')
+    ph = 48; gap = 8
+    vline(x + 10, 316, 326 + (len(ppl) - 1) * (ph + gap) + ph / 2)
     for j, (n_, d) in enumerate(ppl):
-        yy = 324 + j * (ph + gap)
+        yy = 326 + j * (ph + gap)
         hl(x + 10, x + 18, yy + ph / 2)
         node(x + 18, yy, w - 18, ph, n_, d, 'me' if 'ME' in n_ else 'p')
 
