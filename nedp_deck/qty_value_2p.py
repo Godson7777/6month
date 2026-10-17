@@ -21,17 +21,27 @@ def slide(data, title, sub, unit, fmt, takeaways):
     tx(s, 36, 34, 1208, 56, title, 30, True)
     tx(s, 36, 92, 1208, 24, sub, 13, color='6B6B6B')
     tot = {c: sum(data[c]) for c in CLS}; T = sum(tot.values())
-    # chart: total per class, label = value + share
-    cd = CategoryChartData(); cd.categories = CLS; cd.add_series(unit, [tot[c] for c in CLS])
-    ch = s.shapes.add_chart(XL_CHART_TYPE.COLUMN_CLUSTERED, E(36), E(140), E(560), E(470), cd).chart
-    ch.has_legend = False; ch.has_title = False; pl = ch.plots[0]; pl.gap_width = 45
+    # 100% stacked chart (McKinsey style)
+    if unit == 'Txn':   # units per year + total
+        cats = YRS + ['Total']; vals = {c: data[c] + [tot[c]] for c in CLS}
+        lab = lambda c, k: f"{vals[c][k]} ({vals[c][k] / sum(vals[x][k] for x in CLS):.0%})"
+    else:               # units vs value
+        cats = ['Units', 'Value']; vals = {c: [sum(TXN[c]), tot[c]] for c in CLS}
+        lab = lambda c, k: f"{vals[c][k] / sum(vals[x][k] for x in CLS):.0%}"
+    cd = CategoryChartData(); cd.categories = cats
+    for c in CLS: cd.add_series(c, vals[c])
+    ch = s.shapes.add_chart(XL_CHART_TYPE.COLUMN_STACKED_100, E(36), E(130), E(560), E(530), cd).chart
+    ch.has_legend = True; from pptx.enum.chart import XL_LEGEND_POSITION
+    ch.legend.position = XL_LEGEND_POSITION.BOTTOM; ch.legend.include_in_layout = False; ch.legend.font.size = Pt(11); ch.legend.font.name = FONT
+    pl = ch.plots[0]; pl.gap_width = 50 if unit == 'Txn' else 90; pl.overlap = 100
     ch.value_axis.visible = False; ch.value_axis.has_major_gridlines = False
-    ch.category_axis.tick_labels.font.size = Pt(14); ch.category_axis.tick_labels.font.bold = True; ch.category_axis.tick_labels.font.name = FONT
-    for i, c in enumerate(CLS):
-        pt = ch.series[0].points[i]; pt.format.fill.solid(); pt.format.fill.fore_color.rgb = rgb(COL[c])
-        dl = pt.data_label; dl.position = XL_LABEL_POSITION.OUTSIDE_END; tf = dl.text_frame
-        tf.text = fmt(tot[c]); r = tf.paragraphs[0].runs[0]; r.font.size = Pt(15); r.font.bold = True; r.font.name = FONT
-        p2 = tf.add_paragraph(); r2 = p2.add_run(); r2.text = f'{tot[c] / T:.0%} share'; r2.font.size = Pt(12); r2.font.name = FONT; r2.font.color.rgb = rgb('6B6B6B')
+    ch.category_axis.tick_labels.font.size = Pt(13); ch.category_axis.tick_labels.font.bold = True; ch.category_axis.tick_labels.font.name = FONT
+    for ser, c in zip(ch.series, CLS):
+        ser.format.fill.solid(); ser.format.fill.fore_color.rgb = rgb(COL[c]); ser.format.line.color.rgb = rgb('FFFFFF')
+        for k in range(len(cats)):
+            tf = ser.points[k].data_label.text_frame; tf.text = lab(c, k); r = tf.paragraphs[0].runs[0]
+            r.font.size = Pt(11 if unit == 'Txn' else 14); r.font.bold = True; r.font.name = FONT
+            r.font.color.rgb = rgb('000000' if c in ('Light', 'Small') else 'FFFFFF')
     # table: per year + total + share
     rows = 6; cols = 7
     tb = s.shapes.add_table(rows, cols, E(620), E(150), E(624), E(260)).table
@@ -64,7 +74,7 @@ s1 = slide(TXN, 'Heavy is only 75 of 764 units sold (10%)',
            f'Crane import transactions by class, 2023 – 2026* (100% = {TQ} units)', 'Txn', fq,
            [(f'{tq["Medium"] + tq["Heavy"]} units', f'Medium + Heavy = {(tq["Medium"] + tq["Heavy"]) / TQ:.0%} of {TQ} units'),
             (f'{tq["Heavy"]} units', f'Heavy = {tq["Heavy"] / TQ:.0%} of units; peak 39 units in 2025')])
-s2 = slide(VAL, 'But Medium and Heavy bring most of the value',
+s2 = slide(VAL, 'Heavy is 10% of units but 27% of value',
            f'Crane import value by class, 2023 – 2026* (100% = {fv(TV)})', 'USD', fv,
            [(f'{(tv["Medium"] + tv["Heavy"]) / TV:.0%} of value', f'Medium + Heavy = {fv(tv["Medium"] + tv["Heavy"])} from {(tq["Medium"] + tq["Heavy"]) / TQ:.0%} of units'),
             (f'{(tv["Heavy"] / tq["Heavy"]) / (tv["Light"] / tq["Light"]):.1f}x'.replace('.', ','), 'Heavy value per unit vs Light')])
