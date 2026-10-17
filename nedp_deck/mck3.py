@@ -38,7 +38,7 @@ for ser,c in zip(ch.series,CLS):
         tf=ser.points[k].data_label.text_frame; tf.text=lab[k](c)
         for p in tf.paragraphs:
             for r in p.runs:
-                r.font.color.rgb=rgb('000000' if c in ('Light','Small') else 'FFFFFF')
+                r.font.bold=True; r.font.color.rgb=rgb('000000' if c in ('Light','Small') else 'FFFFFF')
 # McKinsey connector lines = native series lines
 bc=ch._chartSpace.find('.//'+qn('c:barChart'))
 sl=etree.SubElement(bc,qn('c:serLines'))
