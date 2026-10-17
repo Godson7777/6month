@@ -33,11 +33,11 @@ ta=ch.category_axis.tick_labels; ta.font.size=Pt(14); ta.font.bold=True; ta.font
 lab=[lambda c:f'{U[c]} units\n{su[c]:.0%}', lambda c:f'{rp(V[c])}\n{sv[c]:.0%}', lambda c:f'{su[c]:.0%} → {sv[c]:.0%}']
 for ser,c in zip(ch.series,CLS):
     ser.format.fill.solid(); ser.format.fill.fore_color.rgb=rgb(COL[c]); ser.format.line.color.rgb=rgb('FFFFFF')
+    dl=ser.data_labels; dl.font.size=Pt(13); dl.font.bold=True; dl.font.name=FONT
     for k in range(3):
         tf=ser.points[k].data_label.text_frame; tf.text=lab[k](c)
         for p in tf.paragraphs:
             for r in p.runs:
-                r.font.size=Pt(13); r.font.bold=True; r.font.name=FONT
                 r.font.color.rgb=rgb('000000' if c in ('Light','Small') else 'FFFFFF')
 # McKinsey connector lines = native series lines
 bc=ch._chartSpace.find('.//'+qn('c:barChart'))
