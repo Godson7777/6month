@@ -10,7 +10,7 @@ CLS = ['Light', 'Small', 'Medium', 'Heavy']; YRS = ['2023', '2024', '2025', '202
 TXN = {'Light': [109, 52, 53, 34], 'Small': [68, 52, 75, 28], 'Medium': [74, 70, 60, 14], 'Heavy': [16, 17, 39, 3]}
 VAL = {'Light': [1318389, 839029, 551005, 310665], 'Small': [1535331, 1127848, 1777124, 596994],
        'Medium': [2452614, 2703601, 1759387, 388829], 'Heavy': [1095383, 1437894, 2951742, 227563]}
-COL = {'Light': 'D9D9D9', 'Small': 'A6A6A6', 'Medium': '595959', 'Heavy': '000000'}
+COL = {'Light': 'C7EFD5', 'Small': '6FCF97', 'Medium': '1E9E57', 'Heavy': '0B4D2A'}
 P = Presentation(); P.slide_width, P.slide_height = 12192000, 6858000
 def tx(s, x, y, w, h, t, sz, bold=False, color='000000', al=PP_ALIGN.LEFT):
     b = s.shapes.add_textbox(E(x), E(y), E(w), E(h)); tf = b.text_frame; tf.word_wrap = True
