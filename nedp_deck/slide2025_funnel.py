@@ -161,9 +161,8 @@ cd2 = CategoryChartData(); cd2.categories = ['Medium', 'Heavy']
 for n in BRANDS: cd2.add_series(n, [dm.get(n, 0), dh.get(n, 0)])
 ch2 = s.shapes.add_chart(XL_CHART_TYPE.BAR_STACKED_100, E(PX + 8), E(292), E(530), E(330), cd2).chart
 ch2.font.name = FONT; ch2.font.size = Pt(10)
-ch2.has_legend = True
+ch2.has_legend = False
 from pptx.enum.chart import XL_LEGEND_POSITION
-ch2.legend.position = XL_LEGEND_POSITION.BOTTOM; ch2.legend.include_in_layout = False; ch2.legend.font.size = Pt(10)
 pl2 = ch2.plots[0]; pl2.gap_width = 45; pl2.overlap = 100
 ch2.value_axis.visible = False; ch2.value_axis.has_major_gridlines = False
 ca2 = ch2.category_axis; ca2.major_tick_mark = XL_TICK_MARK.NONE; ca2.reverse_order = True
@@ -174,8 +173,19 @@ bc2.findall(qn('c:axId'))[0].addprevious(etree.fromstring('<c:serLines xmlns:c="
 for ser, n in zip(ch2.series, BRANDS):
     ser.format.fill.solid(); ser.format.fill.fore_color.rgb = rgb(BCOL[n]); ser.format.line.color.rgb = rgb('FFFFFF')
     dl = ser.data_labels; dl.font.size = Pt(10); dl.font.name = FONT; dl.font.bold = True
-    dl.show_value = True; dl.number_format = '0" units";;;'; dl.number_format_is_linked = False
-    dl.font.color.rgb = rgb('FFFFFF' if BCOL[n] in ('0B4D2A', '1E9E57') else '000000')
+    dl.show_value = True; dl.show_series_name = True; dl.number_format = '0" units";;;'; dl.number_format_is_linked = False
+    dl.font.color.rgb = rgb('FFFFFF' if BCOL[n] in ('0B4D2A', '1E9E57') else '000000'); dl.font.size = Pt(9)
+    dls = dl._element
+    sep = dls.find(qn('c:separator'))
+    if sep is None:
+        sep = etree.SubElement(dls, qn('c:separator'))
+        dls.find(qn('c:showLeaderLines')) is not None and dls.find(qn('c:showLeaderLines')).addnext(sep)
+    sep.text = '\n'
+    # hide label where the brand has 0 units in that class
+    for k, v in enumerate([dm.get(n, 0), dh.get(n, 0)]):
+        if v == 0:
+            d = etree.fromstring(f'<c:dLbl xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart"><c:idx val="{k}"/><c:delete val="1"/></c:dLbl>')
+            dls.insert(0, d)
 wb_live(ch2, 'chart2')
 # explanation boxes, aligned to the two bars
 NOTES = {
