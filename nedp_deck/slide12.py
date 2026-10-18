@@ -18,7 +18,8 @@ ACC = '1E9E57'; GREY = '6B6B6B'
 U = {c: sum(TXN[c]) for c in CLS}; TU = sum(U.values()); TV = sum(VAL.values())
 YT = [sum(TXN[c][k] for c in CLS) for k in range(4)]
 su = {c: U[c] / TU for c in CLS}; sv = {c: VAL[c] / TV for c in CLS}
-usd = lambda v: f'${v / 1e6:,.2f} M'.replace('.', ',')
+FX = 16000  # assumed IDR per USD - change here
+usd = lambda v: f'Rp {v * FX / 1e9:,.1f} Bio'.replace(',', '#').replace('.', ',').replace('#', '.')
 MH_U = U['Medium'] + U['Heavy']; MH_V = VAL['Medium'] + VAL['Heavy']
 
 P = Presentation(); P.slide_width, P.slide_height = 12192000, 6858000
@@ -141,9 +142,9 @@ tf.paragraphs[0].alignment = PP_ALIGN.CENTER; tf.vertical_anchor = MSO_ANCHOR.MI
 tx(664, 214, 580, 36, [[('Share of units vs value by class, ', True, '000000'), ('2023 – 2026*', True, '000000'),
                          (', % of total', False, '000000')]], 12)
 legend(664, 250)
-RX, RY, RW, RH, RG = 750, 300, 280, 330, 70
+RX, RY, RW, RH, RG = 750, 300, 280, 330, 35
 ch2 = chart(XL_CHART_TYPE.COLUMN_STACKED_100, RX, RY, RW, RH, [f'Units\n(n = {TU})', f'Value\n(= {usd(TV)})'],
-            [(NM[c], [U[c], VAL[c] / 1e6]) for c in CLS], RG)
+            [(NM[c], [U[c], VAL[c] * FX / 1e9]) for c in CLS], RG)
 style_series(ch2, {c: [f'{U[c]}\n{su[c]:.0%}', f'{usd(VAL[c])}\n{sv[c]:.0%}'] for c in CLS})
 PH2 = RH * 0.92; yp = lambda f: RY + PH2 * (1 - f)
 cum = {}; a = 0
@@ -167,7 +168,7 @@ xr = X0 + 138; lo, hi = cum['Medium'][0], cum['Heavy'][1]; bracket(xr, yp(hi) + 
 tx(xr + 8, (yp(hi) + yp(lo)) / 2 - 30, 1244 - xr - 8, 60, [[(f'~{MH_V / TV:.0%}', True, ACC)], [('of value', False, '000000')], [(usd(MH_V), False, GREY)]], 11)
 
 # ---------- footer ----------
-tx(36, 662, 1208, 16, [[('Source: ', True, '000000'), ('Indonesia import records 2023 – Aug 2026, knuckle boom (folding) cranes; value in USD (M = million).', False, '000000')]], 10)
+tx(36, 662, 1208, 16, [[('Source: ', True, '000000'), ('Indonesia import records 2023 – Aug 2026, knuckle boom (folding) cranes; value converted from USD at assumed Rp 16.000/USD (Bio = billion).', False, '000000')]], 10)
 tx(36, 680, 1208, 16, [[('Note: ', True, GREY), ('*2026 = Jan–Aug. Application Engineering makes ton meter class classification to make easier identification class. Share may not add to 100% due to rounding.', False, GREY)]], 10)
 line(28, 700, 1252, 700, ACC, 1)
 P.save('Slide12_Market_Review_Style.pptx'); print(TU, TV, MH_U, MH_V, f'{MH_V/TV:.4f}', f'{MH_U/TU:.4f}')

@@ -1,4 +1,4 @@
-"""3-bar McKinsey 100% stacked chart (database: 764 units, value USD): Units | Value | Share, with series lines."""
+"""3-bar McKinsey 100% stacked chart (database: 764 units, value USD -> IDR at FX): Units | Value | Share, with series lines."""
 from pptx import Presentation
 from pptx.chart.data import CategoryChartData
 from pptx.enum.chart import XL_CHART_TYPE, XL_LEGEND_POSITION
@@ -13,7 +13,8 @@ V={'Light':3019087,'Small':5037297,'Medium':7304431,'Heavy':5712582}  # database
 COL={'Light':'C7EFD5','Small':'6FCF97','Medium':'1E9E57','Heavy':'0B4D2A'}
 TU=sum(U.values()); TV=sum(V.values())
 su={c:U[c]/TU for c in CLS}; sv={c:V[c]/TV for c in CLS}
-rp=lambda v: f'${v/1e6:,.2f} M'.replace('.',',')
+FX=16000  # assumed IDR per USD - change here
+rp=lambda v: f'Rp {v*FX/1e9:,.1f} Bio'.replace(',','#').replace('.',',').replace('#','.')
 P=Presentation(); P.slide_width,P.slide_height=12192000,6858000
 s=P.slides.add_slide(P.slide_layouts[6])
 def tx(x,y,w,h,t,sz,b=False,c='000000'):
@@ -21,9 +22,9 @@ def tx(x,y,w,h,t,sz,b=False,c='000000'):
     r=tf.paragraphs[0].add_run(); r.text=t; r.font.size=Pt(sz); r.font.bold=b; r.font.name=FONT; r.font.color.rgb=rgb(c)
 tx(36,34,1208,56,f'Heavy is {su["Heavy"]:.0%} of units but {sv["Heavy"]:.0%} of value',30,True)
 tx(36,92,1208,24,f'Crane imports by class, 2023 – 2026* (100% = {TU} units = {rp(TV)})',13,c='6B6B6B')
-cats=['Units (qty)','Value (USD)','Share (units → value)']
+cats=['Units (qty)','Value (IDR)','Share (units → value)']
 cd=CategoryChartData(); cd.categories=cats
-for c in CLS: cd.add_series(NM[c],[U[c],V[c]/1e6,V[c]/1e6])
+for c in CLS: cd.add_series(NM[c],[U[c],V[c]*FX/1e9,V[c]*FX/1e9])
 gf=s.shapes.add_chart(XL_CHART_TYPE.COLUMN_STACKED_100,E(36),E(130),E(1000),E(540),cd); ch=gf.chart
 ch.has_legend=True; ch.legend.position=XL_LEGEND_POSITION.RIGHT; ch.legend.include_in_layout=False
 ch.legend.font.size=Pt(12); ch.legend.font.name=FONT
@@ -44,5 +45,5 @@ bc=ch._chartSpace.find('.//'+qn('c:barChart'))
 sl=etree.SubElement(bc,qn('c:serLines'))
 sl.append(etree.fromstring('<c:spPr xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:ln w="9525"><a:solidFill><a:srgbClr val="7F7F7F"/></a:solidFill></a:ln></c:spPr>'))
 ax=bc.findall(qn('c:axId'))[0]; ax.addprevious(sl)
-tx(36,676,1208,20,'*2026 = partial year (to Aug). Source: Indonesia import records, knuckle boom cranes; value in USD (M = million). Share = % of total units / % of total value.',9,c='6B6B6B')
+tx(36,676,1208,20,'*2026 = partial year (to Aug). Source: Indonesia import records, knuckle boom cranes; value converted from USD at assumed Rp 16.000/USD (Bio = billion). Share = % of total units / % of total value.',9,c='6B6B6B')
 P.save('McK_3bar_Units_Value_Share.pptx'); print(TU,TV,{c:(round(su[c]*100),round(sv[c]*100)) for c in CLS})
