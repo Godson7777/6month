@@ -12,45 +12,62 @@ FONT = 'Neue Haas Grotesk Text Pro'; E = lambda v: Emu(round(v * 9525)); rgb = R
 ACC, GREY, LG = '1E9E57', '6B6B6B', 'BFBFBF'
 FX = 16000  # assumed IDR per USD
 CLS = ['Light', 'Small', 'Medium', 'Heavy']
-U = {'Light': 53, 'Small': 75, 'Medium': 60, 'Heavy': 39}                       # database 2025
-V = {'Light': 551005, 'Small': 1777124, 'Medium': 1759387, 'Heavy': 2951742}    # USD 2025
+import openpyxl as _ox, collections as _co
+DB = 'data/Crane_Market_GVW_Pairing_v11_Noir.xlsx'   # single source of truth
+_rows = [r for r in _ox.load_workbook(DB, data_only=True, read_only=True)['8. Pivot Source'].iter_rows(min_row=2, values_only=True) if r[4] == 2025]
+ROWS25 = [(r[0], r[2], r[8] or 0, r[10] or 0) for r in _rows]          # brand, class, qty, value USD
+U = {c: sum(q for b_, c_, q, v in ROWS25 if c_ == c) for c in CLS}
+V = {c: sum(v for b_, c_, q, v in ROWS25 if c_ == c) for c in CLS}
 COL = {'Light': 'E3E3E3', 'Small': 'C9C9C9', 'Medium': '1E9E57', 'Heavy': '0B4D2A'}
 rp = lambda usd: f'Rp {usd * FX / 1e9:,.1f} Bio'.replace(',', '#').replace('.', ',').replace('#', '.')
 TU = sum(U.values()); TV = sum(V.values()); MHU = U['Medium'] + U['Heavy']; MHV = V['Medium'] + V['Heavy']
-# brand units 2025 (top 3 from earlier data cut; Others = database total minus top 3)
-MED = [('Sany Palfinger', 30), ('XCMG', 14), ('Palfinger', 5)]; MED.append(('Others', U['Medium'] - sum(b[1] for b in MED)))
-HEV = [('Palfinger', 22), ('Amco Veba', 7), ('XCMG', 4)]; HEV.append(('Others', U['Heavy'] - sum(b[1] for b in HEV)))
+def pareto(cls):
+    """brands sorted by units (tie -> value); take brands until cumulative units >= 80%."""
+    bu, bv = _co.Counter(), _co.Counter()
+    for b_, c_, q, v in ROWS25:
+        if c_ == cls: bu[b_] += q; bv[b_] += v
+    order = sorted(bu, key=lambda k: (-bu[k], -bv[k])); top, cum = [], 0
+    for k in order:
+        top.append(k); cum += bu[k]
+        if cum / U[cls] >= 0.8: break
+    rest = [k for k in order if k not in top]
+    return [(k, bu[k], bv[k]) for k in top], [(k, bu[k], bv[k]) for k in rest]
+MTOP, MREST = pareto('Medium'); HTOP, HREST = pareto('Heavy')
+NICE = lambda b_: b_.title().replace('Xcmg', 'XCMG').replace('Hiab', 'HIAB')
+MED = [(NICE(k), u) for k, u, v in MTOP]; MED.append(('Others', U['Medium'] - sum(u for _, u in MED)))
+HEV = [(NICE(k), u) for k, u, v in HTOP]; HEV.append(('Others', U['Heavy'] - sum(u for _, u in HEV)))
 SHADE = ['0B4D2A', '1E9E57', '6FCF97', 'C7EFD5']
 
 
 import io, openpyxl
 def wb_live(chart, kind):
-    """Replace the chart's embedded workbook with one that holds inputs + Excel formulas (same cell layout as the chart)."""
+    """Embedded workbook: sheet 'Data2025' = 2025 rows from the database; chart cells = SUMIFS formulas on it."""
     wb = openpyxl.Workbook(); ws = wb.active; ws.title = 'Sheet1'
+    d = wb.create_sheet('Data2025'); d.append(['Brand', 'Class', 'Qty', 'Value (USD)'])
+    for r in ROWS25: d.append(list(r))
+    n = len(ROWS25) + 1
+    rngB, rngC, rngQ, rngV = f'Data2025!$A$2:$A${n}', f'Data2025!$B$2:$B${n}', f'Data2025!$C$2:$C${n}', f'Data2025!$D$2:$D${n}'
     if kind == 'chart1':
-        ws['A1'] = None
         for j, c in enumerate(CLS): ws.cell(1, 2 + j, c)
-        ws['A2'] = cd_cats[0]; ws['A3'] = cd_cats[1]
-        ws['A6'] = 'INPUT 2025'; ws['A7'] = 'Units'; ws['A8'] = 'Value (USD)'; ws['A9'] = 'FX (Rp per USD)'; ws['B9'] = FX
+        ws['A2'] = cd_cats[0]; ws['A3'] = cd_cats[1]; ws['A9'] = 'FX (Rp per USD)'; ws['B9'] = FX
         for j, c in enumerate(CLS):
             col = openpyxl.utils.get_column_letter(2 + j)
-            ws[f'{col}7'] = U[c]; ws[f'{col}8'] = V[c]
-            ws[f'{col}2'] = f'={col}7'; ws[f'{col}3'] = f'=ROUND({col}8*$B$9/1000000000,1)'
+            ws[f'{col}2'] = f'=SUMIFS({rngQ},{rngC},"{c}")'
+            ws[f'{col}3'] = f'=ROUND(SUMIFS({rngV},{rngC},"{c}")*$B$9/1000000000,1)'
         ws['F1'] = 'Total'; ws['F2'] = '=SUM(B2:E2)'; ws['F3'] = '=SUM(B3:E3)'
         ws['G1'] = 'Medium+Heavy %'; ws['G2'] = '=(D2+E2)/F2'; ws['G3'] = '=(D3+E3)/F3'
-        ws['A11'] = 'Row 2-3 feed the chart. Change row 7-9 and the chart updates after Edit Data.'
     else:
-        for j, n in enumerate(BRANDS): ws.cell(1, 2 + j, n)
-        ws['A2'] = 'Medium'; ws['A3'] = 'Heavy'
-        ws['H1'] = 'Class total (database)'; ws['H2'] = U['Medium']; ws['H3'] = U['Heavy']
+        for j, nm in enumerate(BRANDS): ws.cell(1, 2 + j, nm)
+        ws['A2'] = 'Medium'; ws['A3'] = 'Heavy'; ws['H1'] = 'Class total'; ws['I1'] = 'Top brands %'
+        dmap = {'Medium': dict(MED), 'Heavy': dict(HEV)}
         for i, cls in ((2, 'Medium'), (3, 'Heavy')):
-            data = dict(MED if cls == 'Medium' else HEV)
-            for j, n in enumerate(BRANDS[:-1]):
-                ws.cell(i, 2 + j, data.get(n, 0))
-            ws[f'F{i}'] = f'=H{i}-SUM(B{i}:E{i})'            # Others = total - named brands
-            ws[f'I{i}'] = f'=B{i}/H{i}'
-        ws['I1'] = 'Leader share'
-        ws['A5'] = 'Others = class total minus named brands (formula).'
+            for j, nm in enumerate(BRANDS[:-1]):
+                col = openpyxl.utils.get_column_letter(2 + j)
+                ws[f'{col}{i}'] = f'=SUMIFS({rngQ},{rngB},"{nm.upper()}",{rngC},"{cls}")' if dmap[cls].get(nm, 0) else 0
+            ws[f'H{i}'] = f'=SUMIFS({rngQ},{rngC},"{cls}")'
+            ws[f'F{i}'] = f'=H{i}-SUM(B{i}:E{i})'
+            ws[f'I{i}'] = f'=SUM(B{i}:E{i})/H{i}'
+        ws['A5'] = 'Brands shown = Pareto (cumulative units >= 80%). Others = class total minus brands shown.'
     bio = io.BytesIO(); wb.save(bio)
     chart.part.chart_workbook.update_from_xlsx_blob(bio.getvalue())
 
@@ -98,10 +115,10 @@ tx(36, 22, 200, 16, '10/18/2026', 11); tx(440, 22, 400, 16, 'Shaping the future 
 tx(36, 52, 900, 60, [[('Indonesian Import Folding Crane 2025', True, '000000')]], 34, anchor=MSO_ANCHOR.MIDDLE)
 tx(940, 54, 304, 56, [[('Where is the value?', True, '000000')], [('And who holds it?', True, '000000')]], 16, PP_ALIGN.RIGHT)
 line(28, 116, 1252, 116, '000000', 3)
-tx(36, 122, 1208, 28, [[('Medium and Heavy are 44% of units but 67% of value, and each class has one clear leader', True, '000000')]], 19, anchor=MSO_ANCHOR.MIDDLE)
+tx(36, 122, 1208, 28, [[(f'Medium and Heavy are {MHU / TU:.0%} of units but {MHV / TV:.0%} of value; 3 brands hold 80%+ of each class', True, '000000')]], 19, anchor=MSO_ANCHOR.MIDDLE)
 line(28, 152, 1252, 152)
 tx(36, 157, 1208, 44, [[('In 2025, Medium and Heavy imports reached ', False, '000000'), (f'{MHU} units ({rp(MHV)})', True, '000000'),
-    (f' out of {TU} units ({rp(TV)}). ', False, '000000'), ('Sany Palfinger leads Medium with half of the units; Palfinger leads Heavy with 56%.', True, '000000')]], 14)
+    (f' out of {TU} units ({rp(TV)}). ', False, '000000'), (f'Three brands cover {sum(u for _, u, _ in MTOP) / U["Medium"]:.0%} of Medium and {sum(u for _, u, _ in HTOP) / U["Heavy"]:.0%} of Heavy units.', True, '000000')]], 14)
 line(28, 204, 1252, 204)
 
 # ---------- panel 1: market by class ----------
@@ -152,8 +169,9 @@ arrow(421)
 # ---------- panel 2: brand share bars (Medium top, Heavy bottom) ----------
 PX, PW = 452, 792
 banner(PX, PW, 'Medium & Heavy 2025: who holds the market', ACC); rect(PX, 240, PW, 412, None, ACC, 1.5)
-BRANDS = ['Sany Palfinger', 'Palfinger', 'XCMG', 'Amco Veba', 'Others']
-BCOL = {'Sany Palfinger': '0B4D2A', 'Palfinger': '1E9E57', 'XCMG': '6FCF97', 'Amco Veba': '9ADBB5', 'Others': 'D9D9D9'}
+BRANDS = ['Sany Palfinger', 'Palfinger', 'Amco Veba', 'XCMG', 'Others']
+assert all(n in BRANDS for n, _ in MED + HEV), (MED, HEV)
+BCOL = {'Sany Palfinger': '0B4D2A', 'Palfinger': '1E9E57', 'Amco Veba': '6FCF97', 'XCMG': '9ADBB5', 'Others': 'D9D9D9'}
 dm, dh = dict(MED), dict(HEV)
 tx(PX + 14, 250, 520, 20, [[('Brand share of units, Medium vs Heavy, 2025, ', True, '000000'), ('% of class units', False, '000000')]], 12)
 tx(PX + 14, 270, 520, 18, [[(f"Medium = {U['Medium']} units ({rp(V['Medium'])})  ·  Heavy = {U['Heavy']} units ({rp(V['Heavy'])})", True, GREY)]], 10)
@@ -188,13 +206,16 @@ for ser, n in zip(ch2.series, BRANDS):
             dls.insert(0, d)
 wb_live(ch2, 'chart2')
 # explanation boxes, aligned to the two bars
+def vshare(top, cls): return sum(v for _, _, v in top) / V[cls]
+def names(top): return ', '.join(NICE(k) for k, _, _ in top[:-1]) + ' and ' + NICE(top[-1][0])
+MR = ', '.join(f'{NICE(k)} {u}' for k, u, v in MREST); HR = ', '.join(f'{NICE(k)} {u}' for k, u, v in HREST)
 NOTES = {
- 'Medium': [[('Sany Palfinger', True, ACC), (f" leads with {dm['Sany Palfinger']} of {U['Medium']} units ({dm['Sany Palfinger'] / U['Medium']:.0%}).", False, '000000')],
-            [('XCMG', True, '000000'), (f" is #2 with {dm['XCMG']} units; Palfinger sells {dm['Palfinger']}.", False, '000000')],
-            [('So what: ', True, '000000'), ('one-leader market; growth means taking units from Sany Palfinger.', False, '000000')]],
- 'Heavy':  [[('Palfinger', True, ACC), (f" holds {dh['Palfinger']} of {U['Heavy']} units ({dh['Palfinger'] / U['Heavy']:.0%}).", False, '000000')],
-            [('Amco Veba', True, '000000'), (f" ({dh['Amco Veba']}) and ", False, '000000'), ('XCMG', True, '000000'), (f" ({dh['XCMG']}) follow.", False, '000000')],
-            [('So what: ', True, '000000'), (f"small in units but {V['Heavy'] / TV:.0%} of market value; about Rp 1,2 Bio per unit.", False, '000000')]]}
+ 'Medium': [[(f'{len(MTOP)} brands = {sum(u for _, u, _ in MTOP) / U["Medium"]:.0%} of units', True, ACC), (f' ({sum(u for _, u, _ in MTOP)} of {U["Medium"]}) and {vshare(MTOP, "Medium"):.0%} of value: {names(MTOP)}.', False, '000000')],
+            [('Sany Palfinger', True, '000000'), (f' alone holds {dict(MED)["Sany Palfinger"]} units ({dict(MED)["Sany Palfinger"] / U["Medium"]:.0%}).', False, '000000')],
+            [('Others: ', True, GREY), (MR + '.', False, GREY)]],
+ 'Heavy':  [[(f'{len(HTOP)} brands = {sum(u for _, u, _ in HTOP) / U["Heavy"]:.0%} of units', True, ACC), (f' ({sum(u for _, u, _ in HTOP)} of {U["Heavy"]}) and {vshare(HTOP, "Heavy"):.0%} of value: {names(HTOP)}.', False, '000000')],
+            [('Palfinger', True, '000000'), (f' alone holds {dict(HEV)["Palfinger"]} units ({dict(HEV)["Palfinger"] / U["Heavy"]:.0%}).', False, '000000')],
+            [('Others: ', True, GREY), (HR + '.', False, GREY)]]}
 ex = PX + 548
 for k, cls in enumerate(['Medium', 'Heavy']):
     y = 300 + k * 148
@@ -202,7 +223,7 @@ for k, cls in enumerate(['Medium', 'Heavy']):
     tx(ex + 10, y + 6, PW - 582, 132, [[(cls, True, '000000')]] + NOTES[cls], 9.5)
 
 # ---------- footer ----------
-tx(36, 662, 1208, 16, [[('Source: ', True, '000000'), ('Indonesia import records 2025, knuckle boom (folding) cranes; value converted from USD at assumed Rp 16.000/USD (Bio = billion).', False, '000000')]], 10)
-tx(36, 680, 1208, 16, [[('Note: ', True, GREY), ('Chart numbers live in chart data (Edit Data); Others = class total minus named brands (formula); brand units from earlier data cut. Light (< 8 tm) and Small (8–25 tm) excluded from focus.', False, GREY)]], 10)
+tx(36, 662, 1208, 16, [[('Source: ', True, '000000'), ('Crane Market GVW Pairing v11 (Noir), sheet 8. Pivot Source, 2025 rows; value converted from USD at assumed Rp 16.000/USD (Bio = billion).', False, '000000')]], 10)
+tx(36, 680, 1208, 16, [[('Note: ', True, GREY), ('Chart data = SUMIFS on 2025 database rows (Edit Data). Brands shown until 80% of class units (Pareto); Others = rest. Light (< 8 tm) and Small (8–25 tm) excluded from focus.', False, GREY)]], 10)
 line(28, 700, 1252, 700, ACC, 1)
 P.save('Slide_2025_Medium_Heavy_Funnel.pptx'); print(TU, rp(TV), MHU, rp(MHV), MED, HEV)
