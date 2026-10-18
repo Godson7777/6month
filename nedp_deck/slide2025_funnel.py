@@ -115,23 +115,40 @@ tx(rx + 6, (fy(1) + fy(lsv)) / 2 - 20, P1X + P1W - rx - 10, 40, [[(f'{MHV / TV:.
 # ---------- arrow (funnel) ----------
 def arrow(x):
     a = s.shapes.add_shape(MSO_SHAPE.CHEVRON, E(x), E(420), E(18), E(36)); a.fill.solid(); a.fill.fore_color.rgb = rgb(ACC); a.line.fill.background()
-arrow(421); arrow(830)
+arrow(421)
 
-# ---------- panels 2 & 3: treemaps ----------
-def brand_panel(x, w, cls, brands, tm):
-    banner(x, w, f'{cls} class ({tm}): who fills it', ACC); rect(x, 240, w, 412, None, ACC, 1.5)
-    tx(x + 12, 248, w - 24, 34, [[(f'{cls} class market, 2025, ', True, '000000'), ('n of units by brand', False, '000000')]], 12)
-    tx(x + 12, 270, w - 24, 18, [[(f'{U[cls]} units · {rp(V[cls])} · {V[cls] / TV:.0%} of market value', False, GREY)]], 10)
-    treemap(x + 12, 296, w - 24, 230, brands)
-    tx(x + 12, 538, w - 24, 18, [[(f'Triatra {cls} market share, ', True, '000000'), ('quantity of sales', False, '000000')]], 11)
-    rect(x + 12, 562, 10, 10, 'FF0000' if False else ACC, ACC, 0.5); tx(x + 26, 559, 60, 16, 'Triatra', 9)
-    rect(x + 84, 562, 10, 10, 'D9D9D9', 'D9D9D9', 0.5); tx(x + 98, 559, 100, 16, 'Rest of market', 9)
-    b = rect(x + 12, 584, w - 24, 30, 'F2F2F2', LG, 0.75); tf = b.text_frame; tf.vertical_anchor = MSO_ANCHOR.MIDDLE
-    p = tf.paragraphs[0]; p.alignment = PP_ALIGN.CENTER; r = p.add_run(); r.text = f'Triatra units sold in 2025: to be added  ·  market = {U[cls]} units'
-    r.font.size = Pt(10); r.font.italic = True; r.font.name = FONT; r.font.color.rgb = rgb(GREY)
-    lead = brands[0]
-    tx(x + 12, 620, w - 24, 28, [[(f'{lead[0]} holds {lead[1]} of {U[cls]} units ({lead[1] / U[cls]:.0%})', True, ACC)]], 11)
-brand_panel(452, 374, 'Medium', MED, '25–45 tm'); brand_panel(862, 382, 'Heavy', HEV, '> 45 tm')
+# ---------- panel 2: brand share bars (Medium top, Heavy bottom) ----------
+PX, PW = 452, 792
+banner(PX, PW, 'Medium & Heavy 2025: who holds the market', ACC); rect(PX, 240, PW, 412, None, ACC, 1.5)
+BC = {'Sany Palfinger': '0B4D2A', 'Palfinger': '1E9E57', 'XCMG': '6FCF97', 'Amco Veba': '9ADBB5', 'Others': 'D9D9D9'}
+NOTES = {
+ 'Medium': [[('Sany Palfinger', True, ACC), (' leads with half of the class (30 units).', False, '000000')],
+            [('XCMG', True, '000000'), (' is a distant #2 at 23%; Palfinger sells only 5 units here.', False, '000000')],
+            [('So what: ', True, '000000'), ('Medium is a one-leader market; to grow, we take units from Sany Palfinger.', False, '000000')]],
+ 'Heavy':  [[('Palfinger', True, ACC), (' holds 56% of units (22 of 39).', False, '000000')],
+            [('Amco Veba', True, '000000'), (' (7) and ', False, '000000'), ('XCMG', True, '000000'), (' (4) follow; top 3 = 85% of units.', False, '000000')],
+            [('So what: ', True, '000000'), ('Heavy is small in units but 42% of market value; each unit is worth about Rp 1,2 Bio.', False, '000000')]]}
+def brand_bar(y0, cls, tm, brands):
+    T = U[cls]
+    tx(PX + 14, y0, 520, 20, [[(f'{cls} class ({tm}), 2025, ', True, '000000'), ('share of units by brand', False, '000000')]], 12)
+    tx(PX + 14, y0 + 20, 520, 18, [[(f'{T} units  ·  {rp(V[cls])}  ·  {V[cls] / TV:.0%} of market value', True, GREY)]], 11)
+    bx, bw, by, bh = PX + 14, 500, y0 + 46, 46; x = bx
+    for n, u in brands:
+        w = bw * u / T; c = BC[n]; dark = c in ('0B4D2A', '1E9E57')
+        r = rect(x, by, w, bh, c); tf = r.text_frame; tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+        tf.margin_left = tf.margin_right = 0; pp = tf.paragraphs[0]; pp.alignment = PP_ALIGN.CENTER
+        rr = pp.add_run(); rr.text = f'{u / T:.0%}'; rr.font.size = Pt(13 if w > 40 else 10); rr.font.bold = True; rr.font.name = FONT
+        rr.font.color.rgb = rgb('FFFFFF' if dark else '000000')
+        cx = x + w / 2; line(cx, by + bh, cx, by + bh + 14, '7F7F7F', 0.75)
+        tx(cx - 46, by + bh + 16, 92, 34, [[(n, n == brands[0][0], '000000')], [(f'{u} units', False, GREY)]], 10, PP_ALIGN.CENTER)
+        x += w
+    # explanation box
+    ex = PX + 540
+    rect(ex, y0, PW - 554, 176, 'F2F2F2', 'F2F2F2', 0.5)
+    tx(ex + 12, y0 + 10, PW - 578, 156, [NOTES[cls][0], [('', False, '000000')], NOTES[cls][1], [('', False, '000000')], NOTES[cls][2]], 11)
+brand_bar(250, 'Medium', '25–45 tm', MED)
+line(PX + 14, 444, PX + PW - 14, 444, 'BFBFBF', 0.75)
+brand_bar(454, 'Heavy', '> 45 tm', HEV)
 
 # ---------- footer ----------
 tx(36, 662, 1208, 16, [[('Source: ', True, '000000'), ('Indonesia import records 2025, knuckle boom (folding) cranes; value converted from USD at assumed Rp 16.000/USD (Bio = billion).', False, '000000')]], 10)
