@@ -216,11 +216,20 @@ NOTES = {
  'Heavy':  [[(f'{len(HTOP)} brands = {sum(u for _, u, _ in HTOP) / U["Heavy"]:.0%} of units', True, ACC), (f' ({sum(u for _, u, _ in HTOP)} of {U["Heavy"]}) and {vshare(HTOP, "Heavy"):.0%} of value: {names(HTOP)}.', False, '000000')],
             [('Palfinger', True, '000000'), (f' alone holds {dict(HEV)["Palfinger"]} units ({dict(HEV)["Palfinger"] / U["Heavy"]:.0%}).', False, '000000')],
             [('Others: ', True, GREY), (HR + '.', False, GREY)]]}
+LOGO = {k: f'assets/logos/brands/{v}.png' for k, v in {'SANY PALFINGER': 'sany_palfinger', 'PALFINGER': 'palfinger', 'XCMG': 'xcmg', 'AMCO VEBA': 'amco_veba', 'HIAB': 'hiab', 'FASSI': 'fassi'}.items()}
 ex = PX + 548
 for k, cls in enumerate(['Medium', 'Heavy']):
     y = 300 + k * 148
     rect(ex, y, PW - 562, 142, 'F2F2F2', 'F2F2F2', 0.5)
-    tx(ex + 10, y + 6, PW - 582, 132, [[(cls, True, '000000')]] + NOTES[cls], 9.5)
+    tx(ex + 10, y + 5, 60, 14, [[(cls, True, '000000')]], 9.5)
+    # Pareto brand logos (from earlier F.lli Ferrari deck), in rank order
+    from PIL import Image as _Im
+    fs = [LOGO[k_] for k_, _, _ in (MTOP if cls == 'Medium' else HTOP) if k_ in LOGO]
+    ws_ = [_Im.open(f).size for f in fs]; avail = PW - 582 - 6 * (len(fs) - 1)
+    h_ = min(18, avail / sum(w / h for w, h in ws_)); lx = ex + 10
+    for f, (w, h) in zip(fs, ws_):
+        s.shapes.add_picture(f, E(lx), E(y + 22 + (18 - h_) / 2), height=E(h_)); lx += h_ * w / h + 6
+    tx(ex + 10, y + 46, PW - 582, 94, NOTES[cls], 9)
 
 # ---------- footer ----------
 tx(36, 662, 1208, 16, [[('Source: ', True, '000000'), ('Crane Market GVW Pairing v11 (Noir), sheet 8. Pivot Source, 2025 rows; value converted from USD at assumed Rp 16.000/USD (Bio = billion).', False, '000000')]], 10)
