@@ -22,6 +22,38 @@ MED = [('Sany Palfinger', 30), ('XCMG', 14), ('Palfinger', 5)]; MED.append(('Oth
 HEV = [('Palfinger', 22), ('Amco Veba', 7), ('XCMG', 4)]; HEV.append(('Others', U['Heavy'] - sum(b[1] for b in HEV)))
 SHADE = ['0B4D2A', '1E9E57', '6FCF97', 'C7EFD5']
 
+
+import io, openpyxl
+def wb_live(chart, kind):
+    """Replace the chart's embedded workbook with one that holds inputs + Excel formulas (same cell layout as the chart)."""
+    wb = openpyxl.Workbook(); ws = wb.active; ws.title = 'Sheet1'
+    if kind == 'chart1':
+        ws['A1'] = None
+        for j, c in enumerate(CLS): ws.cell(1, 2 + j, c)
+        ws['A2'] = cd_cats[0]; ws['A3'] = cd_cats[1]
+        ws['A6'] = 'INPUT 2025'; ws['A7'] = 'Units'; ws['A8'] = 'Value (USD)'; ws['A9'] = 'FX (Rp per USD)'; ws['B9'] = FX
+        for j, c in enumerate(CLS):
+            col = openpyxl.utils.get_column_letter(2 + j)
+            ws[f'{col}7'] = U[c]; ws[f'{col}8'] = V[c]
+            ws[f'{col}2'] = f'={col}7'; ws[f'{col}3'] = f'=ROUND({col}8*$B$9/1000000000,1)'
+        ws['F1'] = 'Total'; ws['F2'] = '=SUM(B2:E2)'; ws['F3'] = '=SUM(B3:E3)'
+        ws['G1'] = 'Medium+Heavy %'; ws['G2'] = '=(D2+E2)/F2'; ws['G3'] = '=(D3+E3)/F3'
+        ws['A11'] = 'Row 2-3 feed the chart. Change row 7-9 and the chart updates after Edit Data.'
+    else:
+        for j, n in enumerate(BRANDS): ws.cell(1, 2 + j, n)
+        ws['A2'] = 'Medium'; ws['A3'] = 'Heavy'
+        ws['H1'] = 'Class total (database)'; ws['H2'] = U['Medium']; ws['H3'] = U['Heavy']
+        for i, cls in ((2, 'Medium'), (3, 'Heavy')):
+            data = dict(MED if cls == 'Medium' else HEV)
+            for j, n in enumerate(BRANDS[:-1]):
+                ws.cell(i, 2 + j, data.get(n, 0))
+            ws[f'F{i}'] = f'=H{i}-SUM(B{i}:E{i})'            # Others = total - named brands
+            ws[f'I{i}'] = f'=B{i}/H{i}'
+        ws['I1'] = 'Leader share'
+        ws['A5'] = 'Others = class total minus named brands (formula).'
+    bio = io.BytesIO(); wb.save(bio)
+    chart.part.chart_workbook.update_from_xlsx_blob(bio.getvalue())
+
 P = Presentation(); P.slide_width, P.slide_height = 12192000, 6858000
 s = P.slides.add_slide(P.slide_layouts[6])
 def tx(x, y, w, h, parts, sz=12, al=PP_ALIGN.LEFT, anchor=MSO_ANCHOR.TOP):
@@ -76,8 +108,9 @@ line(28, 204, 1252, 204)
 P1X, P1W = 36, 380
 banner(P1X, P1W, 'Market 2025: focus on Medium & Heavy', '595959'); rect(P1X, 240, P1W, 412, None, '595959', 1.5)
 tx(P1X + 12, 248, P1W - 24, 34, [[('Market size by class, 2025, ', True, '000000'), ('units vs value', False, '000000')]], 12)
-cd = CategoryChartData(); cd.categories = [f'Units ({TU})', f'Value ({rp(TV)})']
-for c in CLS: cd.add_series(c, [U[c], V[c] * FX / 1e9])
+cd_cats = [f'Units ({TU})', 'Value (Rp Bio)']
+cd = CategoryChartData(); cd.categories = cd_cats
+for c in CLS: cd.add_series(c, [U[c], round(V[c] * FX / 1e9, 1)])
 CX, CY, CW, CH = P1X + 82, 286, 200, 330
 ch = s.shapes.add_chart(XL_CHART_TYPE.COLUMN_STACKED_100, E(CX), E(CY), E(CW), E(CH), cd).chart
 ch.has_legend = False; ch.font.name = FONT; ch.font.size = Pt(9)
@@ -95,11 +128,10 @@ bc.findall(qn('c:axId'))[0].addprevious(etree.fromstring('<c:serLines xmlns:c="h
     'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><c:spPr><a:ln w="6350"><a:solidFill><a:srgbClr val="7F7F7F"/></a:solidFill></a:ln></c:spPr></c:serLines>'))
 for ser, c in zip(ch.series, CLS):
     ser.format.fill.solid(); ser.format.fill.fore_color.rgb = rgb(COL[c]); ser.format.line.color.rgb = rgb('FFFFFF')
-    dl = ser.data_labels; dl.font.size = Pt(9); dl.font.name = FONT; dl.show_value = False
-    for k, t in enumerate([f'{c} {U[c]}\n{U[c] / TU:.0%}', f'{rp(V[c])}\n{V[c] / TV:.0%}']):
-        tf = ser.points[k].data_label.text_frame; tf.text = t
-        for p in tf.paragraphs:
-            for r in p.runs: r.font.bold = True; r.font.color.rgb = rgb('FFFFFF' if c in ('Medium', 'Heavy') else '595959')
+    dl = ser.data_labels; dl.font.size = Pt(9); dl.font.name = FONT; dl.font.bold = True
+    dl.show_value = True; dl.show_series_name = True; dl.number_format = 'General'; dl.number_format_is_linked = False
+    dl.font.color.rgb = rgb('FFFFFF' if c in ('Medium', 'Heavy') else '404040')
+wb_live(ch, 'chart1')
 PH = CH * 0.9; fy = lambda f: CY + PH * (1 - f)
 ls = (U['Light'] + U['Small']) / TU; lsv = (V['Light'] + V['Small']) / TV
 # left bracket: Light+Small excluded
@@ -120,38 +152,47 @@ arrow(421)
 # ---------- panel 2: brand share bars (Medium top, Heavy bottom) ----------
 PX, PW = 452, 792
 banner(PX, PW, 'Medium & Heavy 2025: who holds the market', ACC); rect(PX, 240, PW, 412, None, ACC, 1.5)
-BC = {'Sany Palfinger': '0B4D2A', 'Palfinger': '1E9E57', 'XCMG': '6FCF97', 'Amco Veba': '9ADBB5', 'Others': 'D9D9D9'}
+BRANDS = ['Sany Palfinger', 'Palfinger', 'XCMG', 'Amco Veba', 'Others']
+BCOL = {'Sany Palfinger': '0B4D2A', 'Palfinger': '1E9E57', 'XCMG': '6FCF97', 'Amco Veba': '9ADBB5', 'Others': 'D9D9D9'}
+dm, dh = dict(MED), dict(HEV)
+tx(PX + 14, 250, 520, 20, [[('Brand share of units, Medium vs Heavy, 2025, ', True, '000000'), ('% of class units', False, '000000')]], 12)
+tx(PX + 14, 270, 520, 18, [[(f"Medium = {U['Medium']} units ({rp(V['Medium'])})  ·  Heavy = {U['Heavy']} units ({rp(V['Heavy'])})", True, GREY)]], 10)
+cd2 = CategoryChartData(); cd2.categories = ['Medium', 'Heavy']
+for n in BRANDS: cd2.add_series(n, [dm.get(n, 0), dh.get(n, 0)])
+ch2 = s.shapes.add_chart(XL_CHART_TYPE.BAR_STACKED_100, E(PX + 8), E(292), E(530), E(330), cd2).chart
+ch2.font.name = FONT; ch2.font.size = Pt(10)
+ch2.has_legend = True
+from pptx.enum.chart import XL_LEGEND_POSITION
+ch2.legend.position = XL_LEGEND_POSITION.BOTTOM; ch2.legend.include_in_layout = False; ch2.legend.font.size = Pt(10)
+pl2 = ch2.plots[0]; pl2.gap_width = 45; pl2.overlap = 100
+ch2.value_axis.visible = False; ch2.value_axis.has_major_gridlines = False
+ca2 = ch2.category_axis; ca2.major_tick_mark = XL_TICK_MARK.NONE; ca2.reverse_order = True
+ca2.tick_labels.font.size = Pt(12); ca2.tick_labels.font.bold = True; ca2.format.line.color.rgb = rgb('000000')
+bc2 = ch2._chartSpace.find('.//' + qn('c:barChart'))
+bc2.findall(qn('c:axId'))[0].addprevious(etree.fromstring('<c:serLines xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" '
+    'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><c:spPr><a:ln w="6350"><a:solidFill><a:srgbClr val="7F7F7F"/></a:solidFill></a:ln></c:spPr></c:serLines>'))
+for ser, n in zip(ch2.series, BRANDS):
+    ser.format.fill.solid(); ser.format.fill.fore_color.rgb = rgb(BCOL[n]); ser.format.line.color.rgb = rgb('FFFFFF')
+    dl = ser.data_labels; dl.font.size = Pt(10); dl.font.name = FONT; dl.font.bold = True
+    dl.show_value = True; dl.number_format = '0" units";;;'; dl.number_format_is_linked = False
+    dl.font.color.rgb = rgb('FFFFFF' if BCOL[n] in ('0B4D2A', '1E9E57') else '000000')
+wb_live(ch2, 'chart2')
+# explanation boxes, aligned to the two bars
 NOTES = {
- 'Medium': [[('Sany Palfinger', True, ACC), (' leads with half of the class (30 units).', False, '000000')],
-            [('XCMG', True, '000000'), (' is a distant #2 at 23%; Palfinger sells only 5 units here.', False, '000000')],
-            [('So what: ', True, '000000'), ('Medium is a one-leader market; to grow, we take units from Sany Palfinger.', False, '000000')]],
- 'Heavy':  [[('Palfinger', True, ACC), (' holds 56% of units (22 of 39).', False, '000000')],
-            [('Amco Veba', True, '000000'), (' (7) and ', False, '000000'), ('XCMG', True, '000000'), (' (4) follow; top 3 = 85% of units.', False, '000000')],
-            [('So what: ', True, '000000'), ('Heavy is small in units but 42% of market value; each unit is worth about Rp 1,2 Bio.', False, '000000')]]}
-def brand_bar(y0, cls, tm, brands):
-    T = U[cls]
-    tx(PX + 14, y0, 520, 20, [[(f'{cls} class ({tm}), 2025, ', True, '000000'), ('share of units by brand', False, '000000')]], 12)
-    tx(PX + 14, y0 + 20, 520, 18, [[(f'{T} units  ·  {rp(V[cls])}  ·  {V[cls] / TV:.0%} of market value', True, GREY)]], 11)
-    bx, bw, by, bh = PX + 14, 500, y0 + 46, 46; x = bx
-    for n, u in brands:
-        w = bw * u / T; c = BC[n]; dark = c in ('0B4D2A', '1E9E57')
-        r = rect(x, by, w, bh, c); tf = r.text_frame; tf.vertical_anchor = MSO_ANCHOR.MIDDLE
-        tf.margin_left = tf.margin_right = 0; pp = tf.paragraphs[0]; pp.alignment = PP_ALIGN.CENTER
-        rr = pp.add_run(); rr.text = f'{u / T:.0%}'; rr.font.size = Pt(13 if w > 40 else 10); rr.font.bold = True; rr.font.name = FONT
-        rr.font.color.rgb = rgb('FFFFFF' if dark else '000000')
-        cx = x + w / 2; line(cx, by + bh, cx, by + bh + 14, '7F7F7F', 0.75)
-        tx(cx - 46, by + bh + 16, 92, 34, [[(n, n == brands[0][0], '000000')], [(f'{u} units', False, GREY)]], 10, PP_ALIGN.CENTER)
-        x += w
-    # explanation box
-    ex = PX + 540
-    rect(ex, y0, PW - 554, 176, 'F2F2F2', 'F2F2F2', 0.5)
-    tx(ex + 12, y0 + 10, PW - 578, 156, [NOTES[cls][0], [('', False, '000000')], NOTES[cls][1], [('', False, '000000')], NOTES[cls][2]], 11)
-brand_bar(250, 'Medium', '25–45 tm', MED)
-line(PX + 14, 444, PX + PW - 14, 444, 'BFBFBF', 0.75)
-brand_bar(454, 'Heavy', '> 45 tm', HEV)
+ 'Medium': [[('Sany Palfinger', True, ACC), (f" leads with {dm['Sany Palfinger']} of {U['Medium']} units ({dm['Sany Palfinger'] / U['Medium']:.0%}).", False, '000000')],
+            [('XCMG', True, '000000'), (f" is #2 with {dm['XCMG']} units; Palfinger sells {dm['Palfinger']}.", False, '000000')],
+            [('So what: ', True, '000000'), ('one-leader market; growth means taking units from Sany Palfinger.', False, '000000')]],
+ 'Heavy':  [[('Palfinger', True, ACC), (f" holds {dh['Palfinger']} of {U['Heavy']} units ({dh['Palfinger'] / U['Heavy']:.0%}).", False, '000000')],
+            [('Amco Veba', True, '000000'), (f" ({dh['Amco Veba']}) and ", False, '000000'), ('XCMG', True, '000000'), (f" ({dh['XCMG']}) follow.", False, '000000')],
+            [('So what: ', True, '000000'), (f"small in units but {V['Heavy'] / TV:.0%} of market value; about Rp 1,2 Bio per unit.", False, '000000')]]}
+ex = PX + 548
+for k, cls in enumerate(['Medium', 'Heavy']):
+    y = 300 + k * 148
+    rect(ex, y, PW - 562, 142, 'F2F2F2', 'F2F2F2', 0.5)
+    tx(ex + 10, y + 6, PW - 582, 132, [[(cls, True, '000000')]] + NOTES[cls], 9.5)
 
 # ---------- footer ----------
 tx(36, 662, 1208, 16, [[('Source: ', True, '000000'), ('Indonesia import records 2025, knuckle boom (folding) cranes; value converted from USD at assumed Rp 16.000/USD (Bio = billion).', False, '000000')]], 10)
-tx(36, 680, 1208, 16, [[('Note: ', True, GREY), ('Brand units for top 3 per class from earlier data cut; Others = 2025 class total minus top 3. Light (< 8 tm) and Small (8–25 tm) excluded from focus.', False, GREY)]], 10)
+tx(36, 680, 1208, 16, [[('Note: ', True, GREY), ('Chart numbers live in chart data (Edit Data); Others = class total minus named brands (formula); brand units from earlier data cut. Light (< 8 tm) and Small (8–25 tm) excluded from focus.', False, GREY)]], 10)
 line(28, 700, 1252, 700, ACC, 1)
 P.save('Slide_2025_Medium_Heavy_Funnel.pptx'); print(TU, rp(TV), MHU, rp(MHV), MED, HEV)
