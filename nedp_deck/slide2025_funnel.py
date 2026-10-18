@@ -68,6 +68,22 @@ def wb_live(chart, kind):
             ws[f'F{i}'] = f'=H{i}-SUM(B{i}:E{i})'
             ws[f'I{i}'] = f'=SUM(B{i}:E{i})/H{i}'
         ws['A5'] = 'Brands shown = Pareto (cumulative units >= 80%). Others = class total minus brands shown.'
+        ws['A6'] = 'VALUE (Rp Bio)'; ws['K1'] = 'FX (Rp per USD)'; ws['K2'] = FX
+        for j, nm in enumerate(BRANDS): ws.cell(6, 2 + j, nm)
+        for i, cls in ((7, 'Medium'), (8, 'Heavy')):
+            ws[f'A{i}'] = cls
+            for j, nm in enumerate(BRANDS[:-1]):
+                col = openpyxl.utils.get_column_letter(2 + j)
+                ws[f'{col}{i}'] = f'=SUMIFS({rngV},{rngB},"{nm.upper()}",{rngC},"{cls}")*$K$2/1000000000' if dmap[cls].get(nm, 0) else 0
+            ws[f'H{i}'] = f'=SUMIFS({rngV},{rngC},"{cls}")*$K$2/1000000000'
+            ws[f'F{i}'] = f'=H{i}-SUM(B{i}:E{i})'
+        ws['A11'] = 'LABEL (feeds chart via Value From Cells)'
+        for j, nm in enumerate(BRANDS): ws.cell(11, 2 + j, nm)
+        for i, (r_u, r_v, cls) in ((12, (2, 7, 'Medium')), (13, (3, 8, 'Heavy'))):
+            ws[f'A{i}'] = cls
+            for j in range(len(BRANDS)):
+                col = openpyxl.utils.get_column_letter(2 + j)
+                ws[f'{col}{i}'] = (f'=IF({col}{r_u}=0,"",{col}$1&CHAR(10)&{col}{r_u}&" units"&CHAR(10)&"Rp "&SUBSTITUTE(TEXT({col}{r_v},"0.0"),".",",")&" Bio")')
     bio = io.BytesIO(); wb.save(bio)
     chart.part.chart_workbook.update_from_xlsx_blob(bio.getvalue())
 
@@ -205,6 +221,29 @@ for ser, n in zip(ch2.series, BRANDS):
             d = etree.fromstring(f'<c:dLbl xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart"><c:idx val="{k}"/><c:delete val="1"/></c:dLbl>')
             dls.insert(0, d)
 wb_live(ch2, 'chart2')
+C15 = 'http://schemas.microsoft.com/office/drawing/2012/chart'
+def lbl_text(n, cls):
+    u = (dm if cls == 'Medium' else dh).get(n, 0)
+    if u == 0: return ''
+    if n == 'Others':
+        vb = (V[cls] - sum(v for k, _, v in (MTOP if cls == 'Medium' else HTOP))) * FX / 1e9
+    else:
+        vb = sum(v for k, _, v in (MTOP if cls == 'Medium' else HTOP) if NICE(k) == n) * FX / 1e9
+    return f'{n}\n{u} units\nRp {vb:.1f} Bio'.replace('.', ',')
+for j, (ser, n) in enumerate(zip(ch2.series, BRANDS)):
+    col = 'BCDEF'[j]
+    dls = ser._element.find(qn('c:dLbls'))
+    for tag in ('c:showVal', 'c:showSerName'):
+        e = dls.find(qn(tag))
+        if e is not None: e.set('val', '0')
+    dls.append(etree.fromstring(f'<c:extLst xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:c15="{C15}">'
+        '<c:ext uri="{CE6537A1-D6FC-4f65-9D91-7224C49458BB}"><c15:showDataLabelsRange val="1"/></c:ext></c:extLst>'))
+    pts = ''.join(f'<c:pt idx="{k}"><c:v>{lbl_text(n, c_)}</c:v></c:pt>' for k, c_ in enumerate(['Medium', 'Heavy']))
+    ext = etree.fromstring(f'<c:extLst xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:c15="{C15}">'
+        '<c:ext uri="{02D57815-91ED-43cb-92C2-25804820EDAC}"><c15:datalabelsRange>'
+        f'<c15:f>Sheet1!${col}$12:${col}$13</c15:f><c15:dlblRangeCache><c:ptCount val="2"/>{pts}</c15:dlblRangeCache>'
+        '</c15:datalabelsRange></c:ext></c:extLst>')
+    ser._element.append(ext)
 # explanation boxes, aligned to the two bars
 def vshare(top, cls): return sum(v for _, _, v in top) / V[cls]
 def names(top): return ', '.join(NICE(k) for k, _, _ in top[:-1]) + ' and ' + NICE(top[-1][0])
