@@ -197,7 +197,7 @@ def brand_chart(y, h, kind, title, sub):
         'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><c:spPr><a:ln w="6350"><a:solidFill><a:srgbClr val="7F7F7F"/></a:solidFill></a:ln></c:spPr></c:serLines>'))
     for ser, n in zip(c.series, BRANDS):
         ser.format.fill.solid(); ser.format.fill.fore_color.rgb = rgb(BCOL[n]); ser.format.line.color.rgb = rgb('FFFFFF')
-        dl = ser.data_labels; dl.font.size = Pt(9); dl.font.name = FONT; dl.font.bold = True
+        dl = ser.data_labels; dl.font.size = Pt(9 if kind == 'units' else 8); dl.font.name = FONT; dl.font.bold = True
         dl.show_value = True; dl.show_series_name = True; dl.number_format_is_linked = False
         dl.number_format = '0" units";;;' if kind == 'units' else '"Rp "0.0" Bio";;;'
         dl.font.color.rgb = rgb('FFFFFF' if BCOL[n] in ('0B4D2A', '1E9E57') else '000000')
@@ -208,10 +208,36 @@ def brand_chart(y, h, kind, title, sub):
             if v == 0:
                 dls.insert(0, etree.fromstring(f'<c:dLbl xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart"><c:idx val="{k}"/><c:delete val="1"/></c:dLbl>'))
     wb_live(c, 'chart2' if kind == 'units' else 'chart3')
-    return c
-brand_chart(248, 172, 'units', 'Units by brand, ', f"% of class units (Medium {U['Medium']}, Heavy {U['Heavy']})")
+    X0F, Y0F, WF, HF = 0.12, 0.17, 0.86, 0.66
+    pa_ = c._chartSpace.find('.//' + qn('c:plotArea')); lay_ = pa_.find(qn('c:layout'))
+    if lay_ is None: lay_ = etree.Element(qn('c:layout')); pa_.insert(0, lay_)
+    lay_.append(etree.fromstring('<c:manualLayout xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart"><c:layoutTarget val="inner"/>'
+        f'<c:xMode val="edge"/><c:yMode val="edge"/><c:x val="{X0F}"/><c:y val="{Y0F}"/><c:w val="{WF}"/><c:h val="{HF}"/></c:manualLayout>'))
+    fx0, fy0, fw, fh = PX + 8, y + 18, 530, h
+    px0, pw = fx0 + fw * X0F, fw * WF; py0, ph = fy0 + fh * Y0F, fh * HF
+    slot = ph / 2; bt = slot / 1.4
+    bars = {'Medium': (py0 + (slot - bt) / 2, bt), 'Heavy': (py0 + slot + (slot - bt) / 2, bt)}
+    return c, px0, pw, bars
+G2 = brand_chart(248, 172, 'units', 'Units by brand, ', f"% of class units (Medium {U['Medium']}, Heavy {U['Heavy']})")
 line(PX + 14, 444, PX + 534, 444, 'BFBFBF', 0.75)
-brand_chart(450, 182, 'value', 'Value by brand, ', f"% of class value (Medium {rp(V['Medium'])}, Heavy {rp(V['Heavy'])})")
+G3 = brand_chart(450, 182, 'value', 'Value by brand, ', f"% of class value (Medium {rp(V['Medium'])}, Heavy {rp(V['Heavy'])})")
+def brace(x1, x2, y, up, text, col):
+    """McKinsey-style bracket: horizontal line with end ticks pointing to the bar, label outside."""
+    d = 5 if up else -5
+    line(x1, y, x2, y, col, 1); line(x1, y, x1, y + d, col, 1); line(x2, y, x2, y + d, col, 1)
+    line((x1 + x2) / 2, y, (x1 + x2) / 2, y - d, col, 1)
+    tx((x1 + x2) / 2 - 110, y - 19 if up else y + 6, 220, 13, [[(text, True, col)]], 9, PP_ALIGN.CENTER)
+for G, kind in ((G2, 'units'), (G3, 'value')):
+    _, px0, pw, bars = G
+    for cls, up in (('Medium', True), ('Heavy', False)):
+        top = MTOP if cls == 'Medium' else HTOP
+        if kind == 'units':
+            sh = sum(u for _, u, _ in top) / U[cls]; lab = f'{len(top)} brands = {sh:.0%} of units'
+        else:
+            sh = sum(v for _, _, v in top) / V[cls]; lab = f'{len(top)} brands = {sh:.0%} of value'
+        by, bt = bars[cls]; yb = by - 6 if up else by + bt + 6
+        brace(px0 + 1, px0 + pw * sh - 1, yb, up, lab, ACC)
+        brace(px0 + pw * sh + 1, px0 + pw - 1, yb, up, f'Others {1 - sh:.0%}', GREY)
 # explanation boxes, aligned to the two bars
 def vshare(top, cls): return sum(v for _, _, v in top) / V[cls]
 def names(top): return ', '.join(NICE(k) for k, _, _ in top[:-1]) + ' and ' + NICE(top[-1][0])
