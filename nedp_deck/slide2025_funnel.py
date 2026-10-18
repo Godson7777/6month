@@ -63,27 +63,14 @@ def wb_live(chart, kind):
         for i, cls in ((2, 'Medium'), (3, 'Heavy')):
             for j, nm in enumerate(BRANDS[:-1]):
                 col = openpyxl.utils.get_column_letter(2 + j)
-                ws[f'{col}{i}'] = f'=SUMIFS({rngQ},{rngB},"{nm.upper()}",{rngC},"{cls}")' if dmap[cls].get(nm, 0) else 0
-            ws[f'H{i}'] = f'=SUMIFS({rngQ},{rngC},"{cls}")'
+                rg = rngQ if kind == 'chart2' else rngV
+                fx = '' if kind == 'chart2' else '*$K$2/1000000000'
+                ws[f'{col}{i}'] = f'=SUMIFS({rg},{rngB},"{nm.upper()}",{rngC},"{cls}"){fx}' if dmap[cls].get(nm, 0) else 0
+            ws[f'H{i}'] = f'=SUMIFS({rngQ if kind == "chart2" else rngV},{rngC},"{cls}"){"" if kind == "chart2" else "*$K$2/1000000000"}'
             ws[f'F{i}'] = f'=H{i}-SUM(B{i}:E{i})'
             ws[f'I{i}'] = f'=SUM(B{i}:E{i})/H{i}'
         ws['A5'] = 'Brands shown = Pareto (cumulative units >= 80%). Others = class total minus brands shown.'
-        ws['A6'] = 'VALUE (Rp Bio)'; ws['K1'] = 'FX (Rp per USD)'; ws['K2'] = FX
-        for j, nm in enumerate(BRANDS): ws.cell(6, 2 + j, nm)
-        for i, cls in ((7, 'Medium'), (8, 'Heavy')):
-            ws[f'A{i}'] = cls
-            for j, nm in enumerate(BRANDS[:-1]):
-                col = openpyxl.utils.get_column_letter(2 + j)
-                ws[f'{col}{i}'] = f'=SUMIFS({rngV},{rngB},"{nm.upper()}",{rngC},"{cls}")*$K$2/1000000000' if dmap[cls].get(nm, 0) else 0
-            ws[f'H{i}'] = f'=SUMIFS({rngV},{rngC},"{cls}")*$K$2/1000000000'
-            ws[f'F{i}'] = f'=H{i}-SUM(B{i}:E{i})'
-        ws['A11'] = 'LABEL (feeds chart via Value From Cells)'
-        for j, nm in enumerate(BRANDS): ws.cell(11, 2 + j, nm)
-        for i, (r_u, r_v, cls) in ((12, (2, 7, 'Medium')), (13, (3, 8, 'Heavy'))):
-            ws[f'A{i}'] = cls
-            for j in range(len(BRANDS)):
-                col = openpyxl.utils.get_column_letter(2 + j)
-                ws[f'{col}{i}'] = (f'=IF({col}{r_u}=0,"",{col}$1&CHAR(10)&{col}{r_u}&" units"&CHAR(10)&"Rp "&SUBSTITUTE(TEXT({col}{r_v},"0.0"),".",",")&" Bio")')
+        ws['K1'] = 'FX (Rp per USD)'; ws['K2'] = FX
     bio = io.BytesIO(); wb.save(bio)
     chart.part.chart_workbook.update_from_xlsx_blob(bio.getvalue())
 
@@ -189,61 +176,42 @@ BRANDS = ['Sany Palfinger', 'Palfinger', 'Amco Veba', 'XCMG', 'Others']
 assert all(n in BRANDS for n, _ in MED + HEV), (MED, HEV)
 BCOL = {'Sany Palfinger': '0B4D2A', 'Palfinger': '1E9E57', 'Amco Veba': '6FCF97', 'XCMG': '9ADBB5', 'Others': 'D9D9D9'}
 dm, dh = dict(MED), dict(HEV)
-tx(PX + 14, 250, 520, 20, [[('Brand share of units, Medium vs Heavy, 2025, ', True, '000000'), ('% of class units', False, '000000')]], 12)
-tx(PX + 14, 270, 520, 18, [[(f"Medium = {U['Medium']} units ({rp(V['Medium'])})  ·  Heavy = {U['Heavy']} units ({rp(V['Heavy'])})", True, GREY)]], 10)
-cd2 = CategoryChartData(); cd2.categories = ['Medium', 'Heavy']
-for n in BRANDS: cd2.add_series(n, [dm.get(n, 0), dh.get(n, 0)])
-ch2 = s.shapes.add_chart(XL_CHART_TYPE.BAR_STACKED_100, E(PX + 8), E(292), E(530), E(330), cd2).chart
-ch2.font.name = FONT; ch2.font.size = Pt(10)
-ch2.has_legend = False
-from pptx.enum.chart import XL_LEGEND_POSITION
-pl2 = ch2.plots[0]; pl2.gap_width = 45; pl2.overlap = 100
-ch2.value_axis.visible = False; ch2.value_axis.has_major_gridlines = False
-ca2 = ch2.category_axis; ca2.major_tick_mark = XL_TICK_MARK.NONE; ca2.reverse_order = True
-ca2.tick_labels.font.size = Pt(12); ca2.tick_labels.font.bold = True; ca2.format.line.color.rgb = rgb('000000')
-bc2 = ch2._chartSpace.find('.//' + qn('c:barChart'))
-bc2.findall(qn('c:axId'))[0].addprevious(etree.fromstring('<c:serLines xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" '
-    'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><c:spPr><a:ln w="6350"><a:solidFill><a:srgbClr val="7F7F7F"/></a:solidFill></a:ln></c:spPr></c:serLines>'))
-for ser, n in zip(ch2.series, BRANDS):
-    ser.format.fill.solid(); ser.format.fill.fore_color.rgb = rgb(BCOL[n]); ser.format.line.color.rgb = rgb('FFFFFF')
-    dl = ser.data_labels; dl.font.size = Pt(10); dl.font.name = FONT; dl.font.bold = True
-    dl.show_value = True; dl.show_series_name = True; dl.number_format = '0" units";;;'; dl.number_format_is_linked = False
-    dl.font.color.rgb = rgb('FFFFFF' if BCOL[n] in ('0B4D2A', '1E9E57') else '000000'); dl.font.size = Pt(9)
-    dls = dl._element
-    sep = dls.find(qn('c:separator'))
-    if sep is None:
-        sep = etree.SubElement(dls, qn('c:separator'))
-        dls.find(qn('c:showLeaderLines')) is not None and dls.find(qn('c:showLeaderLines')).addnext(sep)
-    sep.text = '\n'
-    # hide label where the brand has 0 units in that class
-    for k, v in enumerate([dm.get(n, 0), dh.get(n, 0)]):
-        if v == 0:
-            d = etree.fromstring(f'<c:dLbl xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart"><c:idx val="{k}"/><c:delete val="1"/></c:dLbl>')
-            dls.insert(0, d)
-wb_live(ch2, 'chart2')
-C15 = 'http://schemas.microsoft.com/office/drawing/2012/chart'
-def lbl_text(n, cls):
-    u = (dm if cls == 'Medium' else dh).get(n, 0)
-    if u == 0: return ''
-    if n == 'Others':
-        vb = (V[cls] - sum(v for k, _, v in (MTOP if cls == 'Medium' else HTOP))) * FX / 1e9
-    else:
-        vb = sum(v for k, _, v in (MTOP if cls == 'Medium' else HTOP) if NICE(k) == n) * FX / 1e9
-    return f'{n}\n{u} units\nRp {vb:.1f} Bio'.replace('.', ',')
-for j, (ser, n) in enumerate(zip(ch2.series, BRANDS)):
-    col = 'BCDEF'[j]
-    dls = ser._element.find(qn('c:dLbls'))
-    for tag in ('c:showVal', 'c:showSerName'):
-        e = dls.find(qn(tag))
-        if e is not None: e.set('val', '0')
-    dls.append(etree.fromstring(f'<c:extLst xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:c15="{C15}">'
-        '<c:ext uri="{CE6537A1-D6FC-4f65-9D91-7224C49458BB}"><c15:showDataLabelsRange val="1"/></c:ext></c:extLst>'))
-    pts = ''.join(f'<c:pt idx="{k}"><c:v>{lbl_text(n, c_)}</c:v></c:pt>' for k, c_ in enumerate(['Medium', 'Heavy']))
-    ext = etree.fromstring(f'<c:extLst xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:c15="{C15}">'
-        '<c:ext uri="{02D57815-91ED-43cb-92C2-25804820EDAC}"><c15:datalabelsRange>'
-        f'<c15:f>Sheet1!${col}$12:${col}$13</c15:f><c15:dlblRangeCache><c:ptCount val="2"/>{pts}</c15:dlblRangeCache>'
-        '</c15:datalabelsRange></c:ext></c:extLst>')
-    ser._element.append(ext)
+def bval(n, cls):
+    top = MTOP if cls == 'Medium' else HTOP
+    if n == 'Others': return (V[cls] - sum(v for _, _, v in top)) * FX / 1e9
+    return sum(v for k, _, v in top if NICE(k) == n) * FX / 1e9
+def brand_chart(y, h, kind, title, sub):
+    tx(PX + 14, y, 520, 18, [[(title, True, '000000'), (sub, False, '000000')]], 11)
+    cd_ = CategoryChartData(); cd_.categories = ['Medium', 'Heavy']
+    for n in BRANDS:
+        vals = [dm.get(n, 0), dh.get(n, 0)] if kind == 'units' else [round(bval(n, c_), 1) if (dm if c_ == 'Medium' else dh).get(n, 0) else 0 for c_ in ('Medium', 'Heavy')]
+        cd_.add_series(n, vals)
+    c = s.shapes.add_chart(XL_CHART_TYPE.BAR_STACKED_100, E(PX + 8), E(y + 18), E(530), E(h), cd_).chart
+    c.font.name = FONT; c.font.size = Pt(10); c.has_legend = False
+    pl_ = c.plots[0]; pl_.gap_width = 40; pl_.overlap = 100
+    c.value_axis.visible = False; c.value_axis.has_major_gridlines = False
+    ca_ = c.category_axis; ca_.major_tick_mark = XL_TICK_MARK.NONE; ca_.reverse_order = True
+    ca_.tick_labels.font.size = Pt(11); ca_.tick_labels.font.bold = True; ca_.format.line.color.rgb = rgb('000000')
+    bc_ = c._chartSpace.find('.//' + qn('c:barChart'))
+    bc_.findall(qn('c:axId'))[0].addprevious(etree.fromstring('<c:serLines xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" '
+        'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><c:spPr><a:ln w="6350"><a:solidFill><a:srgbClr val="7F7F7F"/></a:solidFill></a:ln></c:spPr></c:serLines>'))
+    for ser, n in zip(c.series, BRANDS):
+        ser.format.fill.solid(); ser.format.fill.fore_color.rgb = rgb(BCOL[n]); ser.format.line.color.rgb = rgb('FFFFFF')
+        dl = ser.data_labels; dl.font.size = Pt(9); dl.font.name = FONT; dl.font.bold = True
+        dl.show_value = True; dl.show_series_name = True; dl.number_format_is_linked = False
+        dl.number_format = '0" units";;;' if kind == 'units' else '"Rp "0.0" Bio";;;'
+        dl.font.color.rgb = rgb('FFFFFF' if BCOL[n] in ('0B4D2A', '1E9E57') else '000000')
+        dls = dl._element; sep = dls.find(qn('c:separator'))
+        if sep is None: sep = etree.SubElement(dls, qn('c:separator'))
+        sep.text = '\n'
+        for k, v in enumerate([dm.get(n, 0), dh.get(n, 0)]):
+            if v == 0:
+                dls.insert(0, etree.fromstring(f'<c:dLbl xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart"><c:idx val="{k}"/><c:delete val="1"/></c:dLbl>'))
+    wb_live(c, 'chart2' if kind == 'units' else 'chart3')
+    return c
+brand_chart(248, 172, 'units', 'Units by brand, ', f"% of class units (Medium {U['Medium']}, Heavy {U['Heavy']})")
+line(PX + 14, 444, PX + 534, 444, 'BFBFBF', 0.75)
+brand_chart(450, 182, 'value', 'Value by brand, ', f"% of class value (Medium {rp(V['Medium'])}, Heavy {rp(V['Heavy'])})")
 # explanation boxes, aligned to the two bars
 def vshare(top, cls): return sum(v for _, _, v in top) / V[cls]
 def names(top): return ', '.join(NICE(k) for k, _, _ in top[:-1]) + ' and ' + NICE(top[-1][0])
