@@ -288,18 +288,18 @@ b = sF.shapes.add_shape(MSO_SHAPE.LEFT_BRACE, E((bl + br) / 2 - bh / 2), E(ytop 
 b.rotation = 90; b.fill.background(); b.line.color.rgb = rgb('000000'); b.line.width = Pt(1.5); b.shadow.inherit = False
 tx(sF, bl - 40, ytop - bh - 40, bw + 80, 36, [(f"{fshare:.0%} of Medium value\n", True, '1E9E57'), (f"{funits} of {CUM} units", False, '000000')], 12, PP_ALIGN.CENTER)
 # support: feature table
-RX = 530; fcols = [130, 140, 250, 192]
+RX = 530; fcols = [126, 136, 190, 260]
 tx(sF, RX, 318, sum(fcols), 16, [('Head to head', True, '000000')], 11)
 rows_ = [('Top 1 model', 'F.lli Ferrari', 'Equal features', 'Ferrari only'),
          (f"HIAB X-CLX 388 (34 tm)\n{rp(f30['p'])}", f"FBR350R A4\n{rp(f30['fp'])}\n{-f30['gap']:.0%} cheaper",
-          "Radio remote control",
-          "Magic Touch auto fold\nDynamic Load Diagram\nDouble linkage, power boost*"),
-         (f"Palfinger PK 41002 (38 tm)\n{rp(f35['p'])}", f"7441C\n{rp(f35['fp'])}\n{-f35['gap']:.0%} cheaper",
-          "Double linkage · power boost · electronic control · stability control · auto fold",
-          "Price, and stock in China (~14 weeks)")]
+          "• Radio remote control",
+          "• Magic Touch auto fold\n• Dynamic Load Diagram\n• Double linkage, power boost*\n• Electronic control (HIAB: manual)"),
+         (f"Palfinger PK 41002 (38 tm)\n{rp(f35['p'])}", f"7441C (44 tm)\n{rp(f35['fp'])}\n{-f35['gap']:.0%} cheaper",
+          "• Double linkage\n• Power boost\n• Electronic control\n• Stability control",
+          "• +6 tm capacity (44 vs 38 tm)\n• Magic Touch auto fold**")]
 tb = sF.shapes.add_table(3, 4, E(RX), E(336), E(sum(fcols)), E(300)).table
 for j, w in enumerate(fcols): tb.columns[j].width = E(w)
-tb.rows[0].height = E(26); tb.rows[1].height = E(137); tb.rows[2].height = E(137)
+tb.rows[0].height = E(26); tb.rows[1].height = E(140); tb.rows[2].height = E(134)
 for i, row in enumerate(rows_):
     for j, v in enumerate(row):
         c = tb.cell(i, j); c.text = v; c.vertical_anchor = MSO_ANCHOR.MIDDLE
@@ -308,10 +308,10 @@ for i, row in enumerate(rows_):
         for pi, p in enumerate(c.text_frame.paragraphs):
             p.space_after = Pt(3)
             for r in p.runs:
-                r.font.name = FONT; r.font.size = Pt(11 if i == 0 else 10.5); r.font.color.rgb = rgb('FFFFFF' if i == 0 else ('1E9E57' if (j == 1 and pi == 2) else '000000'))
+                r.font.name = FONT; r.font.size = Pt(11 if i == 0 else 10); r.font.color.rgb = rgb('FFFFFF' if i == 0 else ('1E9E57' if (j == 1 and pi == 2) else '000000'))
                 r.font.bold = i == 0 or (j < 2 and pi == 0) or (j == 1 and pi == 2)
 tx(sF, 36, 678, 1206, 30, [('Source: Crane Market GVW Pairing v11 (Noir), Jan 2023 – 14 Aug 2026; Hyva excluded; tier by original max lifting moment. Prices as on the Medium table slide (Rp 17.803/USD, incl. duty and import tax; 7441C estimate). '
-    'Features: Hiab, Palfinger and F.lli Ferrari product pages and brochures; HIAB X-CLX 388 is manual control with optional remote. *Not yet verified on the FBR350R A4 datasheet.', False, '6B6B6B')], 6.5)
+    'Features: Hiab, Palfinger and F.lli Ferrari product pages and brochures; HIAB X-CLX 388 is manual control with optional remote. *Not yet verified on the FBR350R A4 datasheet. **P-Fold not confirmed on PK 41002; if fitted, Magic Touch is an equal feature. Lifting capacity in max tm.', False, '6B6B6B')], 6.5)
 s15 = frame_slide('Heavy Class: Who to Target', 'Which model holds the money? Who can beat it on price?',
                   'Heavy: F.lli Ferrari wins only at 45–50 tm; at 50–55 tm it is far above Palfinger PK 53002',
                   f"50–55 tm is {h[50]['ms']:.0%} of Heavy value and PK 53002 takes {h[50]['sh']:.0%} of it. 9601CR A8 is {h[50]['gap']:.0%} above it, and XCMG has no model between 47 and 85 tm in the import data.")
