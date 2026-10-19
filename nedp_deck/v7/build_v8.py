@@ -240,6 +240,75 @@ stp_content(s14, 'Medium', RM,
     'Top 1 model by value in each tier: ' + '; '.join(f"{r['brand']} {r['type']} ({r['t']}–{r['t'] + 5})" for r in RM) + '.',
     f"F.lli Ferrari: European features, {min(-r['gap'] for r in winM):.0%}–{max(-r['gap'] for r in winM):.0%} cheaper than the European leaders at 25–40 tm. "
     f"XCMG {x40['xn']} ({int(x40['xtm'] + .5)} tm): bigger crane, {-x40['xgap']:.0%} cheaper than Sany Palfinger SPK42502 ({int(x40['ttm'] + .5)} tm).")
+# ---- Medium focus slide: 30-40 tm (chart with brace + why + feature table) ----
+from pptx.enum.chart import XL_CHART_TYPE, XL_LABEL_POSITION
+from lxml import etree
+f30, f35 = [r for r in RM if r['t'] == 30][0], [r for r in RM if r['t'] == 35][0]
+fshare = f30['ms'] + f35['ms']; funits = f30['tq'] + f35['tq']
+sF = frame_slide('Medium Class: Where to Focus', 'Which tiers hold the value? Which models do we fight?',
+                 f"Medium: focus on 30–40 tm, where two tiers hold {fshare:.0%} of Medium value",
+                 f"30–35 and 35–40 tm each hold {f30['ms']:.0%} of Medium value. We take on their top 1 models, HIAB X-CLX 388 and Palfinger PK 41002, "
+                 f"with F.lli Ferrari FBR350R A4 and 7441C.")
+CX, CY, CW, CH = 36, 244, 570, 400
+cd = CategoryChartData()
+cd.categories = [f"{r['t']}–{r['t'] + 5} tm\n{r['brand']}\n{r['type']}" for r in RM]
+cd.add_series('% of Medium value', [round(r['ms'], 4) for r in RM], number_format='0%')
+ch = sF.shapes.add_chart(XL_CHART_TYPE.COLUMN_CLUSTERED, E(CX), E(CY), E(CW), E(CH), cd).chart
+ch.has_legend = False; ch.has_title = False
+pl = ch.plots[0]; pl.gap_width = 60; pl.has_data_labels = True
+dl = pl.data_labels; dl.number_format = '0%'; dl.number_format_is_linked = False; dl.position = XL_LABEL_POSITION.OUTSIDE_END
+dl.font.size = Pt(14); dl.font.bold = True; dl.font.name = FONT
+va = ch.value_axis; va.maximum_scale = 0.45; va.minimum_scale = 0; va.visible = False; va.has_major_gridlines = False
+ca = ch.category_axis; ca.tick_labels.font.size = Pt(10); ca.tick_labels.font.name = FONT; ca.format.line.color.rgb = rgb('7F7F7F')
+for i, r in enumerate(RM):
+    pt = pl.series[0].points[i]; pt.format.fill.solid(); pt.format.fill.fore_color.rgb = rgb('1E9E57' if r['t'] in (30, 35) else 'BFBFBF')
+PX, PY, PW, PH = .02, .24, .96, .58          # fixed inner plot area so the brace sits on the bars
+pa = ch._chartSpace.find('.//' + qn('c:plotArea'))
+lay = pa.find(qn('c:layout'))
+if lay is None: lay = etree.SubElement(pa, qn('c:layout')); pa.remove(lay); pa.insert(0, lay)
+lay.append(etree.fromstring(f'<c:manualLayout xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart"><c:layoutTarget val="inner"/><c:xMode val="edge"/><c:yMode val="edge"/>'
+                            f'<c:x val="{PX}"/><c:y val="{PY}"/><c:w val="{PW}"/><c:h val="{PH}"/></c:manualLayout>'))
+catW = CW * PW / len(RM); barW = catW / 1.6; x0 = CX + CW * PX
+bl = x0 + catW * 1.5 - barW / 2 - 4; br = x0 + catW * 2.5 + barW / 2 + 4
+ytop = CY + CH * PY + CH * PH * (1 - max(f30['ms'], f35['ms']) / .45) - 30
+bh = 22; bw = br - bl
+b = sF.shapes.add_shape(MSO_SHAPE.LEFT_BRACE, E((bl + br) / 2 - bh / 2), E(ytop - bh - bw / 2 + bh / 2), E(bh), E(bw))
+b.rotation = 90; b.fill.background(); b.line.color.rgb = rgb('000000'); b.line.width = Pt(1.5); b.shadow.inherit = False
+tx(sF, bl - 40, ytop - bh - 46, bw + 80, 40, [(f"{fshare:.0%} of Medium value\n", True, '1E9E57'), (f"{funits} of {CUM} units", False, '000000')], 13, PP_ALIGN.CENTER)
+tx(sF, CX, CY, CW, 16, [('% of Medium import value by tm tier, and top 1 model by value', True, '000000')], 11)
+# right: why + features
+RX, RW = 640, 602
+tx(sF, RX, CY, RW, 16, [('Why these two tiers', True, '000000')], 12)
+why = [('Size: ', f"30–35 tm ({f30['ms']:.0%}) and 35–40 tm ({f35['ms']:.0%}) are the two biggest tiers; together {fshare:.0%} of Medium value and {funits} of {CUM} units."),
+       ('Price: ', f"F.lli Ferrari is cheaper than the top 1 in both: FBR350R A4 {-f30['gap']:.0%} cheaper than X-CLX 388, 7441C {-f35['gap']:.0%} cheaper than PK 41002."),
+       ('Others are smaller: ', f"25–30 tm is {RM[0]['ms']:.0%} and 40–45 tm is {RM[-1]['ms']:.0%} of Medium value.")]
+bx = sF.shapes.add_textbox(E(RX), E(CY + 22), E(RW), E(100)); tf = bx.text_frame; tf.word_wrap = True
+for m in ('margin_left', 'margin_right', 'margin_top', 'margin_bottom'): setattr(tf, m, 0)
+for i, (h_, t_) in enumerate(why):
+    p = tf.paragraphs[0] if i == 0 else tf.add_paragraph(); p.space_after = Pt(4)
+    for t, bo in ((f"{i + 1}. {h_}", True), (t_, False)):
+        r = p.add_run(); r.text = t; r.font.size = Pt(11); r.font.bold = bo; r.font.name = FONT; r.font.color.rgb = rgb('000000')
+tx(sF, RX, CY + 122, RW, 16, [('Head to head: features', True, '000000')], 12)
+fcols = [108, 112, 180, 202]
+rows_ = [('Top 1 competitor', 'Challenger', 'Equal features', 'Winning features (challenger only)'),
+         (f"HIAB X-CLX 388 (34 tm)\n{rp(f30['p'])}", f"F.lli Ferrari FBR350R A4\n{rp(f30['fp'])} ({f30['gap']:+.0%})".replace('(-', '(−'),
+          "• Radio remote control (option on both)",
+          "• Magic Touch: opens and stows the crane with one button\n• Dynamic Load Diagram: capacity set by truck stability\n• Red Power double linkage and power boost*\n• X-CLX 388 is manual control as standard"),
+         (f"Palfinger PK 41002 (38 tm)\n{rp(f35['p'])}", f"F.lli Ferrari 7441C\n{rp(f35['fp'])} ({f35['gap']:+.0%})".replace('(-', '(−'),
+          "• Double linkage (Red Power = Power Link Plus)\n• Power boost (PPB = HPLS)\n• Electronics (ECM = Paltronic)\n• Stability (Dynamic Load Diagram = HPSC)\n• Auto fold (Magic Touch = P-Fold)",
+          f"• No extra named feature\n• Wins on price: {-f35['gap']:.0%} cheaper\n• Delivery: stock in China (~14 weeks); PK 41002 built in Europe")]
+tb = sF.shapes.add_table(3, 4, E(RX), E(CY + 142), E(sum(fcols)), E(250)).table
+for j, w in enumerate(fcols): tb.columns[j].width = E(w)
+tb.rows[0].height = E(22); tb.rows[1].height = E(100); tb.rows[2].height = E(96)
+for i, row in enumerate(rows_):
+    for j, v in enumerate(row):
+        c = tb.cell(i, j); c.text = v; c.vertical_anchor = MSO_ANCHOR.MIDDLE if i == 0 else MSO_ANCHOR.TOP
+        c.margin_left = c.margin_right = E(5); c.margin_top = c.margin_bottom = E(4)
+        c.fill.solid(); c.fill.fore_color.rgb = rgb('E6E6E6' if i == 0 else ('E1F9EC' if j == 3 else 'FFFFFF'))
+        for pi, p in enumerate(c.text_frame.paragraphs):
+            for r in p.runs: r.font.name = FONT; r.font.size = Pt(9.5 if i == 0 else 9); r.font.color.rgb = rgb('000000'); r.font.bold = i == 0 or (j < 2 and pi == 0)
+tx(sF, 36, 678, 1206, 30, [('Source: Crane Market GVW Pairing v11 (Noir), Jan 2023 – 14 Aug 2026; Hyva excluded; tier by original max lifting moment; prices as on the Medium table slide (Rp 17.803/USD, incl. duty and import tax; 7441C estimate). '
+    'Features: Hiab, Palfinger and F.lli Ferrari product pages and brochures. *Not verified on the FBR350R A4 datasheet; HIAB X-CLX 388 feature list from the Hiab product page (manual control, remote optional).', False, '6B6B6B')], 6.5)
 s15 = frame_slide('Heavy Class: Who to Target', 'Which model holds the money? Who can beat it on price?',
                   'Heavy: F.lli Ferrari wins only at 45–50 tm; at 50–55 tm it is far above Palfinger PK 53002',
                   f"50–55 tm is {h[50]['ms']:.0%} of Heavy value and PK 53002 takes {h[50]['sh']:.0%} of it. 9601CR A8 is {h[50]['gap']:.0%} above it, and XCMG has no model between 47 and 85 tm in the import data.")
