@@ -21,7 +21,7 @@ def price(b, usd):      # highest import unit price x FX x (1+duty) x (1 + PPN 1
 NICE = lambda b: {'SANY PALFINGER': 'Sany Palfinger', 'PALFINGER': 'Palfinger', 'HIAB': 'HIAB', 'AMCO VEBA': 'Amco Veba', 'XCMG': 'XCMG', 'HYVA': 'Hyva'}.get(b, b.title())
 # F.lli Ferrari challenger per tier (TSP price list Rev1 Jun 2026 less 13.6% margin and 3% warranty; F.lli Ferrari Market Strategy v5)
 FER = {25: ('268 A4', 500e6), 30: ('FBR350R A4', 1090e6), 35: ('7441C*', 1240e6), 40: ('746 A4', 1420e6),
-       45: ('FBR450R A4', 1350e6), 50: ('9601CR A8', 3260e6), 55: ('FBR660R A4', 2030e6), 60: ('9661C', None),
+       45: ('FBR450R A4', 1350e6), 50: ('9601CR A8', 3260e6), 55: ('FBR660R A4', 2030e6), 60: ('9661C', 3970000000),
        70: ('990R', 4110e6), 80: (None, None), 85: (None, None)}
 TMCOL = 12   # tier by original max lifting moment (12); 13 = rounded
 EXCL = {'HYVA'}   # Hyva stopped making cranes: out of the STP view
