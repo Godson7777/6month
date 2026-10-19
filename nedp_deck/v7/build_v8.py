@@ -212,7 +212,8 @@ def stp_content(s, cls, rows, seg, tgt, pos):
         else:
             cb, ct, cp, g = ('F.lli Ferrari' if r['fn'] else '—'), (r['fn'] or '—'), r['fp'], r['gap']
         pt = 'No model' if ct == '—' else ('To be quoted by XCMG' if ct == 'Model TBC' else 'Price not yet known') if cp is None else ( f"{rp(cp)}  ({g:+.0%})".replace('-', '−'))
-        cell(i, 8, cb, True, fill(g), sz=10); cell(i, 9, ct, False, fill(g), sz=10); cell(i, 10, pt, False, fill(g), sz=10)
+        if cls == 'Heavy' and r['t'] == 60: pt = 'Price not yet known · no XCMG model in 60–65 tm import data'
+        cell(i, 8, cb, True, fill(g), sz=10); cell(i, 9, ct, False, fill(g), sz=10); cell(i, 10, pt, False, fill(g), sz=10 if len(pt) < 40 else 9)
     foot = ('Source: Crane Market GVW Pairing v11 (Noir), Jan 2023 – 14 Aug 2026. Tier by original max lifting moment; model variants merged (SPK32080 = SPK32080, B, C). '
             f'% of {cls} = tier import value / {cls} import value. Top 1 = model with the highest import value in the tier; value share = model value / tier value. '
             'Competitor price = highest import unit price × Rp 17.803/USD (JISDOR 23 Sep 2026) × (1 + duty: 0% China ACFTA, 5% Europe) × (1 + PPN 11% + PPh 22 2.5%), before distributor margin. '
