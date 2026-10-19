@@ -44,19 +44,19 @@ def pic(f, x, y, w, h):
     p_ = s.shapes.add_picture(path, E(x + (w - pw) / 2), E(y + (h - ph) / 2), E(pw), E(ph))
     p_.line.color.rgb = rgb('D9D9D9'); p_.line.width = Pt(.5)
 STEPS = [
- ('Demand Check', ['I check which demands are rising in PCR',
-                   'I ask the Business Consultant why the customer buys: expansion, new business or replacement',
-                   'I check the project location, and whether the customer wants it fast or cheap',
-                   'I check the expected price and when the PO may come'],
+ ('Demand Check', ['Spot which demands are rising in PCR',
+                   'Why the customer buys: expansion, new business or replacement (with the Business Consultant)',
+                   'Project location, and whether the customer wants it fast or cheap',
+                   'Expected price and when the PO may come'],
   [('sc1_a.png', 0, 0, 394, 140), ('sc1_b.webp', 0, 146, 194, 152), ('sc1_c.png', 200, 146, 194, 152)]),
- ('Preliminary Drawing Review', ['I learn what the unit does and how it works',
-                   'I find the main parts that drive the price or the lead time',
-                   'I check the details with Application Engineering'],
+ ('Preliminary Drawing Review', ['What the unit does and how it works',
+                   'Main parts that drive the price or the lead time',
+                   'Details checked with Application Engineering'],
   [('sc2_a.png', 0, 0, 194, 146), ('sc2_b.png', 200, 0, 194, 146), ('sc2_c.webp', 0, 152, 194, 146), ('sc2_d.png', 200, 152, 194, 146)]),
- ('Request Quote to UTE', ['I send UTE the drawing, target price, lead time, end customer and delivery date',
-                   'I check the standard GP (13.6%) before any negotiation',
-                   'I track the SLA and escalate when it runs late',
-                   'I enter the quote result into PCR'],
+ ('Request Quote to UTE', ['Drawing, target price, lead time, end customer and delivery date sent to UTE',
+                   'Standard GP check (13.6%) before any negotiation',
+                   'SLA tracked; escalated when it runs late',
+                   'Quote result entered into PCR'],
   [('sc3_a.png', 0, 0, 194, 146), ('sc3_b.png', 200, 0, 194, 146), ('sc3_c.png', 0, 152, 394, 146)]),
 ]
 for i, (head, bullets, pics) in enumerate(STEPS):
