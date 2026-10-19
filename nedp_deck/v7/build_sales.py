@@ -77,7 +77,7 @@ for i, (head, bullets, pics) in enumerate(STEPS):
     tx(x + 4, 262, W - 8, 112, ['• ' + b for b in bullets], 10.5)
     for f, dx, dy, w, h in pics: pic(f, x + dx, 380 + dy, w, h)
 from pptx.enum.dml import MSO_LINE_DASH_STYLE
-fx, fy, fw, fh = 36, 540, 394, 130
+fx, fy, fw, fh = 36, 502, 394, 168
 fb = s.shapes.add_shape(MSO_SHAPE.RECTANGLE, E(fx), E(fy), E(fw), E(fh))
 fb.fill.background(); fb.line.color.rgb = rgb('9E9E9E'); fb.line.width = Pt(1); fb.line.dash_style = MSO_LINE_DASH_STYLE.DASH; fb.shadow.inherit = False
 tg = s.shapes.add_shape(MSO_SHAPE.RECTANGLE, E(fx + 10), E(fy - 9), E(46), E(18))
