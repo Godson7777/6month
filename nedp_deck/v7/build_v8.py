@@ -180,7 +180,7 @@ def tx(s, x, y, w, h, runs, sz, al=PP_ALIGN.LEFT):
     for t, bold, c in runs:
         r = p.add_run(); r.text = t; r.font.size = Pt(sz); r.font.bold = bold; r.font.name = FONT; r.font.color.rgb = rgb(c)
     return b
-XCMG_TIERS = {('Medium', 40), ('Heavy', 50), ('Heavy', 70)}
+XCMG_TIERS = {('Medium', 40), ('Heavy', 50)}   # 60-90: XCMG only where Ferrari loses/has no model and XCMG has a model in range
 def stp_content(s, cls, rows, seg, tgt, pos):
     for i, (head, body, fill) in enumerate([('SEGMENTATION', seg, 'F2F2F2'), ('TARGETING', tgt, 'F2F2F2'), ('POSITIONING', pos, 'E1F9EC')]):
         x = 36 + i * 406
@@ -216,14 +216,15 @@ def stp_content(s, cls, rows, seg, tgt, pos):
             else: cb, ct, cp, g = 'XCMG', 'Model TBC', None, None
         else:
             cb, ct, cp, g = ('F.lli Ferrari' if r['fn'] else '—'), (r['fn'] or '—'), r['fp'], r['gap']
-        pt = 'No model' if ct == '—' else ('To be quoted by XCMG' if ct == 'Model TBC' else 'Price not yet known') if cp is None else ( f"{rp(cp)}  ({g:+.0%})".replace('-', '−'))
+        if ct == '—' and r['brand'] == 'XCMG': cb, ct = 'XCMG', 'XCMG is the top 1'
+        pt = ('No F.lli Ferrari model' if ct == 'XCMG is the top 1' else 'No model') if ct in ('—', 'XCMG is the top 1') else ('To be quoted by XCMG' if ct == 'Model TBC' else 'Price not yet known') if cp is None else ( f"{rp(cp)}  ({g:+.0%})".replace('-', '−'))
         if cls == 'Heavy' and r['t'] == 60: pt = 'Price not yet known · no XCMG model in 60–65 tm import data'
         cell(i, 8, cb, True, fill(g), sz=10); cell(i, 9, ct, False, fill(g), sz=10); cell(i, 10, pt, False, fill(g), sz=10 if len(pt) < 40 else 9)
     foot = ('Source: Crane Market GVW Pairing v11 (Noir), Jan 2023 – 14 Aug 2026. Tier by original max lifting moment; model variants merged (SPK32080 = SPK32080, B, C). '
             f'% of {cls} = tier import value / {cls} import value. Top 1 = model with the highest import value in the tier; value share = model value / tier value. '
             'Competitor price = highest import unit price × Rp 17.803/USD (JISDOR 23 Sep 2026) × (1 + duty: 0% China ACFTA, 5% Europe) × (1 + PPN 11% + PPh 22 2.5%), before distributor margin. '
             'F.lli Ferrari = TSP price list Rev1 Jun 2026 less 13.6% TSP margin and 3% warranty; *7441C estimate; 990R less Rp 168 Jt cargo deck and install; 9601CR A8 = UTPE quote 15 Sep 2026. '
-            'XCMG GSQZ460.4 priced like competitors (highest import unit price, 0% duty); no XCMG 50–75 tm model in import data, so model and price TBC. Hyva excluded (cranes discontinued). tm shown rounded. '
+            'XCMG GSQZ460.4 priced like competitors (highest import unit price, 0% duty); no XCMG 50–55 tm model in import data, so model and price TBC. Hyva excluded (cranes discontinued). tm shown rounded. '
             'Fill: green = challenger cheaper, yellow = up to +30%, red = over +30%, grey = no price or no model.')
     tx(s, 36, 678, 1206, 38, [(foot, False, '6B6B6B')], 6.5)
 
@@ -241,9 +242,9 @@ stp_content(s14, 'Medium', RM,
     f"XCMG {x40['xn']} ({int(x40['xtm'] + .5)} tm): bigger crane, {-x40['xgap']:.0%} cheaper than Sany Palfinger SPK42502 ({int(x40['ttm'] + .5)} tm).")
 s15 = frame_slide('Heavy Class: Who to Target', 'Which model holds the money? Who can beat it on price?',
                   'Heavy: win 45–50 tm with F.lli Ferrari; take on Palfinger PK 53002 at 50–55 tm with XCMG',
-                  f"50–55 tm is {h[50]['ms']:.0%} of Heavy value and PK 53002 takes {h[50]['sh']:.0%} of it. XCMG has no 50–75 tm crane in the import data yet, so a model and price must be quoted.")
+                  f"50–55 tm is {h[50]['ms']:.0%} of Heavy value and PK 53002 takes {h[50]['sh']:.0%} of it. XCMG has no 50–55 tm crane in the import data yet, so a model and price must be quoted. Above 60 tm XCMG has no model per tier, so F.lli Ferrari stays and shows its gap.")
 stp_content(s15, 'Heavy', RH_,
     f"Heavy class split into {len(RH_)} tm tiers. 45–55 tm holds {h[45]['ms'] + h[50]['ms']:.0%} of Heavy value ({h[45]['tq'] + h[50]['tq']} of {CUH} units); tiers above 55 tm have 1–4 units each.",
     f"Top 1 model by value: Amco Veba V950 at 45–50 tm ({h[45]['sh']:.0%} of tier value) and Palfinger PK 53002 at 50–55 tm ({h[50]['sh']:.0%}).",
-    f"F.lli Ferrari FBR450R A4 is {-h[45]['gap']:.0%} cheaper than V950. XCMG for PK 53002 (50–55 tm) and PK 76002 (70–75 tm): ask XCMG for a model and Triatra price.")
+    f"FBR450R A4 is {-h[45]['gap']:.0%} cheaper than V950. 990R stays {h[70]['gap']:.0%} above PK 76002: no XCMG model at 70–75 tm.")
 P.save(OUT); print('saved', OUT, len(P.slides._sldIdLst), 'slides')
