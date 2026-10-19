@@ -23,6 +23,7 @@ NICE = lambda b: {'SANY PALFINGER': 'Sany Palfinger', 'PALFINGER': 'Palfinger', 
 FER = {25: ('268 A4', 500e6), 30: ('FBR350R A4', 1090e6), 35: ('7441C*', 1240e6), 40: ('746 A4', 1420e6),
        45: ('FBR450R A4', 1350e6), 50: ('9601CR A8', 3260e6), 55: ('FBR660R A4', 2030e6), 60: ('9661C', None),
        70: ('990R', 4110e6), 80: (None, None), 85: (None, None)}
+XROWS = [r for r in RALL if r[0] == 'XCMG' and r[2] in ('Medium', 'Heavy')]
 def build_rows(cls):
     R = [r for r in RALL if r[2] == cls]; CV = sum(r[10] for r in R)
     T = collections.defaultdict(list)
@@ -34,8 +35,18 @@ def build_rows(cls):
         for r in rr:
             k = (r[0], fam(r[0], r[1])); V[k] += r[10]; Q[k] += r[8]; MX[k] = max(MX[k], r[9])
         k, v = V.most_common(1)[0]; p_ = price(k[0], MX[k]); fn, fp = FER[t]
+        ttm = max(r[12] for r in rr if r[0] == k[0] and fam(r[0], r[1]) == k[1])
+        # XCMG challenger: cheapest XCMG model, at most 2 tm smaller / 5 tm bigger than the target, any class
+        xc = collections.defaultdict(lambda: [0, 0])
+        for r in XROWS:
+            if ttm - 2 <= r[12] <= ttm + 5: xc[r[1]][0] = max(xc[r[1]][0], r[9]); xc[r[1]][1] = r[12]
+        xn = xp = xtm = None
+        if k[0] != 'XCMG' and xc:
+            m_ = min(xc, key=lambda m: (price('XCMG', xc[m][0]), -xc[m][1]))
+            xn, xp, xtm = m_.replace('XCMG ', ''), price('XCMG', xc[m_][0]), xc[m_][1]
         rows.append(dict(t=t, tq=tq, ms=tv / CV, brand=NICE(k[0]), type=k[1], q=Q[k], sh=v / tv, p=p_, fn=fn, fp=fp,
-                         gap=(fp / p_ - 1) if fp else None))
+                         gap=(fp / p_ - 1) if fp else None, ttm=ttm, xn=xn, xp=xp, xtm=xtm,
+                         xgap=(xp / p_ - 1) if xp else None))
     return rows, sum(r[8] for r in R)
 rp = lambda x: 'Rp ' + f'{x:,.0f}'.replace(',', '.')
 pct = lambda x: f'{x:.0%}'
