@@ -105,6 +105,8 @@ n12 = rep_slide(s12, [
     ('118 Units in Avg', f'{L_S * 12 / 44:.0f} units per year'),
     ('80 Units in Avg', f'{MQ * 12 / 44:.0f} units per year'),
     ('Selling Less but gain more value', 'Medium and Heavy sell fewer units but bring more value'),
+    ("How big the market is?", "How big is the market?"), ("And who's lead the market?", "And who leads the market?"),
+    ('Need To Focus on Medium and Heavy class', 'Needs To Focus on Medium and Heavy Class'),
 ])
 for sh in s12.shapes:   # second chart title was a copy of the first
     if sh.name == 'TextBox 91': rep_tf(sh.text_frame, 'Imported folding cranes by class per year, 2023 – 2026', 'Share of units vs value by class, 2023 – 2026')
@@ -128,6 +130,9 @@ n13 = rep_slide(s13, [
     ('3 brands holds', '3 brands hold'), ('of Unit', 'of units'), ('18% of units', 'Others 18%'),
     ('XCMG holds 86% of value  and 85% of units', 'XCMG hold 86% of value and 85% of units'),
     ('Palfinger holds 82% of units', 'Palfinger hold 82% of units'),
+    ('Did Medium and Heavy class still the leader?', 'Are Medium and Heavy still the leaders?'), ("And who's lead the market?", "And who leads the market?"),
+    ('Need To Focus on Medium and Heavy class', 'Needs To Focus on Medium and Heavy Class'),
+    ('XCMG holds 86% of value', 'XCMG hold 86% of value'), ('86% of value  and', '86% of value and'),
 ])
 for sh in s13.shapes:
     if sh.name == 'TextBox 74':
