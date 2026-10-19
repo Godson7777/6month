@@ -64,9 +64,11 @@ STEPS = [
                       'Painting style requested at least one month before RFD',
                       'Customer FAT joined with the Business Consultant'],
   [('sc5_72.webp', 0, 12, 194, 136), ('sc5_73.webp', 200, 12, 194, 136), ('sc5_74.webp', 0, 154, 194, 136), ('sc5_75.webp', 200, 154, 194, 136)]),
- ('Billing', ['Billing progress tracked: production, UTE admin or Triatra admin',
-              'Any blockage escalated until the invoice goes out',
-              'Pipeline–OSPO dashboard updated every month'], []),
+ ('Billing', ['Weekly billing tracker per unit, up to BAST and invoice',
+              'Monthly report: target, carry over, additional, actual',
+              'PICA on carry-over units: cause and corrective action',
+              'Blockages escalated until the invoice goes out'],
+  [('s4_a.webp', 0, 16, 394, 164), ('s4_b.webp', 0, 186, 394, 104)]),
 ]
 for i, (head, bullets, pics) in enumerate(STEPS):
     x = 36 + i * 406; W = 394
@@ -86,5 +88,5 @@ r = tg.text_frame.paragraphs[0].add_run(); r.text = 'FYI'; r.font.size = Pt(9); 
 tg.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER; tg.text_frame.margin_top = tg.text_frame.margin_bottom = 0
 y = chips(fx + 12, fy + 18, fw - 24, 'CLOSE WON APPROVAL', ['Sales Manager', '→ Marketing Associate', '→ Marketing Manager', '→ GM Marketing'], 2)
 chips(fx + 12, y + 12, fw - 24, 'PO INTERCO APPROVAL', ['Marketing Manager', '→ GM Marketing', '→ Marketing Director'], 3)
-tx(36, 678, 1206, 14, ['Photos: unit production at the UTE plant.'], 7, '6B6B6B')
+tx(36, 678, 1206, 14, ['Photos: unit production at the UTE plant; billing report with PICA, and weekly billing tracker.'], 7, '6B6B6B')
 P.save('v7/Slide_Sales.pptx'); print('ok', len(P.slides))
