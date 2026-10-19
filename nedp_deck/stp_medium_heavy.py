@@ -24,6 +24,8 @@ FER = {25: ('268 A4', 500e6), 30: ('FBR350R A4', 1090e6), 35: ('7441C*', 1240e6)
        45: ('FBR450R A4', 1350e6), 50: ('9601CR A8', 3260e6), 55: ('FBR660R A4', 2030e6), 60: ('9661C', None),
        70: ('990R', 4110e6), 80: (None, None), 85: (None, None)}
 TMCOL = 12   # tier by original max lifting moment (12); 13 = rounded
+EXCL = {'HYVA'}   # Hyva stopped making cranes: out of the STP view
+RALL = [r for r in RALL if r[0] not in EXCL]
 XROWS = [r for r in RALL if r[0] == 'XCMG' and r[2] in ('Medium', 'Heavy')]
 def build_rows(cls):
     R = [r for r in RALL if r[2] == cls]; CV = sum(r[10] for r in R)
