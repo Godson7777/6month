@@ -1,0 +1,84 @@
+"""One slide: Pre Sales (Demand Check, Preliminary Drawing Review, Request Quote to UTE) with photos, in the user's deck style."""
+import copy, os
+from PIL import Image
+from pptx import Presentation
+from pptx.util import Emu, Pt
+from pptx.dml.color import RGBColor
+from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
+from pptx.enum.shapes import MSO_SHAPE
+E = lambda v: Emu(round(v * 9525)); rgb = RGBColor.from_string; FONT = 'Neue Haas Grotesk Text Pro'
+P = Presentation('v7/6M_V9.pptx'); L = P.slides._sldIdLst
+for i, sid in reversed(list(enumerate(list(L)))):
+    if i != 13: P.part.drop_rel(sid.rId); L.remove(sid)
+src = P.slides[0]
+s = P.slides.add_slide(src.slide_layout)
+for ph in list(s.placeholders): ph._element.getparent().remove(ph._element)
+for sh in src.shapes:
+    if sh.name in ('Date Placeholder 3', 'Slide Number Placeholder 5', 'Title 10', 'Group 31', 'Straight Connector 34', 'Table 2'):
+        s.shapes._spTree.append(copy.deepcopy(sh._element))
+P.part.drop_rel(L[0].rId); L.remove(L[0])
+def set_runs(par, text):
+    rs = par.runs; rs[0].text = text
+    for r in rs[1:]: r._r.getparent().remove(r._r)
+SH = {sh.name: sh for sh in s.shapes}
+for c in SH['Group 31'].shapes:
+    set_runs(c.text_frame.paragraphs[0], 'Sales/' if 'Medium' in c.text_frame.text else 'What happens after the PO comes in?')
+t2 = SH['Table 2'].table
+set_runs(t2.cell(0, 0).text_frame.paragraphs[0], 'After the PO, I lock the order details, follow production and push billing to invoice')
+set_runs(t2.cell(1, 0).text_frame.paragraphs[0], 'From Close Won to invoice, so the unit reaches the customer on the agreed RFD.')
+def tx(x, y, w, h, paras, sz, color='000000', bold=False, al=PP_ALIGN.LEFT):
+    b = s.shapes.add_textbox(E(x), E(y), E(w), E(h)); tf = b.text_frame; tf.word_wrap = True
+    for m in ('margin_left', 'margin_right', 'margin_top', 'margin_bottom'): setattr(tf, m, 0)
+    for i, t in enumerate(paras):
+        p = tf.paragraphs[0] if i == 0 else tf.add_paragraph(); p.alignment = al; p.space_after = Pt(3)
+        r = p.add_run(); r.text = t; r.font.size = Pt(sz); r.font.name = FONT; r.font.bold = bold; r.font.color.rgb = rgb(color)
+    return b
+os.makedirs('/tmp/claude-0/ps', exist_ok=True)
+def pic(f, x, y, w, h):
+    path = 'assets/evidence/' + f
+    if f.endswith('.webp'):
+        out = '/tmp/claude-0/ps/' + f.replace('.webp', '.png'); Image.open(path).convert('RGB').save(out); path = out
+    iw, ih = Image.open(path).size; k = min(w / iw, h / ih); pw, ph = iw * k, ih * k
+    fr = s.shapes.add_shape(MSO_SHAPE.RECTANGLE, E(x), E(y), E(w), E(h))
+    fr.fill.solid(); fr.fill.fore_color.rgb = rgb('F2F2F2'); fr.line.fill.background(); fr.shadow.inherit = False
+    p_ = s.shapes.add_picture(path, E(x + (w - pw) / 2), E(y + (h - ph) / 2), E(pw), E(ph))
+    p_.line.color.rgb = rgb('D9D9D9'); p_.line.width = Pt(.5)
+def chips(x, y, w, title, items, cols):
+    tx(x, y, w, 14, [title], 9.5, '1E9E57', True)
+    cw = (w - (cols - 1) * 4) / cols; ch_ = 22
+    for k, it in enumerate(items):
+        cx = x + (k % cols) * (cw + 4); cy = y + 18 + (k // cols) * (ch_ + 4)
+        b = s.shapes.add_shape(MSO_SHAPE.RECTANGLE, E(cx), E(cy), E(cw), E(ch_))
+        b.fill.solid(); b.fill.fore_color.rgb = rgb('F2F2F2'); b.line.fill.background(); b.shadow.inherit = False
+        tf = b.text_frame; tf.margin_left = tf.margin_right = E(2); tf.margin_top = tf.margin_bottom = 0; tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+        p = tf.paragraphs[0]; p.alignment = PP_ALIGN.CENTER; r = p.add_run(); r.text = it
+        r.font.size = Pt(8.5); r.font.name = FONT; r.font.color.rgb = rgb('000000')
+    return y + 18 + ((len(items) - 1) // cols + 1) * (ch_ + 4)
+STEPS = [
+ ('Close Won → CPO', ['PO, preliminary drawing and PJB checked in CRM',
+                      'QFD requested from UTE; special requests and painting style collected from the Business Consultant',
+                      'RFD date in the QFD becomes the due date of the PO Interco'], []),
+ ('Production Monitoring', ['Production followed regularly: plant visits or photos from Nandu',
+                      'QFD plan compared with actual production',
+                      'Issues that put the RFD at risk escalated early',
+                      'Painting style requested at least one month before RFD',
+                      'Customer FAT joined with the Business Consultant'],
+  [('sc5_72.webp', 0, 12, 194, 136), ('sc5_73.webp', 200, 12, 194, 136), ('sc5_74.webp', 0, 154, 194, 136), ('sc5_75.webp', 200, 154, 194, 136)]),
+ ('Billing', ['Billing progress tracked: production, UTE admin or Triatra admin',
+              'Any blockage escalated until the invoice goes out',
+              'Pipeline–OSPO dashboard updated every month'], []),
+]
+for i, (head, bullets, pics) in enumerate(STEPS):
+    x = 36 + i * 406; W = 394
+    hb = s.shapes.add_shape(MSO_SHAPE.CHEVRON if i else MSO_SHAPE.PENTAGON, E(x), E(222), E(W), E(30))
+    hb.fill.solid(); hb.fill.fore_color.rgb = rgb('1E9E57'); hb.line.fill.background(); hb.shadow.inherit = False
+    tf = hb.text_frame; tf.paragraphs[0].alignment = PP_ALIGN.CENTER; r = tf.paragraphs[0].add_run()
+    r.text = f'{i + 1}. {head}'; r.font.size = Pt(14); r.font.bold = True; r.font.name = FONT; r.font.color.rgb = rgb('FFFFFF')
+    tx(x + 4, 262, W - 8, 112, ['• ' + b for b in bullets], 10.5)
+    for f, dx, dy, w, h in pics: pic(f, x + dx, 380 + dy, w, h)
+y = chips(36, 384, 394, 'CLOSE WON APPROVAL', ['Sales Manager', '→ Marketing Associate', '→ Marketing Manager', '→ GM Marketing'], 2)
+chips(36, y + 10, 394, 'PO INTERCO APPROVAL', ['Marketing Manager', '→ GM Marketing', '→ Marketing Director'], 3)
+y = chips(848, 384, 394, 'AT UTE', [f'{k + 1}. {t}' for k, t in enumerate(['PO Interco', 'PRO', 'PR', 'PO', 'Drawing', 'BOM', 'LPPB', 'PB', 'Fabrication', 'Assembly', 'QC passed', 'GR Teco', 'GI'])], 4)
+chips(848, y + 10, 394, 'AT TRIATRA', [f'{k + 1}. {t}' for k, t in enumerate(['GR', 'DO / TO', 'GI', 'BAST', 'BAST approval', 'Invoice'])], 4)
+tx(36, 678, 1206, 14, ['Photos: unit production at the UTE plant.'], 7, '6B6B6B')
+P.save('v7/Slide_Sales.pptx'); print('ok', len(P.slides))
