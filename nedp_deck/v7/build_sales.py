@@ -76,9 +76,15 @@ for i, (head, bullets, pics) in enumerate(STEPS):
     r.text = f'{i + 1}. {head}'; r.font.size = Pt(14); r.font.bold = True; r.font.name = FONT; r.font.color.rgb = rgb('FFFFFF')
     tx(x + 4, 262, W - 8, 112, ['• ' + b for b in bullets], 10.5)
     for f, dx, dy, w, h in pics: pic(f, x + dx, 380 + dy, w, h)
-y = chips(36, 384, 394, 'CLOSE WON APPROVAL', ['Sales Manager', '→ Marketing Associate', '→ Marketing Manager', '→ GM Marketing'], 2)
-chips(36, y + 10, 394, 'PO INTERCO APPROVAL', ['Marketing Manager', '→ GM Marketing', '→ Marketing Director'], 3)
-y = chips(848, 384, 394, 'AT UTE', [f'{k + 1}. {t}' for k, t in enumerate(['PO Interco', 'PRO', 'PR', 'PO', 'Drawing', 'BOM', 'LPPB', 'PB', 'Fabrication', 'Assembly', 'QC passed', 'GR Teco', 'GI'])], 4)
-chips(848, y + 10, 394, 'AT TRIATRA', [f'{k + 1}. {t}' for k, t in enumerate(['GR', 'DO / TO', 'GI', 'BAST', 'BAST approval', 'Invoice'])], 4)
+from pptx.enum.dml import MSO_LINE_DASH_STYLE
+fx, fy, fw, fh = 36, 540, 394, 130
+fb = s.shapes.add_shape(MSO_SHAPE.RECTANGLE, E(fx), E(fy), E(fw), E(fh))
+fb.fill.background(); fb.line.color.rgb = rgb('9E9E9E'); fb.line.width = Pt(1); fb.line.dash_style = MSO_LINE_DASH_STYLE.DASH; fb.shadow.inherit = False
+tg = s.shapes.add_shape(MSO_SHAPE.RECTANGLE, E(fx + 10), E(fy - 9), E(46), E(18))
+tg.fill.solid(); tg.fill.fore_color.rgb = rgb('6B6B6B'); tg.line.fill.background(); tg.shadow.inherit = False
+r = tg.text_frame.paragraphs[0].add_run(); r.text = 'FYI'; r.font.size = Pt(9); r.font.bold = True; r.font.name = FONT; r.font.color.rgb = rgb('FFFFFF')
+tg.text_frame.paragraphs[0].alignment = PP_ALIGN.CENTER; tg.text_frame.margin_top = tg.text_frame.margin_bottom = 0
+y = chips(fx + 12, fy + 18, fw - 24, 'CLOSE WON APPROVAL', ['Sales Manager', '→ Marketing Associate', '→ Marketing Manager', '→ GM Marketing'], 2)
+chips(fx + 12, y + 12, fw - 24, 'PO INTERCO APPROVAL', ['Marketing Manager', '→ GM Marketing', '→ Marketing Director'], 3)
 tx(36, 678, 1206, 14, ['Photos: unit production at the UTE plant.'], 7, '6B6B6B')
 P.save('v7/Slide_Sales.pptx'); print('ok', len(P.slides))
