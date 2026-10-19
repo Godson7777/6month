@@ -23,11 +23,12 @@ NICE = lambda b: {'SANY PALFINGER': 'Sany Palfinger', 'PALFINGER': 'Palfinger', 
 FER = {25: ('268 A4', 500e6), 30: ('FBR350R A4', 1090e6), 35: ('7441C*', 1240e6), 40: ('746 A4', 1420e6),
        45: ('FBR450R A4', 1350e6), 50: ('9601CR A8', 3260e6), 55: ('FBR660R A4', 2030e6), 60: ('9661C', None),
        70: ('990R', 4110e6), 80: (None, None), 85: (None, None)}
+TMCOL = 12   # tier by original max lifting moment (12); 13 = rounded
 XROWS = [r for r in RALL if r[0] == 'XCMG' and r[2] in ('Medium', 'Heavy')]
 def build_rows(cls):
     R = [r for r in RALL if r[2] == cls]; CV = sum(r[10] for r in R)
     T = collections.defaultdict(list)
-    for r in R: T[int((r[12] - 1e-9) // 5 * 5)].append(r)
+    for r in R: T[int((r[TMCOL] - 1e-9) // 5 * 5)].append(r)
     rows = []
     for t in sorted(T):
         rr = T[t]; tv = sum(r[10] for r in rr); tq = sum(r[8] for r in rr)
@@ -35,11 +36,11 @@ def build_rows(cls):
         for r in rr:
             k = (r[0], fam(r[0], r[1])); V[k] += r[10]; Q[k] += r[8]; MX[k] = max(MX[k], r[9])
         k, v = V.most_common(1)[0]; p_ = price(k[0], MX[k]); fn, fp = FER[t]
-        ttm = max(r[12] for r in rr if r[0] == k[0] and fam(r[0], r[1]) == k[1])
+        ttm = max(r[TMCOL] for r in rr if r[0] == k[0] and fam(r[0], r[1]) == k[1])
         # XCMG challenger: cheapest XCMG model, at most 2 tm smaller / 5 tm bigger than the target, any class
         xc = collections.defaultdict(lambda: [0, 0])
         for r in XROWS:
-            if ttm - 2 <= r[12] <= ttm + 5: xc[r[1]][0] = max(xc[r[1]][0], r[9]); xc[r[1]][1] = r[12]
+            if ttm - 2 <= r[TMCOL] <= ttm + 5: xc[r[1]][0] = max(xc[r[1]][0], r[9]); xc[r[1]][1] = r[TMCOL]
         xn = xp = xtm = None
         if k[0] != 'XCMG' and xc:
             m_ = min(xc, key=lambda m: (price('XCMG', xc[m][0]), -xc[m][1]))

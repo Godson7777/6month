@@ -87,8 +87,8 @@ n10 = rep_slide(P.slides[9], [
      'Top 1 model by value. Medium: Amco Veba V825, HIAB X-CLX 388, Palfinger PK 41002, Sany Palfinger SPK42502. Heavy: Amco Veba V950, Palfinger PK 53002.'),
     ('Two classes, ten 5-tm tiers', 'Two classes, eleven 5-tm tiers with imports'),
     ('cheaper where it wins (−23% at 25 – 30 tm, −32% at 45 – 50 tm)', 'cheaper where it wins (−23% at 25 – 30 tm, −25% at 30 – 35 tm, −14% at 35 – 40 tm, −32% at 45 – 50 tm)'),
-    ('XCMG: same capacity, lower price (SQZ365.4 −9% vs SPK36080).', 'XCMG: same or bigger crane at a lower price (16–63% below the value leader in every Medium tier; −59% vs V950).'),
-    ('XCMG: Triatra special price on SQZ325.4 and SQZ365.4.', 'XCMG: Triatra special price on SQ12ZK3Q, KSQZ365.4, GSQZ460.4 and GSQZ860.6.'),
+    ('XCMG: same capacity, lower price (SQZ365.4 −9% vs SPK36080).', 'XCMG: bigger crane at a lower price against Sany Palfinger (GSQZ460.4 −16% vs SPK42502 at 40 – 45 tm).'),
+    ('XCMG: Triatra special price on SQZ325.4 and SQZ365.4.', 'XCMG: Triatra special price on GSQZ460.4.'),
 ])
 print('slide 10 replacements', n10)
 
@@ -182,7 +182,7 @@ def stp_content(s, cls, rows, seg, tgt, pos):
         b.fill.solid(); b.fill.fore_color.rgb = rgb(fill); b.line.fill.background(); b.shadow.inherit = False
         tx(s, x + 12, 244, 370, 14, [(head, True, '1E9E57')], 10)
         tx(s, x + 12, 258, 370, 68, [(body, False, '000000')], 10.5)
-    cols = [70, 48, 70, 132, 112, 48, 58, 140, 104, 160, 104, 160]
+    cols = [72, 50, 72, 136, 116, 50, 62, 146, 112, 150, 240]
     n = len(rows); RH = min(60, (676 - 340 - 72) // n)
     tb = s.shapes.add_table(3 + n, len(cols), E(36), E(340), E(sum(cols)), E(72 + RH * n)).table
     for j, w in enumerate(cols): tb.columns[j].width = E(w)
@@ -197,49 +197,46 @@ def stp_content(s, cls, rows, seg, tgt, pos):
             for r in p.runs: r.font.name = FONT; r.font.size = Pt(sz); r.font.bold = bold; r.font.color.rgb = rgb(color)
     tb.cell(0, 0).merge(tb.cell(0, len(cols) - 1)); cell(0, 0, f'{cls} Class Crane', True, '0B4D2A', 'FFFFFF', 12)
     tb.cell(1, 0).merge(tb.cell(2, 0)); cell(1, 0, 'TM Class', True, 'E6E6E6', sz=10)
-    for a, b_, t in [(1, 2, 'Market Size'), (3, 7, 'Top 1 Competitor (by value)'), (8, 9, 'Challenger: F.lli Ferrari (quality buyer)'), (10, 11, 'Challenger: XCMG (price buyer)')]:
+    for a, b_, t in [(1, 2, 'Market Size'), (3, 7, 'Top 1 Competitor (by value)'), (8, 10, 'Challenger')]:
         tb.cell(1, a).merge(tb.cell(1, b_)); cell(1, a, t, True, 'E6E6E6', sz=10)
-    for j, t in enumerate(['', 'Qty', f'% of {cls}', 'Brand', 'Type', 'Qty', 'Value share', 'Price/unit', 'Type', 'Price/unit', 'Type', 'Price/unit']):
+    for j, t in enumerate(['', 'Qty', f'% of {cls}', 'Brand', 'Type', 'Qty', 'Value share', 'Price/unit', 'Brand', 'Type', 'Price/unit']):
         if j: cell(2, j, t, True, 'E6E6E6', sz=10)
     fill = lambda g: 'EDEDED' if g is None else ('E1F9EC' if g < 0 else ('FFF7C2' if g <= .30 else 'FEEBEC'))
     for i, r in enumerate(rows, start=3):
-        for j, v in enumerate([f"{r['t']} – {r['t'] + 5}", str(r['tq']), f"{r['ms']:.0%}", r['brand'], r['type'], str(r['q']), f"{r['sh']:.0%}", rp(r['p'])]):
-            cell(i, j, v, j in (0, 3), sz=11 if j != 7 else 10)
-        g = r['gap']
-        if r['fn'] is None: ft, pt = '—', 'No model'
-        elif r['fp'] is None: ft, pt = r['fn'], 'Price not yet known'
-        else: ft, pt = r['fn'], f"{rp(r['fp'])} ({g:+.0%})".replace('-', '−')
-        cell(i, 8, ft, False, fill(g), sz=10); cell(i, 9, pt, False, fill(g), sz=10)
-        xg = r['xgap']
-        if r['xn'] is None: xt, xpt = '—', ('XCMG is the leader' if r['brand'] == 'XCMG' else 'No model in range')
-        else: xt, xpt = f"{r['xn']} ({r['xtm']:g} tm)", f"{rp(r['xp'])} ({xg:+.0%})".replace('-', '−')
-        cell(i, 10, xt, False, fill(xg), sz=10); cell(i, 11, xpt, False, fill(xg), sz=10)
+        for j, v in enumerate([f"{r['t']} – {r['t'] + 5}", str(r['tq']), f"{r['ms']:.0%}", r['brand'], f"{r['type']} ({int(r['ttm'] + .5)} tm)", str(r['q']), f"{r['sh']:.0%}", rp(r['p'])]):
+            cell(i, j, v, j in (0, 3), sz=11 if j not in (4, 7) else 10)
+        if cls == 'Medium' and r['t'] == 40 and r['xn']:          # Sany Palfinger SPK42502 is fought with XCMG
+            cb, ct, cp, g = 'XCMG', f"{r['xn']} ({int(r['xtm'] + .5)} tm)", r['xp'], r['xgap']
+        else:
+            cb, ct, cp, g = ('F.lli Ferrari' if r['fn'] else '—'), (r['fn'] or '—'), r['fp'], r['gap']
+        pt = 'No model' if ct == '—' else ('Price not yet known' if cp is None else f"{rp(cp)}  ({g:+.0%})".replace('-', '−'))
+        cell(i, 8, cb, True, fill(g), sz=10); cell(i, 9, ct, False, fill(g), sz=10); cell(i, 10, pt, False, fill(g), sz=10)
     foot = ('Source: Crane Market GVW Pairing v11 (Noir), Jan 2023 – 14 Aug 2026. Tier by original max lifting moment; model variants merged (SPK32080 = SPK32080, B, C). '
             f'% of {cls} = tier import value / {cls} import value. Top 1 = model with the highest import value in the tier; value share = model value / tier value. '
             'Competitor price = highest import unit price × Rp 17.803/USD (JISDOR 23 Sep 2026) × (1 + duty: 0% China ACFTA, 5% Europe) × (1 + PPN 11% + PPh 22 2.5%), before distributor margin. '
             'F.lli Ferrari = TSP price list Rev1 Jun 2026 less 13.6% TSP margin and 3% warranty; *7441C estimate; 990R less Rp 168 Jt cargo deck and install; 9601CR A8 = UTPE quote 15 Sep 2026. '
-            'XCMG = cheapest XCMG model from 2 tm smaller to 5 tm bigger than the target, priced like competitors (0% duty). '
+            'XCMG GSQZ460.4 priced like competitors (highest import unit price, 0% duty). tm shown rounded. '
             'Fill: green = challenger cheaper, yellow = up to +30%, red = over +30%, grey = no price or no model.')
     tx(s, 36, 678, 1206, 38, [(foot, False, '6B6B6B')], 6.5)
 
 RM, CUM = build_rows('Medium'); RH_, CUH = build_rows('Heavy')
 winM = [r for r in RM if r['gap'] is not None and r['gap'] < 0]; mid = [r for r in RM if r['t'] in (30, 35)]; h = {r['t']: r for r in RH_}
-xM = [r for r in RM if r['xgap'] is not None and r['xgap'] < 0]
+x40 = RM[-1]
 s14 = frame_slide('Medium Class: Who to Target', 'Which model holds the money? Who can beat it on price?',
-                  'Medium: XCMG beats the value leader on price in every tier; F.lli Ferrari wins at 25–40 tm',
-                  f"XCMG for price buyers ({min(-r['xgap'] for r in xM):.0%}–{max(-r['xgap'] for r in xM):.0%} cheaper in {len(xM)} of {len(RM)} tiers); "
-                  f"F.lli Ferrari for quality buyers ({min(-r['gap'] for r in winM):.0%}–{max(-r['gap'] for r in winM):.0%} cheaper at 25–40 tm, {sum(r['ms'] for r in winM):.0%} of Medium value).")
+                  'Medium: F.lli Ferrari wins at 25–40 tm; XCMG takes on Sany Palfinger at 40–45 tm',
+                  f"F.lli Ferrari is {min(-r['gap'] for r in winM):.0%}–{max(-r['gap'] for r in winM):.0%} cheaper than the value leader at 25–40 tm ({sum(r['ms'] for r in winM):.0%} of Medium value); "
+                  f"at 40–45 tm XCMG {x40['xn']} is {-x40['xgap']:.0%} cheaper than SPK42502.")
 stp_content(s14, 'Medium', RM,
     f"Medium class split into {len(RM)} tm tiers. 30–40 tm holds {sum(r['ms'] for r in mid):.0%} of Medium value ({sum(r['tq'] for r in mid)} of {CUM} units).",
     'Top 1 model by value in each tier: ' + '; '.join(f"{r['brand']} {r['type']} ({r['t']}–{r['t'] + 5})" for r in RM) + '.',
-    f"XCMG: same or bigger crane, {min(-r['xgap'] for r in xM):.0%}–{max(-r['xgap'] for r in xM):.0%} cheaper in all tiers. "
-    f"F.lli Ferrari: European features, {min(-r['gap'] for r in winM):.0%}–{max(-r['gap'] for r in winM):.0%} cheaper at 25–40 tm. "
-    f"At 40–45 tm only XCMG GSQZ460.4 beats SPK42502 ({RM[-1]['xgap']:.0%}).".replace('-', '−'))
+    f"F.lli Ferrari: European features, {min(-r['gap'] for r in winM):.0%}–{max(-r['gap'] for r in winM):.0%} cheaper than the European leaders at 25–40 tm. "
+    f"XCMG {x40['xn']} ({int(x40['xtm'] + .5)} tm): bigger crane, {-x40['xgap']:.0%} cheaper than Sany Palfinger SPK42502 ({int(x40['ttm'] + .5)} tm).")
 s15 = frame_slide('Heavy Class: Who to Target', 'Which model holds the money? Who can beat it on price?',
-                  'Heavy: XCMG and F.lli Ferrari win 45–50 tm; no challenger beats PK 53002 at 50–55 tm yet',
-                  f"50–55 tm is {h[50]['ms']:.0%} of Heavy value and PK 53002 takes {h[50]['sh']:.0%} of it; XCMG has no model there and 9601CR A8 is {h[50]['gap']:.0%} above.")
+                  'Heavy: win 45–50 tm with F.lli Ferrari; Palfinger PK 53002 holds 50–55 tm',
+                  f"50–55 tm is {h[50]['ms']:.0%} of Heavy value and PK 53002 takes {h[50]['sh']:.0%} of it; 9601CR A8 is {h[50]['gap']:.0%} above PK 53002, "
+                  f"while FBR450R A4 is {-h[45]['gap']:.0%} below Amco Veba V950 at 45–50 tm.")
 stp_content(s15, 'Heavy', RH_,
     f"Heavy class split into {len(RH_)} tm tiers. 45–55 tm holds {h[45]['ms'] + h[50]['ms']:.0%} of Heavy value ({h[45]['tq'] + h[50]['tq']} of {CUH} units); tiers above 55 tm have 1–4 units each.",
     f"Top 1 model by value: Amco Veba V950 at 45–50 tm ({h[45]['sh']:.0%} of tier value) and Palfinger PK 53002 at 50–55 tm ({h[50]['sh']:.0%}).",
-    f"At 45–50 tm, XCMG GSQZ460.4 is {-h[45]['xgap']:.0%} and FBR450R A4 {-h[45]['gap']:.0%} cheaper than V950. At 80–85 tm, XCMG GSQZ860.6 is {-h[80]['xgap']:.0%} cheaper than PK 88002. No XCMG model at 50–75 tm.")
+    f"FBR450R A4 is {-h[45]['gap']:.0%} cheaper than V950. 9601CR A8 is {h[50]['gap']:.0%} above PK 53002; F.lli Ferrari has no model above 74 tm.")
 P.save(OUT); print('saved', OUT, len(P.slides._sldIdLst), 'slides')
