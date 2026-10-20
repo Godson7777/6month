@@ -20,7 +20,7 @@ def fam(b, m):
         if re.search(r'\d', t): out.append(re.sub(r'(\d)[A-Z]+$', r'\1', t)); break
         out.append(t)
     return ' '.join(out)
-landed = lambda b, usd: usd * FX * (1 + (0 if b in CN else .05)) * 1.135
+landed = lambda b, usd: usd * FX          # as-is import (Eximpedia) price, no duty / tax assumption
 HI = {'Light': 8, 'Small': 25, 'Medium': 45, 'Heavy': 999}
 def cls_of(tm):
     t = int(tm + .5); return 'Light' if t <= 8 else 'Small' if t <= 25 else 'Medium' if t <= 45 else 'Heavy'
@@ -36,7 +36,7 @@ def by_year():
     U = collections.defaultdict(int); V = collections.defaultdict(float)
     for r in R: U[(r[4], r[2])] += r[8]; V[(r[4], r[2])] += r[10] * FX
     return U, V
-# F.lli Ferrari cost, crane only: (K - I) x (1 - 13.6% TSP GP), sheet 25.06; tm per flliferrari.it or model-name class
+# F.lli Ferrari price list as-is, crane only: K - I, sheet 25.06; tm per flliferrari.it or model-name class
 FTM = {'315 A2': 1.5, '350 A2': 3.45, '543 A2': 4.3, '563 A2': 6, '563R A2': 6, '563 A3': 6, '563 A4': 6, '563R A4': 6,
        '6108 A2': 9.6, '6108 A3': 9.6, '6148 A3': 13.9, '5148 A4': 13.9, '178 A3': 15.8, '178 A4': 15.8, '6238 A3': 19.3, '6238 A4': 19.3,
        '6248 A3': 23, '6248 A4': 23, '258 A3': 25, '258R A3': 25, '258 A4': 25, '268 A3': 25.4, '268 A4': 25.4,
@@ -46,7 +46,7 @@ def ferrari():
     ws = openpyxl.load_workbook(PL, data_only=True)['25.06']; out = {}
     for r in ws.iter_rows(min_row=3, values_only=True):
         if r[3] in FTM and r[10]:
-            p = (r[10] - r[8]) * (1 - .136)
+            p = r[10] - r[8]                      # as-is price list, crane only (K - I)
             if r[3] not in out or p < out[r[3]]['p']:
                 out[r[3]] = dict(brand='F.lli Ferrari', type=r[3], tm=FTM[r[3]], p=p, lead=r[6], src=r[4])
     return list(out.values())

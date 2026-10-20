@@ -194,8 +194,8 @@ def s_map(CLS, sub=None, part=None):
             r = p.add_run(); r.text = d.NICE.get(key, key.title()); r.font.size = Pt(10 if len(d.NICE.get(key, key)) < 9 else 8.5); r.font.bold = True; r.font.color.rgb = rgb(DG); r.font.name = FONT; tf.word_wrap = False
     C.legend(36, 662, 520, [(LG, 'Our challenger (F.lli Ferrari first in Medium & Heavy)'), ('FFF7D6', 'Tier leader (TOP 1 = highest import value in the tier)')])
     C.tx(36, 682, 1206, 34, [[('Source: Indonesia import records (Crane Market GVW Pairing v11, Noir), 2023 – 2026 (2026 partial year); F.lli Ferrari price list June 2026 (Rev1), sheet 25.06. '
-        'Competitor price = average import unit price of the model (total value ÷ total units) × Rp 17.803/USD (JISDOR 23 Sep 2026) × (1 + import duty: 0% China/ACFTA, 5% others) × (1 + PPN 11% + PPh 22 2.5%); crane only, before distributor margin. '
-        'F.lli Ferrari price = (column K − column I) × (1 − 13.6% TSP GP): crane only, no cargo deck, no install, no warranty; taxes included. '
+        'Competitor price = average import unit price of the model as recorded (total value ÷ total units) × Rp 17.803/USD (JISDOR 23 Sep 2026); no duty or tax added. '
+        'F.lli Ferrari price = price list as is, crane only (column K − column I): no cargo deck, no install. '
         'Model variants merged (e.g. SPK8500 = SPK8500, A, B). '
         'Folding cranes only; Hyva, Zoomlion, grabbers, telescopic cranes and invalid-price records excluded. Challengers: F.lli Ferrari or XCMG; in Medium and Heavy F.lli Ferrari comes first (same size −2/+5 tm) unless it is more than 30% dearer; Heavy 50 – 55 tm uses FBR450R A4 (4,6 tm smaller) by decision.', False, '7F7F7F', 6.5)]])
 
@@ -258,7 +258,7 @@ def s_conclusion():
     C.tx(TX + 16, Y0 + 140, TW - 32, 250, [[(f'≈ {15 / avg:.0%} of one year of imports ({avg:.0f} units/year)', False, 'FFFFFF', 11)], [('', False, 'FFFFFF', 6)],
         [('Start with the biggest classes we win:', True, 'FFFFFF', 11)]] +
         [[(f"• {c} {t['tier'][0]}–{t['tier'][1]} tm: {t['ch']['nice']} {t['ch']['type']} ({t['units']} units, {jt(t['top']['p'] - t['ch']['p'])} cheaper)", False, 'FFFFFF', 10)] for c, t in big])
-    C.tx(36, 662, 1206, 30, [[('Prices per unit, crane only: competitors = average import price incl. duty and import tax (Rp 17.803/USD); F.lli Ferrari = price list June 2026 (K − I) less 13.6% TSP GP. '
+    C.tx(36, 662, 1206, 30, [[('Prices per unit, as is: competitors = average import price × Rp 17.803/USD (no duty or tax added); F.lli Ferrari = price list June 2026, crane only (K − I). '
         'Units = imports 2023 – 2026 (2026 partial year). Leader = highest import value in the tm class. − = we are cheaper, + = we are dearer. *FBR450R A4 is 4,6 tm smaller than PK 53002 (used by decision).', False, '7F7F7F', 7.5)]])
 
 s_market_all(); s_market_2025(); s_map('Light'); s_map('Small'); s_map('Medium'); s_map('Heavy'); s_conclusion()
