@@ -44,16 +44,16 @@ def pic(f, x, y, w, h):
     p_ = s.shapes.add_picture(path, E(x + (w - pw) / 2), E(y + (h - ph) / 2), E(pw), E(ph))
     p_.line.color.rgb = rgb('D9D9D9'); p_.line.width = Pt(.5)
 STEPS = [
- ('Monitor Unit Performance', ['Monitor unit performance', 'Gather customer feedback'], 'as1_warranty.png'),
- ('Follow Up Problems', ['Follow up problems', 'Ensure the problem is not repeated in other orders'], 'as2_failure.png'),
+ ('Monitor Unit Performance', ['Monitor unit performance', 'Gather customer feedback'], 36, 300, []),
+ ('Follow Up Problems', ['Follow up problems', 'Ensure the problem is not repeated in other orders'], 342, 900,
+  [('as1_warranty.png', 0), ('as2_failure.png', 453)]),
 ]
-for i, (head, bullets, f) in enumerate(STEPS):
-    W = 600; x = 36 + i * (W + 6)
+for i, (head, bullets, x, W, pics) in enumerate(STEPS):
     hb = s.shapes.add_shape(MSO_SHAPE.CHEVRON if i else MSO_SHAPE.PENTAGON, E(x), E(222), E(W), E(30))
     hb.fill.solid(); hb.fill.fore_color.rgb = rgb('1E9E57'); hb.line.fill.background(); hb.shadow.inherit = False
     tf = hb.text_frame; tf.paragraphs[0].alignment = PP_ALIGN.CENTER; r = tf.paragraphs[0].add_run()
     r.text = f'{i + 1}. {head}'; r.font.size = Pt(14); r.font.bold = True; r.font.name = FONT; r.font.color.rgb = rgb('FFFFFF')
     tx(x + 4, 262, W - 8, 50, ['• ' + b for b in bullets], 10.5)
-    pic(f, x, 310, W, 360)
+    for f, dx in pics: pic(f, x + dx, 310, 447, 252)
 tx(36, 678, 1206, 14, ['Photos: warranty unit population report and product failure analysis.'], 7, '6B6B6B')
 P.save('v7/Slide_AfterSales.pptx'); print('ok', len(P.slides))
