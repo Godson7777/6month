@@ -195,7 +195,7 @@ def s_map(CLS, sub=None, part=None):
     C.legend(36, 662, 520, [(LG, 'Our challenger (F.lli Ferrari first in Medium & Heavy)'), ('FFF7D6', 'Tier leader (TOP 1 = highest import value in the tier)')])
     C.tx(36, 682, 1206, 34, [[('Source: Indonesia import records (Crane Market GVW Pairing v11, Noir), 2023 – 2026 (2026 partial year); F.lli Ferrari price list June 2026 (Rev1), sheet 25.06. '
         'Competitor price = average import unit price of the model as recorded (total value ÷ total units) × Rp 17.803/USD (JISDOR 23 Sep 2026); no duty or tax added. '
-        'F.lli Ferrari price = price list as is, crane only (column K − column I): no cargo deck, no install. '
+        'F.lli Ferrari price = price list, crane only (column K − column I), less 13.6% TSP GP: no cargo deck, no install. '
         'Model variants merged (e.g. SPK8500 = SPK8500, A, B). '
         'Folding cranes only; Hyva, Zoomlion, grabbers, telescopic cranes and invalid-price records excluded. Challengers: F.lli Ferrari or XCMG; in Medium and Heavy F.lli Ferrari comes first (same size −2/+5 tm) unless it is more than 30% dearer; Heavy 50 – 55 tm uses FBR450R A4 (4,6 tm smaller) by decision.', False, '7F7F7F', 6.5)]])
 
@@ -258,7 +258,7 @@ def s_conclusion():
     C.tx(TX + 16, Y0 + 140, TW - 32, 250, [[(f'≈ {15 / avg:.0%} of one year of imports ({avg:.0f} units/year)', False, 'FFFFFF', 11)], [('', False, 'FFFFFF', 6)],
         [('Start with the biggest classes we win:', True, 'FFFFFF', 11)]] +
         [[(f"• {c} {t['tier'][0]}–{t['tier'][1]} tm: {t['ch']['nice']} {t['ch']['type']} ({t['units']} units, {jt(t['top']['p'] - t['ch']['p'])} cheaper)", False, 'FFFFFF', 10)] for c, t in big])
-    C.tx(36, 662, 1206, 30, [[('Prices per unit, as is: competitors = average import price × Rp 17.803/USD (no duty or tax added); F.lli Ferrari = price list June 2026, crane only (K − I). '
+    C.tx(36, 662, 1206, 30, [[('Prices per unit, as is: competitors = average import price × Rp 17.803/USD (no duty or tax added); F.lli Ferrari = price list June 2026, crane only (K − I) less 13.6% TSP GP. '
         'Units = imports 2023 – 2026 (2026 partial year). Leader = highest import value in the tm class. − = we are cheaper, + = we are dearer. *FBR450R A4 is 4,6 tm smaller than PK 53002 (used by decision).', False, '7F7F7F', 7.5)]])
 
 s_market_all(); s_market_2025(); s_map('Light'); s_map('Small'); s_map('Medium'); s_map('Heavy'); s_conclusion()

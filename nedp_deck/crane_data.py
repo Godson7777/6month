@@ -46,7 +46,7 @@ def ferrari():
     ws = openpyxl.load_workbook(PL, data_only=True)['25.06']; out = {}
     for r in ws.iter_rows(min_row=3, values_only=True):
         if r[3] in FTM and r[10]:
-            p = r[10] - r[8]                      # as-is price list, crane only (K - I)
+            p = (r[10] - r[8]) * (1 - .136)       # price list, crane only (K - I), less 13.6% TSP GP
             if r[3] not in out or p < out[r[3]]['p']:
                 out[r[3]] = dict(brand='F.lli Ferrari', type=r[3], tm=FTM[r[3]], p=p, lead=r[6], src=r[4])
     return list(out.values())
