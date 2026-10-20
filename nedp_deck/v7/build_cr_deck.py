@@ -91,8 +91,8 @@ def s_market_2025():
         fc = 'FFFFFF' if b in ('SANY PALFINGER', 'PALFINGER') else '000000'
         for j, c in enumerate(cats):
             sh = bv[(c, b)] / cv[c]
-            if sh >= .12: C.point_label(se, j, [d.NICE[b], f'{sh:.0%}'], fc, 9.5)
-            elif sh >= .05: C.point_label(se, j, [f'{sh:.0%}'], fc, 9)
+            if sh >= .3: C.point_fmt(se, j, f'"{d.NICE[b]} "0%', fc, 10)
+            elif sh >= .05: C.point_fmt(se, j, '0%', fc, 9.5)
             else: C.hide_label(se, j)
     rowh = BH * QH / 4
     for j, c in enumerate(d.CLS):          # bar charts draw the first category at the bottom: Light (last) is the top row

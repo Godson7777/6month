@@ -98,6 +98,16 @@ class Canvas:
             p = tf.paragraphs[0] if li == 0 else tf.add_paragraph()
             rr = p.add_run(); rr.text = part; rr.font.size = Pt(sz); rr.font.bold = True; rr.font.name = FONT; rr.font.color.rgb = rgb(color)
     @staticmethod
+    def point_fmt(se, j, fmt, color, sz=10, bold=True):
+        """Native data label (value + number format with literal text): font stays editable in PowerPoint."""
+        dl = se.points[j].data_label; dl.position = XL_LABEL_POSITION.CENTER; dl.show_value = True
+        dl.font.size = Pt(sz); dl.font.bold = bold; dl.font.name = FONT; dl.font.color.rgb = rgb(color)
+        el = dl._dLbl
+        for old in el.findall(qn('c:numFmt')): el.remove(old)
+        nf = etree.SubElement(el, qn('c:numFmt')); el.remove(nf); nf.set('formatCode', fmt); nf.set('sourceLinked', '0')
+        anchor = el.find(qn('c:spPr')) if el.find(qn('c:spPr')) is not None else el.find(qn('c:txPr'))
+        anchor.addprevious(nf)
+    @staticmethod
     def hide_label(se, j):
         se.data_labels  # make sure c:dLbls exists
         se._element.find(qn('c:dLbls')).insert(0, etree.fromstring(
@@ -120,16 +130,17 @@ class Canvas:
         TU = sum(cu.values()); TV = sum(cv.values())
         QX, QY, QW, QH = .02, .02, .96, .89
         ch = self.chart(XL_CHART_TYPE.COLUMN_STACKED_100, MX, MY, MW, MHh, ['Units (qty)', 'Value (IDR)', 'Units → value'],
-                        [(LEG[c], [cu[c] / TU, cv[c] / TV, cv[c] / TV]) for c in d.CLS], gap=40)
+                        [(LEG[c], [cu[c] / TU, cv[c] / TV, cv[c] / TV]) for c in d.CLS], gap=25)
         self.manual(ch, QX, QY, QW, QH)
         for k, c in enumerate(d.CLS):
             se = ch.plots[0].series[k]; se.format.fill.solid(); se.format.fill.fore_color.rgb = rgb(COL[c])
             fc = 'FFFFFF' if c in DARK else '000000'
-            labs = [[f'{cu[c]} units', f'{cu[c] / TU:.0%}'], [f'Rp {num(cv[c] / 1e9)} Bio', f'{cv[c] / TV:.0%}'], [f'{cu[c] / TU:.0%} → {cv[c] / TV:.0%}']]
-            for j, lines in enumerate(labs):
-                if (cu[c] / TU if j == 0 else cv[c] / TV) < .045: self.hide_label(se, j)
-                else: self.point_label(se, j, lines if (cu[c] / TU if j == 0 else cv[c] / TV) >= .08 else [' '.join(lines)], fc, 10.5 if j else 10.5)
-        qx0, qy0, qw, qh = MX + MW * QX, MY + MHh * QY, MW * QW, MHh * QH; qcat = qw / 3; bw = qcat / 1.4
+            for j in range(3):
+                sh = cu[c] / TU if j == 0 else cv[c] / TV
+                if sh < .045: self.hide_label(se, j); continue
+                lit = [f'{cu[c]} units · ', f'Rp {num(cv[c] / 1e9)} Bio · ', f'{cu[c] / TU:.0%} → '][j]
+                self.point_fmt(se, j, f'"{lit}"0%', fc, 9.5 if j == 1 else 10)
+        qx0, qy0, qw, qh = MX + MW * QX, MY + MHh * QY, MW * QW, MHh * QH; qcat = qw / 3; bw = qcat / 1.25
         ub_l = qx0 + qcat * .5 - bw / 2; sb_r = qx0 + qcat * 2.5 + bw / 2
         ls_u = (cu['Light'] + cu['Small']) / TU; mh_v = (cv['Medium'] + cv['Heavy']) / TV
         y_u = qy0 + qh * (1 - ls_u); y_v = qy0 + qh * mh_v; ybot = qy0 + qh
