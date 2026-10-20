@@ -14,7 +14,7 @@ allr = [(c, t) for c in d.CLS for t in cm.tiers(c)]
 win = [(c, t) for c, t in allr if t['ch'] and t['ch']['p'] < t['top']['p']]
 wu = sum(t['units'] for _, t in win)
 GPR = .35
-PLAN = [('SQ3.2ZK2', 6), ('SQZ325.4', 3), ('KSQZ365.4', 2), ('258 A3', 2), ('GSQZ200.3', 1), ('FBR450 A4', 1)]   # 15 cranes, round plan
+PLAN = [('SQ3.2ZK2', 5), ('SQZ325.4', 2), ('KSQZ365.4', 2), ('GSQZ200.3', 1), ('FBR450 A4', 5)]   # 10 XCMG + 5 F.lli Ferrari FBR450 A4   # 15 cranes, round plan
 chp = {t['ch']['type']: t['ch']['p'] for _, t in win}
 rev = sum(chp[m] / (1 - GPR) * n for m, n in PLAN) / 1e9
 gp = rev * GPR
@@ -122,6 +122,6 @@ for k, (role, name) in enumerate(roles):
     C.box(x, y + 25, bw, 26, 'FFFFFF', 'BFBFBF', lw=.75)
     C.box(x, y + 53, bw, 16, 'FFFFFF', 'BFBFBF', lw=.75); C.tx(x, y + 55, bw, 13, [[(name, False, '000000', 8.5)]], al=PP_ALIGN.CENTER)
 print('right bottom', y + 70, 'left ok')
-C.tx(36, 700, 1206, 14, [[(f'Revenue plan, 15 cranes: XCMG SQ3.2ZK2 ×6, SQZ325.4 ×3, KSQZ365.4 ×2, GSQZ200.3 ×1; F.lli Ferrari 258 A3 ×2, FBR450 A4 ×1; selling price = cost ÷ (1 − 35% GP). '
+C.tx(36, 700, 1206, 14, [[(f'Revenue plan, 15 cranes: 10 XCMG (SQ3.2ZK2 ×5, SQZ325.4 ×2, KSQZ365.4 ×2, GSQZ200.3 ×1) + 5 F.lli Ferrari FBR450 A4; selling price = cost ÷ (1 − 35% GP). '
                           'Prices and units from the crane market slides (imports 2023 – 2026, F.lli Ferrari price list June 2026). Lead time per F.lli Ferrari price list; Malaysia stock to be confirmed.', False, '7F7F7F', 7)]])
 deck.save('v7/Project_Charter.pptx'); print('ok')
