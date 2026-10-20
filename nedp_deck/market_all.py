@@ -3,15 +3,17 @@ import openpyxl, collections, re, json
 DB = 'data/Crane_Market_GVW_Pairing_v11_Noir.xlsx'; FX = 17803
 CN = {'SANY PALFINGER', 'XCMG', 'BOB-LIFT', 'ZOOMLION'}
 EXCL = {'HYVA', 'ZOOMLION'}
+NONFOLD = ('HIAB 19000XG', 'HIAB 6000XG', 'TADANO TM-Z')          # grabber / telescopic still in Pivot Source
+BADPRICE = ('PALFINGER PK 36050', 'PALFINGER PK 48002')            # USD 2.000-2.680 per unit: not a valid crane price
 R = [r for r in openpyxl.load_workbook(DB, data_only=True, read_only=True)['8. Pivot Source'].iter_rows(min_row=2, values_only=True)
-     if r[0] and r[0] not in EXCL and r[8]]
+     if r[0] and r[0] not in EXCL and r[8] and not str(r[1]).startswith(NONFOLD + BADPRICE)]
 def fam(b, m):
     out = []
     for t in m[len(b):].strip().split():
         if re.search(r'\d', t): out.append(re.sub(r'(\d)[A-Z]+$', r'\1', t)); break
         out.append(t)
     return ' '.join(out)
-landed = lambda b, usd: usd * FX * (1 + (0 if b in CN else .05)) * 1.135
+landed = lambda b, usd: usd * FX * (1 + (0 if b in CN else .05)) * 1.025   # duty + PPh 22 2.5% (no PPN; TSP list incl. PPh)
 HI = {'Light': 8, 'Small': 25, 'Medium': 45, 'Heavy': 999}
 def cls_of(tm):                      # AE rule: class by rounded tm (25.3 -> 25 -> Small)
     t = int(tm + .5); return 'Light' if t <= 8 else 'Small' if t <= 25 else 'Medium' if t <= 45 else 'Heavy'
@@ -20,7 +22,7 @@ def tier(cls, tm):
     if cls == 'Light': return (0, 5) if tm <= 5 else (5, 8)
     if cls == 'Small': return (8, 10) if tm <= 10 else next((lo, lo + 5) for lo in (10, 15, 20) if tm <= lo + 5)
     lo = int((tm - 1e-9) // 5 * 5); return (lo, lo + 5)
-# F.lli Ferrari: cost = (K - J) x (1 - 13.6%), sheet 25.06; tm per flliferrari.it (class / model page) or name approach
+# F.lli Ferrari: crane only = (K - I) x (1 - 13.6%), sheet 25.06; tm per flliferrari.it (class / model page) or name approach
 wb = openpyxl.load_workbook('data/Price_List_Crane_Ferrari_Jun26_Rev1.xlsx', data_only=True)['25.06']
 TM = {'315 A2': 1.5, '350 A2': 3.45, '543 A2': 4.3, '563 A2': 6, '563R A2': 6, '563 A3': 6, '563 A4': 6, '563R A4': 6,
       '6108 A2': 9.6, '6108 A3': 9.6, '6148 A3': 13.9, '5148 A4': 13.9, '178 A3': 15.8, '178 A4': 15.8, '6238 A3': 19.3, '6238 A4': 19.3,
@@ -30,7 +32,7 @@ TM = {'315 A2': 1.5, '350 A2': 3.45, '543 A2': 4.3, '563 A2': 6, '563R A2': 6, '
 FER = []
 for r in wb.iter_rows(min_row=3, values_only=True):
     if r[3] in TM and r[10]:
-        FER.append(dict(brand='F.lli Ferrari', type=r[3], tm=TM[r[3]], p=(r[10] - r[9]) * (1 - .136), lead=r[6], src=r[4]))
+        FER.append(dict(brand='F.lli Ferrari', type=r[3], tm=TM[r[3]], p=(r[10] - r[8]) * (1 - .136), lead=r[6], src=r[4]))
 # keep cheapest row per Ferrari model name (350 A2 Italy vs Malaysia)
 fb = {}
 for f in FER:
