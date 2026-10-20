@@ -88,9 +88,10 @@ for j, name in enumerate(cols):
 FS = 11 if len(T) <= 2 else 10 if len(T) <= 4 else 9
 def model_lines(x, top=False):
     lines = ([[('TOP 1', True, G, FS - 1)]] if top else []) + [
-             [(f"{x['type']}", True, '000000', FS + .5), (f"  {num(x['tm'])} tm", False, '595959', FS - 1)],
-             [(f"{x['q']} unit{'s' if x['q'] > 1 else ''} · Rp {num(x['amt'] / 1e9, 1 if x['amt'] >= 1e9 else 2)} Bio", False, '000000', FS - 1)],
-             [(f"{jt(x['p'])} /unit", False, '000000', FS - .5)], [('', False, '000000', 4)]]
+             [(f"{x['type']}", True, '000000', FS + .5)],
+             [(f"• {x['q']} unit{'s' if x['q'] > 1 else ''}", False, '000000', FS - .5)],
+             [(f"• Rp {num(x['amt'] / 1e9, 1 if x['amt'] >= 1e9 else 2)} Bio total", False, '000000', FS - .5)],
+             [(f"• {jt(x['p'])} /unit", False, '000000', FS - .5)], [('', False, '000000', 4)]]
     return lines
 for i, t in enumerate(T, start=1):
     lo, hi = t['tier']; lab = f'≤ {hi} tm' if lo == 0 else f'> {lo} – {hi} tm'
@@ -98,9 +99,9 @@ for i, t in enumerate(T, start=1):
     ch = t['ch']; c = tb.cell(i, 1); fill(c, LG if ch else 'F2F2F2')
     if ch:
         srcl = 'F.lli Ferrari price list' if ch.get('src') else f"import data, {ch['q']} unit{'s' if ch['q'] > 1 else ''}"
-        write(c, [[(f"{ch['nice']}", True, DG, FS + 1)], [(f"{ch['type']}", True, '000000', FS + 1), (f"  {num(ch['tm'])} tm", False, '595959', FS - 1)],
-                  [(f"{jt(ch['p'])} /unit", False, '000000', FS)], [('', False, '000000', 4)], [(f"{jt(t['top']['p'] - ch['p'])} cheaper", True, G, FS + 2)],
-                  [(f"vs {t['top']['nice']} {t['top']['type']}", False, '595959', FS - 1.5)], [(f"({jt(t['top']['p'])} /unit)", False, '595959', FS - 1.5)], [('', False, '000000', 4)], [(srcl, False, '7F7F7F', FS - 2.5)]], PP_ALIGN.LEFT, MSO_ANCHOR.MIDDLE)
+        write(c, [[(f"{ch['nice']} {ch['type']}", True, DG, FS + 1)],
+                  [(f"• {jt(ch['p'])} /unit", False, '000000', FS)], [('', False, '000000', 4)], [(f"{jt(t['top']['p'] - ch['p'])} cheaper", True, G, FS + 2)],
+                  [(f"• vs {t['top']['nice']} {t['top']['type']}, {jt(t['top']['p'])} /unit", False, '595959', FS - 1.5)], [('', False, '000000', 4)], [(srcl, False, '7F7F7F', FS - 2.5)]], PP_ALIGN.LEFT, MSO_ANCHOR.MIDDLE)
     else:
         write(c, [[('No cheaper crane of the same size', False, '595959', 9)]], PP_ALIGN.LEFT, MSO_ANCHOR.MIDDLE)
     # Ferrari column: imports + price list (cheapest variant per base model)
@@ -112,7 +113,7 @@ for i, t in enumerate(T, start=1):
         k = f['type'].split()[0]
         if k not in base or f['p'] < base[k]['p']: base[k] = f
     for f in sorted(base.values(), key=lambda f: f['tm']):
-        paras += [[(f"{f['type']}", True, '000000', FS + .5), (f"  {num(f['tm'])} tm", False, '595959', FS - 1)], [(f"{jt(f['p'])} /unit", False, '000000', FS - .5), ], [('', False, '000000', 4)]]
+        paras += [[(f"{f['type']}", True, '000000', FS + .5)], [(f"• {jt(f['p'])} /unit", False, '000000', FS - .5)], [('', False, '000000', 4)]]
     write(c, paras or [[('–', False, '7F7F7F', 9)]])
     for j, b in enumerate(BR, start=3):
         c = tb.cell(i, j); ms = [m for m in t['models'] if m['brand'] == b]
