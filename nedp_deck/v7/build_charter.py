@@ -52,10 +52,10 @@ y = section(LX, y, LW, 'Background')
 y = blist(LX, y, LW, [[('Hyva has stopped making cranes: ', True), (f'{hy_u} Hyva cranes (Rp {num(hy_v)} Bio) sold in 2023 – 2026 need a new brand', False)],
                       [(f'Indonesia imports ~{avg_u:.0f} folding cranes a year (Rp {num(avg_v)} Bio) across all four classes', False)]])
 y = section(LX, y, LW, 'Objective')
+C.tx(LX + 10, y, LW - 20, 22, [[('Sell 15 folding cranes by December 2027', True, DG, 14)]]); y += 24
 y = blist(LX, y, LW, [[('4C: ', True), (f'map all {TU} imported folding cranes (Rp {num(TV)} Bio, 2023 – 2026) by class, brand, model', False)],
                       [('STP: ', True), (f'split into {len(allr)} tm classes and find the top 1 model in each', False)],
-                      [('4P: ', True), (f'set a cheaper F.lli Ferrari or XCMG challenger per tm class ({len(win)} of {len(allr)} done)', False)],
-                      [('Sales: ', True), ('sell 15 cranes by December 2027', False)]])
+                      [('4P: ', True), (f'set a cheaper F.lli Ferrari or XCMG challenger per tm class ({len(win)} of {len(allr)} done)', False)]])
 y = section(LX, y, LW, 'Project Scope')
 y = blist(LX, y, LW, [[('In: ', True), ('folding cranes, Light to Heavy; price and specification; imports 2023 – 2026', False)],
                       [('Out: ', True), ('telescopic, grabber and forestry cranes; Hyva; Zoomlion', False)]])
@@ -81,11 +81,11 @@ y = blist(LX, y, LW, [[('Business Consultant: ', True), ('leads, customer visits
 # ================= right column =================
 RX, RW = 666, 576; y = 150
 y = section(RX, y, RW, 'Project Timeframe')
-months = ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Q1', 'Q2', 'Q3', 'Q4']
+months = ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 acts = [('Market study (4C)', range(0, 3)), ('STP & challenger choice', range(3, 5)), ('Negotiate F.lli Ferrari & XCMG', range(4, 7)),
-        ('Sales kit with Marcom', range(5, 7)), ('Exhibition & customer visits', range(7, 9)), ('Quotation → PO → delivery', range(7, 11)),
-        ('15 cranes sold', range(10, 11))]
-AW = 190; CW = (RW - AW) / 11; RHG = 17
+        ('Sales kit with Marcom', range(5, 7)), ('Exhibition & customer visits', range(7, 13)), ('Quotation → PO → delivery', range(7, 19)),
+        ('15 cranes sold', range(18, 19))]
+AW = 168; NM = len(months); CW = (RW - AW) / NM; RHG = 17
 def cellbox(x, y, w, h, fillc, text='', bold=False, sz=9, al=PP_ALIGN.CENTER, color='000000'):
     b = C.box(x, y, w, h, fillc, 'D9D9D9', lw=.5); tf = b.text_frame
     for m in ('margin_left', 'margin_right', 'margin_top', 'margin_bottom'): setattr(tf, m, E(3) if m in ('margin_left', 'margin_right') else 0)
@@ -94,12 +94,12 @@ def cellbox(x, y, w, h, fillc, text='', bold=False, sz=9, al=PP_ALIGN.CENTER, co
         p = tf.paragraphs[0]; p.alignment = al; r = p.add_run(); r.text = text
         r.font.name = FONT; r.font.size = Pt(sz); r.font.bold = bold; r.font.color.rgb = rgb(color)
 cellbox(RX, y, AW, 2 * RHG, 'F2F2F2', 'Activity', True, 9.5, PP_ALIGN.LEFT)
-cellbox(RX + AW, y, 7 * CW, RHG, 'F2F2F2', '2026', True, 9); cellbox(RX + AW + 7 * CW, y, 4 * CW, RHG, 'F2F2F2', '2027', True, 9)
-for j, m in enumerate(months): cellbox(RX + AW + j * CW, y + RHG, CW, RHG, 'F2F2F2', m, False, 8.5)
+cellbox(RX + AW, y, 7 * CW, RHG, 'F2F2F2', '2026', True, 9); cellbox(RX + AW + 7 * CW, y, 12 * CW, RHG, 'F2F2F2', '2027', True, 9)
+for j, m in enumerate(months): cellbox(RX + AW + j * CW, y + RHG, CW, RHG, 'F2F2F2', m[0], False, 8)
 for i, (a, rg) in enumerate(acts):
     last = i == len(acts) - 1; yy = y + (2 + i) * RHG
     cellbox(RX, yy, AW, RHG, 'FFFFFF', a, last, 9, PP_ALIGN.LEFT, DG if last else '000000')
-    for j in range(11):
+    for j in range(NM):
         cellbox(RX + AW + j * CW, yy, CW, RHG, (DG if last else '3CC46B') if j in rg else 'FFFFFF', '★' if (last and j in rg) else '', True, 8, PP_ALIGN.CENTER, 'FFFFFF')
 y += RHG * (2 + len(acts)) + 8
 y = section(RX, y, RW, 'Benefit of Project')
