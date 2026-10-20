@@ -49,4 +49,9 @@ def ferrari():
             p = (r[10] - r[8]) * (1 - .136)       # price list, crane only (K - I), less 13.6% TSP GP
             if r[3] not in out or p < out[r[3]]['p']:
                 out[r[3]] = dict(brand='F.lli Ferrari', type=r[3], tm=FTM[r[3]], p=p, lead=r[6], src=r[4])
+    # Heavy models not in the June 2026 price list (sources as in the earlier F.lli Ferrari deck)
+    for t, tm, p, src in [('9601CR A8', 50.7, 3260e6, 'UTPE quote 15 Sep 2026, crane only'),
+                          ('9661C', 63.2, 160000 * 20830, 'EUR 160.000 ex-works x Rp 20.830/EUR'),
+                          ('990R', 74, 4110e6 / .97, 'TSP price less Rp 168 Jt cargo deck & install, less 13.6% TSP GP')]:
+        out[t] = dict(brand='F.lli Ferrari', type=t, tm=tm, p=p, lead=None, src=src, extra=True)
     return list(out.values())

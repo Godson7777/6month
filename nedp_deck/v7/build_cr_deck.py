@@ -196,7 +196,8 @@ def s_map(CLS, sub=None, part=None):
     C.tx(36, 682, 1206, 34, [[('Source: Indonesia import records (Crane Market GVW Pairing v11, Noir), 2023 – 2026 (2026 partial year); F.lli Ferrari price list June 2026 (Rev1), sheet 25.06. '
         'Competitor price = average import unit price of the model as recorded (total value ÷ total units) × Rp 17.803/USD (JISDOR 23 Sep 2026); no duty or tax added. '
         'F.lli Ferrari price = price list, crane only (column K − column I), less 13.6% TSP GP: no cargo deck, no install. '
-        'Model variants merged (e.g. SPK8500 = SPK8500, A, B). '
+        + ('' if CLS == 'Heavy' else 'Model variants merged (e.g. SPK8500 = SPK8500, A, B). ')
+        + ('9601CR A8 = UTPE quote 15 Sep 2026; 9661C = EUR 160.000 ex-works × Rp 20.830/EUR; 990R = TSP price less Rp 168 Jt deck & install, less 13.6%. ' if CLS == 'Heavy' else '') +
         'Folding cranes only; Hyva, Zoomlion, grabbers, telescopic cranes and invalid-price records excluded. Challengers: F.lli Ferrari or XCMG; in Medium and Heavy F.lli Ferrari comes first (same size −2/+5 tm) unless it is more than 30% dearer; Heavy 50 – 55 tm uses FBR450R A4 (4,6 tm smaller) by decision.', False, '7F7F7F', 6.5)]])
 
 # ======================= conclusion =======================
