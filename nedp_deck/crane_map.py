@@ -1,5 +1,6 @@
 """Competitor map per class/tier + challenger pick (uses crane_data)."""
 import collections, crane_data as d
+num = lambda x, n=1: f'{x:,.{n}f}'.replace(',', 'X').replace('.', ',').replace('X', '.')
 def models():
     M = collections.defaultdict(lambda: dict(q=0, v=0, tms=[]))
     for r in d.R:
@@ -11,15 +12,19 @@ def models():
                         usd=m['v'], amt=m['v'] * d.FX, p=d.landed(b, m['v'] / m['q'])))
     return out
 MOD = models(); FER = d.ferrari()
-CH_EXCL = {'BOB-LIFT'}   # not offered as our challenger (user: use XCMG instead)
+CH_BRANDS = {'XCMG', 'FERRARI'}   # our challengers: F.lli Ferrari (price list or imports) and XCMG only
+OVERRIDE = {('Heavy', (50, 55)): 'FBR450R A4'}   # user decision: FBR450R A4 vs PK 53002 although 4.6 tm smaller
 def tiers(cls):
     res = []
     for tr in sorted({x['tier'] for x in MOD if x['cls'] == cls}):
         T = sorted([x for x in MOD if x['cls'] == cls and x['tier'] == tr], key=lambda x: -x['usd']); top = T[0]
         fer = [dict(f, nice='F.lli Ferrari') for f in FER if d.cls_of(f['tm']) == cls and d.tier(cls, f['tm']) == tr]
-        cands = [x for x in T[1:] if x['brand'] != top['brand'] and x['brand'] not in CH_EXCL] + fer
+        cands = [x for x in T[1:] if x['brand'] != top['brand'] and x['brand'] in CH_BRANDS] + fer
         ok = [c for c in cands if c['p'] < top['p'] and c['tm'] >= top['tm'] - 2]
         ch = min(ok, key=lambda c: c['p']) if ok else None
+        if (cls, tr) in OVERRIDE:
+            f = next(f for f in FER if f['type'] == OVERRIDE[(cls, tr)])
+            ch = dict(f, nice='F.lli Ferrari', note=f"{num(top['tm'] - f['tm'])} tm smaller")
         res.append(dict(tier=tr, units=sum(x['q'] for x in T), amt=sum(x['amt'] for x in T), models=T, top=top, fer=fer, ch=ch))
     return res
 if __name__ == '__main__':
