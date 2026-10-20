@@ -24,8 +24,8 @@ SH = {sh.name: sh for sh in s.shapes}
 for c in SH['Group 31'].shapes:
     set_runs(c.text_frame.paragraphs[0], 'After Sales/' if 'Medium' in c.text_frame.text else 'What happens after the unit is delivered?')
 t2 = SH['Table 2'].table
-set_runs(t2.cell(0, 0).text_frame.paragraphs[0], 'After delivery, I track every unit under warranty and analyse each failure')
-set_runs(t2.cell(1, 0).text_frame.paragraphs[0], '6 units under warranty and 25 failures recorded; most are minor and can be fixed at the source.')
+set_runs(t2.cell(0, 0).text_frame.paragraphs[0], 'After delivery, I monitor unit performance and make sure problems do not repeat')
+set_runs(t2.cell(1, 0).text_frame.paragraphs[0], 'Units under warranty are monitored, and every failure is followed up.')
 def tx(x, y, w, h, paras, sz, color='000000', bold=False, al=PP_ALIGN.LEFT):
     b = s.shapes.add_textbox(E(x), E(y), E(w), E(h)); tf = b.text_frame; tf.word_wrap = True
     for m in ('margin_left', 'margin_right', 'margin_top', 'margin_bottom'): setattr(tf, m, 0)
@@ -44,13 +44,8 @@ def pic(f, x, y, w, h):
     p_ = s.shapes.add_picture(path, E(x + (w - pw) / 2), E(y + (h - ph) / 2), E(pw), E(ph))
     p_.line.color.rgb = rgb('D9D9D9'); p_.line.width = Pt(.5)
 STEPS = [
- ('Units Under Warranty', ['6 units under warranty (0–1 year): 2 lube trucks, 2 water trucks, 2 truck cranes',
-                           'Delivery and commissioning dates tracked per serial number',
-                           'Unit performance followed up with the end customer'], 'as1_warranty.png'),
- ('Product Failure Analysis', ['25 failures on 6 units: 96% minor, 76% system-related',
-                           'Pareto by unit and by symptom shows where problems repeat (R60825: 9 failures)',
-                           'Cause by 4M: material 48%, method 44%, man 8%',
-                           'Findings shared with UTE so the same problem does not repeat'], 'as2_failure.png'),
+ ('Monitor Unit Performance', ['Monitor unit performance', 'Gather customer feedback'], 'as1_warranty.png'),
+ ('Follow Up Problems', ['Follow up problems', 'Ensure the problem is not repeated in other orders'], 'as2_failure.png'),
 ]
 for i, (head, bullets, f) in enumerate(STEPS):
     W = 600; x = 36 + i * (W + 6)
@@ -58,7 +53,7 @@ for i, (head, bullets, f) in enumerate(STEPS):
     hb.fill.solid(); hb.fill.fore_color.rgb = rgb('1E9E57'); hb.line.fill.background(); hb.shadow.inherit = False
     tf = hb.text_frame; tf.paragraphs[0].alignment = PP_ALIGN.CENTER; r = tf.paragraphs[0].add_run()
     r.text = f'{i + 1}. {head}'; r.font.size = Pt(14); r.font.bold = True; r.font.name = FONT; r.font.color.rgb = rgb('FFFFFF')
-    tx(x + 4, 262, W - 8, 90, ['• ' + b for b in bullets], 10.5)
-    pic(f, x, 344, W, 326)
+    tx(x + 4, 262, W - 8, 50, ['• ' + b for b in bullets], 10.5)
+    pic(f, x, 310, W, 360)
 tx(36, 678, 1206, 14, ['Photos: warranty unit population report and product failure analysis.'], 7, '6B6B6B')
 P.save('v7/Slide_AfterSales.pptx'); print('ok', len(P.slides))
