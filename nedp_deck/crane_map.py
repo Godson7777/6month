@@ -11,12 +11,13 @@ def models():
                         usd=m['v'], amt=m['v'] * d.FX, p=d.landed(b, m['v'] / m['q'])))
     return out
 MOD = models(); FER = d.ferrari()
+CH_EXCL = {'BOB-LIFT'}   # not offered as our challenger (user: use XCMG instead)
 def tiers(cls):
     res = []
     for tr in sorted({x['tier'] for x in MOD if x['cls'] == cls}):
         T = sorted([x for x in MOD if x['cls'] == cls and x['tier'] == tr], key=lambda x: -x['usd']); top = T[0]
         fer = [dict(f, nice='F.lli Ferrari') for f in FER if d.cls_of(f['tm']) == cls and d.tier(cls, f['tm']) == tr]
-        cands = [x for x in T[1:] if x['brand'] != top['brand']] + fer
+        cands = [x for x in T[1:] if x['brand'] != top['brand'] and x['brand'] not in CH_EXCL] + fer
         ok = [c for c in cands if c['p'] < top['p'] and c['tm'] >= top['tm'] - 2]
         ch = min(ok, key=lambda c: c['p']) if ok else None
         res.append(dict(tier=tr, units=sum(x['q'] for x in T), amt=sum(x['amt'] for x in T), models=T, top=top, fer=fer, ch=ch))
