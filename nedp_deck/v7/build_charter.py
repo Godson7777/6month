@@ -13,12 +13,13 @@ hy_avg = sum(r[8] for r in hy if r[4] in (2023, 2024, 2025)) / 3
 allr = [(c, t) for c in d.CLS for t in cm.tiers(c)]
 win = [(c, t) for c, t in allr if t['ch'] and t['ch']['p'] < t['top']['p']]
 wu = sum(t['units'] for _, t in win)
-plan = [(c, t, 15 * t['units'] / wu) for c, t in win]                       # 15 cranes split like the import mix of the tiers we win
-rev = sum(t['ch']['p'] / (1 - .136) * n for c, t, n in plan) / 1e9           # selling price = challenger cost / (1 - 13.6%)
-gp = rev * .136
-save = sum((t['top']['p'] - t['ch']['p']) * n for c, t, n in plan) / 1e9
+GPR = .35
+PLAN = [('SQ3.2ZK2', 6), ('SQZ325.4', 3), ('KSQZ365.4', 2), ('258 A3', 2), ('GSQZ200.3', 1), ('FBR450 A4', 1)]   # 15 cranes, round plan
+chp = {t['ch']['type']: t['ch']['p'] for _, t in win}
+rev = sum(chp[m] / (1 - GPR) * n for m, n in PLAN) / 1e9
+gp = rev * GPR
 gaps = [(t['top']['p'] - t['ch']['p']) / 1e6 for _, t in win]
-print(f'rev {rev:.2f} gp {gp:.2f} save {save:.2f} gaps {min(gaps):.0f}-{max(gaps):.0f} hyva {hy_u} {hy_v:.1f} avg {hy_avg:.0f}')
+print(f'rev {rev:.2f} gp {gp:.2f} gaps {min(gaps):.0f}-{max(gaps):.0f} hyva {hy_u} {hy_v:.1f} avg {hy_avg:.0f}')
 
 deck = Deck()
 C = deck.slide('Project Charter/', 'What is the background,', 'the objective and the benefit?', 'x', [('x', False)], title_w=600)
@@ -61,8 +62,8 @@ y = blist(LX, y, LW, [[('In: ', True), ('folding cranes, Light to Heavy; price a
                       [('Out: ', True), ('telescopic, grabber and forestry cranes; Hyva; Zoomlion', False)]])
 y = section(LX, y, LW, 'KPI / Metric')
 kpi = [('Units sold', '15 cranes', 'by Dec 2027'),
-       ('Revenue', f'≈ Rp {num(rev)} Bio', f'GP ≈ Rp {num(gp)} Bio (13,6%)'),
-       ('Price vs leader', f'Rp {min(gaps):.0f} – {max(gaps):.0f} Jt cheaper', f'per unit, in {len(win)} of {len(allr)} tm classes'),
+       ('Revenue', f'≈ Rp {num(rev)} Bio', f'GP ≈ Rp {num(gp)} Bio (35%)'),
+       ('Cost vs leader', f'Rp {min(gaps):.0f} – {max(gaps):.0f} Jt lower', f'per unit, in {len(win)} of {len(allr)} tm classes'),
        ('Lead time', '≤ 14 weeks', 'stock in Malaysia (TBC)')]
 tb = s.shapes.add_table(len(kpi), 3, E(LX), E(y), E(LW), E(19 * len(kpi))).table
 for j, w in enumerate([150, 200, 260]): tb.columns[j].width = E(w)
@@ -105,7 +106,7 @@ y += RHG * (2 + len(acts)) + 8
 y = section(RX, y, RW, 'Benefit of Project')
 y = blist(RX, y, RW, [[(f'≈ Rp {num(rev)} Bio revenue, Rp {num(gp)} Bio GP', True), (' from 15 cranes by end-2027', False)],
                       [(f'Replaces Hyva: ~{hy_avg:.0f} cranes a year', True), (' get a new brand', False)],
-                      [(f'Customers pay Rp {min(gaps):.0f} – {max(gaps):.0f} Jt less per unit', True), (f' (≈ Rp {num(save)} Bio on 15 cranes)', False)],
+                      [(f'Our cost is Rp {min(gaps):.0f} – {max(gaps):.0f} Jt below the leader', True), (' per unit: room for 35% GP', False)],
                       [('Lead time ≤ 14 weeks', True), (' (China / Malaysia) vs 25 – 27 weeks (Italy / Brazil)', False)]], sz=10.5, lh=16)
 y = section(RX, y, RW, 'Project Team')
 team = [('Executive Sponsor', 'David'), ('Advisor', 'Ceisar Centiaga'), ('Owner', 'Ricardo Tanada'), ('Coordinator', 'Ignatius Indrawan Sumawinata'),
@@ -121,6 +122,6 @@ for k, (role, name) in enumerate(roles):
     C.box(x, y + 25, bw, 26, 'FFFFFF', 'BFBFBF', lw=.75)
     C.box(x, y + 53, bw, 16, 'FFFFFF', 'BFBFBF', lw=.75); C.tx(x, y + 55, bw, 13, [[(name, False, '000000', 8.5)]], al=PP_ALIGN.CENTER)
 print('right bottom', y + 70, 'left ok')
-C.tx(36, 700, 1206, 14, [[(f'Revenue estimate: 15 cranes split over the {len(win)} tm classes we win, in line with their import units; selling price = challenger price ÷ (1 − 13,6% TSP GP). '
+C.tx(36, 700, 1206, 14, [[(f'Revenue plan, 15 cranes: XCMG SQ3.2ZK2 ×6, SQZ325.4 ×3, KSQZ365.4 ×2, GSQZ200.3 ×1; F.lli Ferrari 258 A3 ×2, FBR450 A4 ×1; selling price = cost ÷ (1 − 35% GP). '
                           'Prices and units from the crane market slides (imports 2023 – 2026, F.lli Ferrari price list June 2026). Lead time per F.lli Ferrari price list; Malaysia stock to be confirmed.', False, '7F7F7F', 7)]])
 deck.save('v7/Project_Charter.pptx'); print('ok')
