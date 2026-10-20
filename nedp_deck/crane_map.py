@@ -13,6 +13,7 @@ def models():
     return out
 MOD = models(); FER = d.ferrari()
 CH_BRANDS = {'XCMG', 'FERRARI'}   # our challengers: F.lli Ferrari (price list or imports) and XCMG only
+FERRARI_FIRST = {'Medium', 'Heavy'}; FAR = .30   # user: Medium & Heavy use F.lli Ferrari unless it loses by far (> 30%)
 OVERRIDE = {('Heavy', (50, 55)): 'FBR450R A4'}   # user decision: FBR450R A4 vs PK 53002 although 4.6 tm smaller
 def tiers(cls):
     res = []
@@ -22,9 +23,19 @@ def tiers(cls):
         cands = [x for x in T[1:] if x['brand'] != top['brand'] and x['brand'] in CH_BRANDS] + fer
         ok = [c for c in cands if c['p'] < top['p'] and c['tm'] >= top['tm'] - 2]
         ch = min(ok, key=lambda c: c['p']) if ok else None
+        if cls in FERRARI_FIRST:
+            # F.lli Ferrari first: any price-list model of about the same size (-2 / +5 tm), kept unless > 30% above the leader
+            fc = [dict(f, nice='F.lli Ferrari') for f in FER if top['tm'] - 2 <= f['tm'] <= top['tm'] + 5]
+            bf = min(fc, key=lambda f: f['p']) if fc else None
+            if bf and bf['p'] <= top['p'] * (1 + FAR):
+                ch = bf
+            else:   # Ferrari far behind or no model: push XCMG, only if cheaper
+                xo = [c for c in ok if c['brand'] == 'XCMG']
+                ch = min(xo, key=lambda c: c['p']) if xo else None
         if (cls, tr) in OVERRIDE:
             f = next(f for f in FER if f['type'] == OVERRIDE[(cls, tr)])
             ch = dict(f, nice='F.lli Ferrari', note=f"{num(top['tm'] - f['tm'])} tm smaller")
+        if ch and ch.get('src') and all(f['type'] != ch['type'] for f in fer): fer = fer + [ch]
         res.append(dict(tier=tr, units=sum(x['q'] for x in T), amt=sum(x['amt'] for x in T), models=T, top=top, fer=fer, ch=ch))
     return res
 if __name__ == '__main__':

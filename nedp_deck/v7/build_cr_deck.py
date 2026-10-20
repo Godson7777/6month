@@ -118,7 +118,8 @@ def s_map(CLS, sub=None, part=None):
     TU = sum(t['units'] for t in ALL); TA = sum(t['amt'] for t in ALL); main = max(T, key=lambda t: t['units'])
     pu = sum(t['units'] for t in T); rng = f"{T[0]['tier'][0]}–{T[-1]['tier'][1]} tm"
     mt, mc = main['top'], main['ch']
-    head = (f"{CLS}: {mt['nice']} {mt['type']} leads; " + (f"{mc['nice']} {mc['type']} is {jt(mt['p'] - mc['p'])} cheaper per unit" if mc else 'no cheaper crane of the same size yet'))
+    head = (f"{CLS}: {mt['nice']} {mt['type']} leads; " + ((f"{mc['nice']} {mc['type']} is {jt(mt['p'] - mc['p'])} cheaper per unit" if mc['p'] < mt['p']
+            else f"{mc['nice']} {mc['type']} is within {mc['p'] / mt['p'] - 1:.0%} of its price") if mc else 'no cheaper crane of the same size yet'))
     tail = [('. Each row compares the tier leader (by value) with the cheapest crane of about the same size.', False)]
     body = ([(f'{CLS} class ({RANGE[CLS]}): ', False), (f'{TU} units', True), (' imported in 2023 – 2026. ', False)]
             + ([(f'{main["tier"][0]}–{main["tier"][1]} tm takes {main["units"] / TU:.0%} of units', True)] if part is None
@@ -158,7 +159,8 @@ def s_map(CLS, sub=None, part=None):
             srcl = 'F.lli Ferrari price list' if ch.get('src') else f"import data, {ch['q']} unit{'s' if ch['q'] > 1 else ''}"
             write(c, [[(f"{ch['nice']} {ch['type']}", True, DG, FS + 1)], [(f"• {jt(ch['p'])} /unit", False, '000000', FS)]]
                      + ([[(f"• {ch['note']}", False, 'C0504D', FS - 1)]] if ch.get('note') and len(T) <= 4 else [])
-                     + [[(f"{jt(t['top']['p'] - ch['p'])} cheaper", True, G, FS + 2)],
+                     + [[(f"{jt(t['top']['p'] - ch['p'])} cheaper", True, G, FS + 2)] if ch['p'] < t['top']['p'] else
+                        [(f"{jt(ch['p'] - t['top']['p'])} more (+{ch['p'] / t['top']['p'] - 1:.0%})", True, 'C55A11', FS + 1)],
                         [(f"• vs {t['top']['type']}, {jt(t['top']['p'])} /unit" + (f" ({ch['note']})" if ch.get('note') and len(T) > 4 else ''), False, '595959', FS - 1.5)]]
                      + ([] if CMP else [[('', False, '000000', 4)], [(srcl, False, '7F7F7F', FS - 2.5)]]), PP_ALIGN.LEFT, MSO_ANCHOR.MIDDLE)
         else:
@@ -190,17 +192,17 @@ def s_map(CLS, sub=None, part=None):
         else:
             tf = plate.text_frame; tf.margin_top = tf.margin_bottom = 0; p = tf.paragraphs[0]; p.alignment = PP_ALIGN.CENTER
             r = p.add_run(); r.text = d.NICE.get(key, key.title()); r.font.size = Pt(10 if len(d.NICE.get(key, key)) < 9 else 8.5); r.font.bold = True; r.font.color.rgb = rgb(DG); r.font.name = FONT; tf.word_wrap = False
-    C.legend(36, 662, 520, [(LG, 'Our challenger: F.lli Ferrari or XCMG, cheaper than the leader, max 2 tm smaller'), ('FFF7D6', 'Tier leader (TOP 1 = highest import value in the tier)')])
+    C.legend(36, 662, 520, [(LG, 'Our challenger (F.lli Ferrari first in Medium & Heavy)'), ('FFF7D6', 'Tier leader (TOP 1 = highest import value in the tier)')])
     C.tx(36, 682, 1206, 34, [[('Source: Indonesia import records (Crane Market GVW Pairing v11, Noir), 2023 – 2026 (2026 partial year); F.lli Ferrari price list June 2026 (Rev1), sheet 25.06. '
         'Competitor price = average import unit price of the model (total value ÷ total units) × Rp 17.803/USD (JISDOR 23 Sep 2026) × (1 + import duty: 0% China/ACFTA, 5% others) × (1 + PPN 11% + PPh 22 2.5%); crane only, before distributor margin. '
         'F.lli Ferrari price = (column K − column I) × (1 − 13.6% TSP GP): crane only, no cargo deck, no install, no warranty; taxes included. '
-        'Model variants merged (e.g. SPK8500 = SPK8500, A, B). tm class per Application Engineering (rounded max lifting moment). '
-        'Folding cranes only; Hyva, Zoomlion, grabbers, telescopic cranes and invalid-price records excluded. Challengers limited to F.lli Ferrari and XCMG; Heavy 50 – 55 tm uses FBR450R A4 (4,6 tm smaller) by decision.', False, '7F7F7F', 6.5)]])
+        'Model variants merged (e.g. SPK8500 = SPK8500, A, B). '
+        'Folding cranes only; Hyva, Zoomlion, grabbers, telescopic cranes and invalid-price records excluded. Challengers: F.lli Ferrari or XCMG; in Medium and Heavy F.lli Ferrari comes first (same size −2/+5 tm) unless it is more than 30% dearer; Heavy 50 – 55 tm uses FBR450R A4 (4,6 tm smaller) by decision.', False, '7F7F7F', 6.5)]])
 
 # ======================= conclusion =======================
 def s_conclusion():
     allr = [(cls, t) for cls in d.CLS for t in cm.tiers(cls)]; tot = sum(t['units'] for _, t in allr)
-    win = [(c, t) for c, t in allr if t['ch']]; cov = sum(t['units'] for _, t in win) / tot
+    win = [(c, t) for c, t in allr if t['ch'] and t['ch']['p'] < t['top']['p']]; cov = sum(t['units'] for _, t in win) / tot
     big_h = [t for c, t in allr if c == 'Heavy' and t['tier'][0] >= 55]
     rows = [(c, t) for c, t in allr if not (c == 'Heavy' and t['tier'][0] >= 55)]
     if big_h:
@@ -209,10 +211,10 @@ def s_conclusion():
     U, V = d.by_year(); avg = sum(U[(y, c)] for y in (2023, 2024, 2025) for c in d.CLS) / 3
     C = deck.slide('Conclusion/', 'Which crane per class?', 'And what is our target?',
                    f'We undercut the leader in {len(win)} of {len(allr)} tm classes ({cov:.0%} of units); target: 15 cranes by end-2027',
-                   [('Our challengers are ', False), ('F.lli Ferrari or XCMG', True), (', each cheaper per unit than the tier leader. ', False),
-                    ('Classes with no cheaper crane yet', True), (' stay on the watch list until we get a better price.', False)])
+                   [('Light & Small: ', False), ('the cheapest of F.lli Ferrari or XCMG', True), ('. Medium & Heavy: ', False),
+                    ('F.lli Ferrari first', True), (', XCMG only where Ferrari is more than 30% dearer or has no model of that size. Classes with no challenger stay on the watch list.', False)])
     s = C.s
-    cols = ['Class', 'tm class', 'Units', 'Leader (TOP 1)', 'Our challenger', 'We are cheaper by']
+    cols = ['Class', 'tm class', 'Units', 'Leader (TOP 1)', 'Our challenger', 'Price vs leader /unit']
     widths = [76, 74, 52, 286, 266, 140]; X0, Y0 = 36, 236
     tb = s.shapes.add_table(1 + len(rows), len(cols), E(X0), E(Y0), E(sum(widths)), E(400)).table
     for j, w in enumerate(widths): tb.columns[j].width = E(w)
@@ -235,7 +237,8 @@ def s_conclusion():
         else: cell(i, 3, [(f"4 small classes, led by {t['leaders']}", False, '595959', 9)])
         if ch:
             cell(i, 4, [(f"{ch['nice']} {ch['type']}", True, DG, 9.5), (f"  ·  {jt(ch['p'])}", False, '595959', 9)], LG)
-            cell(i, 5, [(f"{jt(top['p'] - ch['p'])} /unit" + ('*' if ch.get('note') else ''), True, G, 10.5)], LG, PP_ALIGN.CENTER)
+            dif = top['p'] - ch['p']
+            cell(i, 5, [((f"−{jt(dif)}" if dif > 0 else f"+{jt(-dif)}") + ('*' if ch.get('note') else ''), True, G if dif > 0 else 'C55A11', 10.5)], LG if dif > 0 else 'FFF2E5', PP_ALIGN.CENTER)
         else:
             cell(i, 4, [('No cheaper crane yet', False, '7F7F7F', 9.5)], 'F2F2F2'); cell(i, 5, [('–', False, '7F7F7F', 10)], 'F2F2F2', PP_ALIGN.CENTER)
     ends = {}
@@ -256,7 +259,7 @@ def s_conclusion():
         [('Start with the biggest classes we win:', True, 'FFFFFF', 11)]] +
         [[(f"• {c} {t['tier'][0]}–{t['tier'][1]} tm: {t['ch']['nice']} {t['ch']['type']} ({t['units']} units, {jt(t['top']['p'] - t['ch']['p'])} cheaper)", False, 'FFFFFF', 10)] for c, t in big])
     C.tx(36, 662, 1206, 30, [[('Prices per unit, crane only: competitors = average import price incl. duty and import tax (Rp 17.803/USD); F.lli Ferrari = price list June 2026 (K − I) less 13.6% TSP GP. '
-        'Units = imports 2023 – 2026 (2026 partial year). Leader = highest import value in the tm class. *FBR450R A4 is 4,6 tm smaller than PK 53002 (used by decision).', False, '7F7F7F', 7.5)]])
+        'Units = imports 2023 – 2026 (2026 partial year). Leader = highest import value in the tm class. − = we are cheaper, + = we are dearer. *FBR450R A4 is 4,6 tm smaller than PK 53002 (used by decision).', False, '7F7F7F', 7.5)]])
 
 s_market_all(); s_market_2025(); s_map('Light'); s_map('Small'); s_map('Medium'); s_map('Heavy'); s_conclusion()
 deck.save('v7/CR_Deck.pptx'); print('saved')
