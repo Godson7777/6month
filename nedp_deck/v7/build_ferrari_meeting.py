@@ -1,95 +1,80 @@
-"""Deck for the F.lli Ferrari meeting: most popular crane types per tm class (by units imported, 2023-2026)."""
+"""Deck for F.lli Ferrari meeting: most popular crane models per tm range (imports 2023 - 2026). Simple tables."""
 import sys
 sys.path.insert(0, '.')
-src = open('v7/build_cr_deck.py').read(); src = src[:src.index('\ns_market_all();')]
-exec(src)                     # brings deck, s_market_all, helpers
-import crane_map as cm
-jt = lambda x: f"Rp {num(x / 1e6, 0)} Jt"
-POP = {c: cm.tiers(c) for c in d.CLS}
-def ferr(t):
-    base = {}
-    for f in t['fer']:
-        k = f['type'].split()[0]
-        if k not in base: base[k] = f
-    out = ', '.join(sorted(base, key=lambda k: base[k]['tm']))
-    if not out and t['tier'] == (35, 40): out = '7441C (not in price list; please quote)'
-    return out or '–'
-
-def s_popular(classes, title, head, body):
-    C = deck.slide(title, 'Which crane types sell most', 'in each tm class?', head, body)
-    s = C.s; rows = [(c, t) for c in classes for t in POP[c]]
-    cols = ['Class', 'tm class', 'Units', '#1 most popular', '#2', '#3', 'F.lli Ferrari in this size']
-    W = [70, 78, 52, 300, 230, 230, 246]; X0, Y0 = 36, 236
-    tb = s.shapes.add_table(1 + len(rows), len(cols), E(X0), E(Y0), E(sum(W)), E(400)).table
-    for j, w in enumerate(W): tb.columns[j].width = E(w)
-    rh = (652 - Y0 - 30) / len(rows); tb.rows[0].height = E(30)
-    for i in range(1, len(rows) + 1): tb.rows[i].height = E(rh)
-    def cell(i, j, runs, fillc='FFFFFF', al=PP_ALIGN.LEFT):
+import crane_data as d, crane_map as cm
+from cr_common import *
+usd = lambda x: f"USD {x:,.0f}".replace(',', '.')
+idr = lambda x: f"Rp {x * d.FX / 1e6:,.0f} Jt".replace(',', '.')
+RANGE = {'Light': 'up to 8 tm', 'Small': '8 – 25 tm', 'Medium': '25 – 45 tm', 'Heavy': 'above 45 tm'}
+def lab(tr): lo, hi = tr; return f'up to {hi} tm' if lo == 0 else f'{lo} – {hi} tm'
+def pop(t, n): return sorted(t['models'], key=lambda x: (-x['q'], -x['usd']))[:n]
+NOTE = ('Source: Indonesia import records 2023 – Aug 2026 (folding / knuckle boom cranes only; Hyva and Zoomlion not included). '
+        'Units = units imported. Price per unit = average import price of the model (CIF value ÷ units), before Indonesian duty and tax; Rp at 17.803 per USD. '
+        'Model variants merged (e.g. SPK8500 = SPK8500, A, B).')
+deck = Deck()
+def table(C, rows, widths, y0, rh, head, cls_col=True):
+    s = C.s; X0 = 36
+    tb = s.shapes.add_table(1 + len(rows), len(widths), E(X0), E(y0), E(sum(widths)), E(30 + rh * len(rows))).table
+    for j, w in enumerate(widths): tb.columns[j].width = E(w)
+    tb.rows[0].height = E(30)
+    for i in range(1, 1 + len(rows)): tb.rows[i].height = E(rh)
+    def cell(i, j, text, bold=False, fillc='FFFFFF', color='000000', sz=12, al=PP_ALIGN.LEFT):
         c = tb.cell(i, j); c.fill.solid(); c.fill.fore_color.rgb = rgb(fillc); c.vertical_anchor = MSO_ANCHOR.MIDDLE
-        c.margin_left = c.margin_right = E(6); c.margin_top = c.margin_bottom = E(1)
-        for k, para in enumerate(runs):
-            p = c.text_frame.paragraphs[0] if k == 0 else c.text_frame.add_paragraph(); p.alignment = al
-            for t, b, col, sz in para:
-                r = p.add_run(); r.text = t; r.font.bold = b; r.font.size = Pt(sz); r.font.name = FONT; r.font.color.rgb = rgb(col)
-    for j, h in enumerate(cols): cell(0, j, [[(h, True, 'FFFFFF', 10.5)]], G if j == 6 else (DG if j != 3 else '0B4D2A'), PP_ALIGN.CENTER if j in (1, 2) else PP_ALIGN.LEFT)
-    start, end = {}, {}
-    for i, (c, t) in enumerate(rows, start=1):
-        start.setdefault(c, i); end[c] = i
-        lo, hi = t['tier']; cell(i, 1, [[(f'≤ {hi} tm' if lo == 0 else f'{lo}–{hi} tm', True, '000000', 10)]], 'F2F2F2', PP_ALIGN.CENTER)
-        cell(i, 2, [[(str(t['units']), True, '000000', 10)]], 'F2F2F2', PP_ALIGN.CENTER)
-        ms = sorted(t['models'], key=lambda x: -x['q'])[:3]
-        for k in range(3):
-            if k < len(ms):
-                m = ms[k]; sh = m['q'] / t['units']
-                cell(i, 3 + k, [[(f"{m['nice']} {m['type']}", True, DG if k == 0 else '000000', 10 if k == 0 else 9.5),
-                                 (f"  {m['q']} units ({sh:.0%}) · {jt(m['p'])}", False, '595959', 8.5)]], LG if k == 0 else 'FFFFFF')
-            else: cell(i, 3 + k, [[('', False, '000000', 9)]])
-        cell(i, 6, [[(ferr(t), True, DG, 9.5)]], 'FFFFFF')
-    for c in classes:
-        if end[c] > start[c]: tb.cell(start[c], 0).merge(tb.cell(end[c], 0))
-        cell(start[c], 0, [[(c, True, 'FFFFFF' if c in DARK else '000000', 11)]], COL[c])
-    C.tx(36, 662, 1206, 34, [[('Source: Indonesia import records (Crane Market GVW Pairing v11), 2023 – 2026 (2026 partial year); folding cranes only; Hyva, Zoomlion, grabbers and telescopic cranes excluded. '
-        'Popularity = units imported. Price = average import price per unit (total value ÷ units) × Rp 17.803/USD, before import duty and tax. Model variants merged. '
-        'F.lli Ferrari models placed by lifting moment (flliferrari.it / price list June 2026).', False, '7F7F7F', 7)]])
-
-def s_focus():
-    focus = [(c, t) for c in d.CLS for t in POP[c] if t['units'] >= 20]
-    focus.sort(key=lambda ct: -ct[1]['units'])
-    tot = sum(t['units'] for c in d.CLS for t in POP[c]); fu = sum(t['units'] for _, t in focus)
-    C = deck.slide('Where to Focus with F.lli Ferrari/', 'Which models must we beat,', 'and at what price?',
-                   f'{len(focus)} tm classes take {fu / tot:.0%} of all units; each has one clear model to beat',
-                   [('Ranked by units imported in 2023 – 2026. ', False), ('Price to beat', True), (' = average import price of the #1 model, before duty and tax.', False)])
-    s = C.s
-    cols = ['#', 'Class', 'tm class', 'Units', 'Model to beat (#1)', 'Its share', 'Price to beat /unit', 'F.lli Ferrari model to offer']
-    W = [36, 80, 86, 62, 290, 86, 170, 396]; X0, Y0 = 36, 236
-    tb = s.shapes.add_table(1 + len(focus), len(cols), E(X0), E(Y0), E(sum(W)), E(300)).table
-    for j, w in enumerate(W): tb.columns[j].width = E(w)
-    rh = min(44, (640 - Y0 - 30) / len(focus)); tb.rows[0].height = E(30)
-    for i in range(1, len(focus) + 1): tb.rows[i].height = E(rh)
-    def cell(i, j, t, b=False, col='000000', fillc='FFFFFF', sz=10.5, al=PP_ALIGN.LEFT):
-        c = tb.cell(i, j); c.fill.solid(); c.fill.fore_color.rgb = rgb(fillc); c.vertical_anchor = MSO_ANCHOR.MIDDLE
-        c.margin_left = c.margin_right = E(6); p = c.text_frame.paragraphs[0]; p.alignment = al
-        r = p.add_run(); r.text = t; r.font.bold = b; r.font.size = Pt(sz); r.font.name = FONT; r.font.color.rgb = rgb(col)
-    for j, h in enumerate(cols): cell(0, j, h, True, 'FFFFFF', G if j == 7 else DG, 10.5, PP_ALIGN.CENTER if j in (0, 2, 3, 5) else PP_ALIGN.LEFT)
-    for i, (c, t) in enumerate(focus, start=1):
-        m = max(t['models'], key=lambda x: x['q']); lo, hi = t['tier']
-        cell(i, 0, str(i), True, '000000', 'F2F2F2', 10.5, PP_ALIGN.CENTER)
-        cell(i, 1, c, True, 'FFFFFF' if c in DARK else '000000', COL[c])
-        cell(i, 2, f'{lo}–{hi} tm', True, '000000', 'F2F2F2', 10.5, PP_ALIGN.CENTER)
-        cell(i, 3, str(t['units']), True, '000000', 'F2F2F2', 10.5, PP_ALIGN.CENTER)
-        cell(i, 4, f"{m['nice']} {m['type']}", True, DG, LG)
-        cell(i, 5, f"{m['q'] / t['units']:.0%}", False, '000000', 'FFFFFF', 10.5, PP_ALIGN.CENTER)
-        cell(i, 6, jt(m['p']), True, '000000')
-        f = ferr(t); cell(i, 7, f if f != '–' else 'No model in this size: please advise', f != '–', DG if f != '–' else 'C55A11', 'FFFFFF', 10.5)
-    C.tx(36, 662, 1206, 30, [[('Source: Indonesia import records (Crane Market GVW Pairing v11), 2023 – 2026 (2026 partial year); folding cranes only. Price to beat = average import price per unit of the #1 model '
-        '(total value ÷ units) × Rp 17.803/USD, before import duty, tax and distributor margin. tm classes with fewer than 20 units in 2023 – 2026 not shown.', False, '7F7F7F', 7.5)]])
-
-s_market_all()
-s_popular(['Light', 'Small'], 'Most Popular Cranes: Light & Small/', 'Light & Small: Sany Palfinger leads; SPK8500 and SPK23500 are the volume models',
-          [('Light and Small: ', False), (f"{sum(t['units'] for c in ('Light', 'Small') for t in POP[c])} units", True), (' imported in 2023 – 2026. ', False),
-           ('5–8 tm and 20–25 tm', True), (' are the two biggest tm classes.', False)])
-s_popular(['Medium', 'Heavy'], 'Most Popular Cranes: Medium & Heavy/', 'Medium is split between Sany Palfinger, Amco Veba and HIAB; Heavy is Palfinger PK 53002',
-          [('Medium and Heavy: ', False), (f"{sum(t['units'] for c in ('Medium', 'Heavy') for t in POP[c])} units", True), (' imported in 2023 – 2026. ', False),
-           ('30–35 tm and 35–40 tm', True), (' are the biggest Medium classes; PK 53002 alone is 39 of 65 Heavy units.', False)])
-s_focus()
-deck.save('v7/Ferrari_Meeting_Popular_Cranes.pptx'); print('saved')
+        c.margin_left = c.margin_right = E(8); c.margin_top = c.margin_bottom = E(1)
+        p = c.text_frame.paragraphs[0]; p.alignment = al; r = p.add_run(); r.text = text
+        r.font.name = FONT; r.font.size = Pt(sz); r.font.bold = bold; r.font.color.rgb = rgb(color)
+    for j, h in enumerate(head): cell(0, j, h, True, DG, 'FFFFFF', 12, PP_ALIGN.RIGHT if j >= len(head) - 3 else PP_ALIGN.LEFT)
+    return tb, cell
+# ---------- slide 1: overview, most popular model per tm range ----------
+rows = []
+for c in d.CLS:
+    for t in cm.tiers(c):
+        m = pop(t, 1)[0]; rows.append((c, t, m))
+C = deck.slide('Most Popular Cranes in Indonesia/', 'Which crane sells most', 'in each tm range?',
+               'Sany Palfinger, Palfinger and Amco Veba sell the most popular model in nearly every tm range',
+               [('Folding cranes imported into Indonesia, ', False), ('2023 – 2026', True), ('. One row per tm range: the model with the most units sold.', False)])
+widths = [110, 140, 200, 220, 130, 200, 206]
+tb, cell = table(C, rows, widths, 236, 25.5, ['Class', 'tm range', 'Brand', 'Model', 'Units sold', 'Price / unit (USD)', 'Price / unit (Rp)'])
+start = {}
+for i, (c, t, m) in enumerate(rows, start=1):
+    start.setdefault(c, [i, i])[1] = i
+    fill = 'FFFFFF' if i % 2 else 'F7F7F7'
+    cell(i, 1, lab(t['tier']), True, fill, '000000', 11)
+    cell(i, 2, m['nice'], False, fill, '000000', 11)
+    cell(i, 3, m['type'], True, fill, DG, 11)
+    cell(i, 4, f"{m['q']}", False, fill, '000000', 11, PP_ALIGN.RIGHT)
+    cell(i, 5, usd(m['usd'] / m['q']), False, fill, '000000', 11, PP_ALIGN.RIGHT)
+    cell(i, 6, idr(m['usd'] / m['q']), False, fill, '595959', 11, PP_ALIGN.RIGHT)
+for c, (a, b) in start.items():
+    if b > a: tb.cell(a, 0).merge(tb.cell(b, 0))
+    cell(a, 0, c, True, COL[c], 'FFFFFF' if c in DARK else '000000', 12)
+C.tx(36, 680, 1206, 30, [[(NOTE, False, '7F7F7F', 7.5)]])
+# ---------- slides 2-5: top 3 per tm range, per class ----------
+for c in d.CLS:
+    T = cm.tiers(c); rows = [(t, r, m) for t in T for r, m in enumerate(pop(t, 3), start=1)]
+    tu = sum(t['units'] for t in T); top = max(T, key=lambda t: t['units']); tm_ = pop(top, 1)[0]
+    C = deck.slide(f'{c} Class ({RANGE[c]})/', 'Top 3 models', 'in each tm range',
+                   f"{c}: {tm_['nice']} {tm_['type']} is the best seller, {tm_['q']} units in {lab(top['tier'])}",
+                   [(f'{c} class: ', False), (f'{tu} units imported in 2023 – 2026', True), ('. Up to three best-selling models per tm range.', False)])
+    rh = min(34, (650 - 236 - 30) / len(rows))
+    widths = [150, 70, 210, 250, 140, 190, 196]
+    tb, cell = table(C, rows, widths, 236, rh, ['tm range', '#', 'Brand', 'Model', 'Units sold', 'Price / unit (USD)', 'Price / unit (Rp)'])
+    span = {}
+    for i, (t, r, m) in enumerate(rows, start=1):
+        span.setdefault(t['tier'], [i, i, t])[1] = i
+        fill = LG if r == 1 else 'FFFFFF'; sz = 12 if len(rows) <= 9 else 11
+        cell(i, 1, str(r), r == 1, fill, G if r == 1 else '7F7F7F', sz)
+        cell(i, 2, m['nice'], r == 1, fill, '000000', sz)
+        cell(i, 3, m['type'], True, fill, DG if r == 1 else '000000', sz)
+        cell(i, 4, f"{m['q']}", r == 1, fill, '000000', sz, PP_ALIGN.RIGHT)
+        cell(i, 5, usd(m['usd'] / m['q']), False, fill, '000000', sz, PP_ALIGN.RIGHT)
+        cell(i, 6, idr(m['usd'] / m['q']), False, fill, '595959', sz, PP_ALIGN.RIGHT)
+    for tr, (a, b, t) in span.items():
+        if b > a: tb.cell(a, 0).merge(tb.cell(b, 0))
+        cc = tb.cell(a, 0); cc.fill.solid(); cc.fill.fore_color.rgb = rgb('F2F2F2'); cc.vertical_anchor = MSO_ANCHOR.MIDDLE
+        cc.margin_left = E(8); tf = cc.text_frame; p = tf.paragraphs[0]
+        for txt, bo, col, sz in [(lab(tr), True, G, 13)]:
+            r = p.add_run(); r.text = txt; r.font.name = FONT; r.font.size = Pt(sz); r.font.bold = bo; r.font.color.rgb = rgb(col)
+        p2 = tf.add_paragraph(); r = p2.add_run(); r.text = f"{t['units']} unit{'s' if t['units'] > 1 else ''} in total"; r.font.name = FONT; r.font.size = Pt(9.5); r.font.color.rgb = rgb('595959')
+    C.tx(36, 680, 1206, 30, [[(NOTE, False, '7F7F7F', 7.5)]])
+deck.save('v7/Ferrari_Meeting_Popular_Cranes.pptx'); print('ok')
