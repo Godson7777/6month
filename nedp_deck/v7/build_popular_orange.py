@@ -138,12 +138,12 @@ for j, c in enumerate(d.CLS):
         tx(s, x + 128, yy + 87, cw - 136, 16, [[(f"{jt(m['p'])} /unit", False, DK, 9)]])
 # ---------- detail slides ----------
 pg = 3
-spec = [('Light', [(0, 5), (5, 8)], 'Light (≤ 8 tm): Sany Palfinger SPK8500 is the volume model'),
+spec = [('Light', [(0, 5), (5, 8)], 'Light (≤ 8 tm): SPK8500 is the volume model'),
         ('Small', [(8, 10), (10, 15)], 'Small (8 – 15 tm): SPK15500 leads 10–15 tm'),
         ('Small', [(15, 20), (20, 25)], 'Small (15 – 25 tm): SPK23500 is 70 of 87 units at 20–25 tm'),
-        ('Medium', [(25, 30), (30, 35)], 'Medium (25 – 35 tm): Amco Veba V825 and Sany Palfinger SPK32080 lead'),
-        ('Medium', [(35, 40), (40, 45)], 'Medium (35 – 45 tm): Sany Palfinger SPK36080 and SPK42502 lead'),
-        ('Heavy', [(45, 50), (50, 55)], 'Heavy (45 – 55 tm): Amco Veba V950 and Palfinger PK 53002 lead')]
+        ('Medium', [(25, 30), (30, 35)], 'Medium (25 – 35 tm): V825 and SPK32080 lead'),
+        ('Medium', [(35, 40), (40, 45)], 'Medium (35 – 45 tm): SPK36080 and SPK42502 lead'),
+        ('Heavy', [(45, 50), (50, 55)], 'Heavy (45 – 55 tm): V950 and PK 53002 lead')]
 for cls, trs, title in spec:
     s = frame(title, f'Top models by units imported, 2023 – 2026 · {cls} class', pg); pg += 1
     for k, tr in enumerate(trs): tier_row(s, 116 + k * 290, 278, cls, tiers[(cls, tr)])
