@@ -45,6 +45,9 @@ for i in range(6):
             txt, bo, col, sz = [str(i), f"{r['brand']} {r['model']}", r['lab'], str(r['units']), why[i-1]][j], j in (0, 1), DG if j == 1 else '000000', 13 if j < 4 else 12
         c.fill.fore_color.rgb = rgb(fc); p = c.text_frame.paragraphs[0]; run = p.add_run(); run.text = txt
         run.font.size = Pt(sz); run.font.bold = bo; run.font.name = FONT; run.font.color.rgb = rgb(col)
+C.box(36, 628, 1206, 42, 'F2F2F2')
+C.tx(46, 632, 1186, 36, [[('How to read: ', True, '000000', 10), ('tm = ton-meter (lifting moment). Light ≤ 8 tm · Small 8–25 tm · Medium 25–45 tm · Heavy > 45 tm. Units = cranes imported into Indonesia, Jan 2023 – Aug 2026. '
+    'Green rows = F.lli Ferrari models. Lead time without stock: China 14 weeks, Italy 25 weeks, Brazil 27 weeks (F.lli Ferrari price list).', False, '000000', 10)]])
 C.tx(36, 680, 1206, 30, [[(SRC, False, '7F7F7F', 7.5)]])
 # ---- 2: demand chart ----
 C = deck.slide('Where the Demand Is/', 'Do these tm ranges', 'really sell?',
@@ -52,26 +55,32 @@ C = deck.slide('Where the Demand Is/', 'Do these tm ranges', 'really sell?',
                [('Units imported per tm range, 2023 – 2026. ', False), ('Green = range we stock.', True)])
 keys = [k for k in T if T[k]['units'] >= 3]
 sel = {k for _, _, tiers, *_ in REC for k in tiers}
-cats = [f"{k[0][0]} {k[1][0]}–{k[1][1]}" for k in keys]
-ch = C.chart(XL_CHART_TYPE.COLUMN_CLUSTERED, 36, 236, 1206, 420, cats, [('Units', [T[k]['units'] for k in keys])], gap=40, serlines=False)
+cats = [f"{k[0]}\n{k[1][0]}–{k[1][1]} tm" for k in keys]
+ch = C.chart(XL_CHART_TYPE.COLUMN_CLUSTERED, 36, 236, 1206, 390, cats, [('Units', [T[k]['units'] for k in keys])], gap=40, serlines=False)
 se = ch.plots[0].series[0]; dl = se.data_labels; dl.show_value = True; dl.position = XL_LABEL_POSITION.OUTSIDE_END; dl.font.size = Pt(12); dl.font.bold = True; dl.font.name = FONT
 for i, k in enumerate(keys):
     pt = se.points[i]; pt.format.fill.solid(); pt.format.fill.fore_color.rgb = rgb(G if k in sel else 'BFBFBF')
 ch.category_axis.tick_labels.font.size = Pt(10)
-C.tx(36, 680, 1206, 30, [[('L = Light, S = Small, M = Medium, H = Heavy. ' + SRC, False, '7F7F7F', 7.5)]])
+C.box(36, 632, 1206, 40, 'F2F2F2')
+C.tx(46, 636, 1186, 34, [[('How to read: ', True, '000000', 10), ('tm = ton-meter (lifting moment = load × reach). Classes: Light ≤ 8 tm · Small 8–25 tm · Medium 25–45 tm · Heavy > 45 tm, each split into 5-tm ranges. '
+    'Bars = cranes imported into Indonesia in each range, Jan 2023 – Aug 2026. Green = range where we recommend stock.', False, '000000', 10)]])
+C.tx(36, 680, 1206, 30, [[(SRC, False, '7F7F7F', 7.5)]])
 # ---- 3: price chart ----
 C = deck.slide('Price vs Best-Seller/', 'Can we win', 'on price?',
                'In every recommended range our crane costs less than the best-seller',
                [('Price per unit, Rp Jt. ', False), ('Grey = best-seller, green = our crane.', True)])
-cats = [f"{r['model']} vs {r['lead'].split(' ', 1)[1] if r['lead'].startswith('Amco') or r['lead'].startswith('Sany') else r['lead'].split(' ', 1)[1]}" for r in rows]
-ch = C.chart(XL_CHART_TYPE.BAR_CLUSTERED, 36, 236, 900, 420, cats, [('Best-seller', [round(r['lp']/1e6) for r in rows]), ('Our crane', [round(r['p']/1e6) for r in rows])], gap=50, serlines=False)
+cats = [f"{r['lab']}: {r['model']} vs {r['lead']}" for r in rows]
+ch = C.chart(XL_CHART_TYPE.BAR_CLUSTERED, 36, 236, 900, 380, cats, [('Best-seller', [round(r['lp']/1e6) for r in rows]), ('Our crane', [round(r['p']/1e6) for r in rows])], gap=50, serlines=False)
 ch.plots[0].overlap = -10
 for k, col in enumerate(['BFBFBF', G]):
     se = ch.plots[0].series[k]; se.format.fill.solid(); se.format.fill.fore_color.rgb = rgb(col)
     dl = se.data_labels; dl.show_value = True; dl.position = XL_LABEL_POSITION.OUTSIDE_END; dl.font.size = Pt(11); dl.font.name = FONT; dl.number_format = '#,##0'; dl.number_format_is_linked = False
 ch.category_axis.reverse_order = True; ch.category_axis.tick_labels.font.size = Pt(11)
-C.legend(40, 660, 160, [('BFBFBF', 'Best-seller'), (G, 'Our crane')])
+C.legend(40, 618, 160, [('BFBFBF', 'Best-seller'), (G, 'Our crane')])
+C.box(36, 636, 1206, 40, 'F2F2F2')
+C.tx(46, 640, 1186, 34, [[('How to read: ', True, '000000', 10), ('Best-seller = model with the highest import value in that tm range. Price = cost per unit, crane only, before Triatra margin: competitors at average import price, '
+    'F.lli Ferrari at price list less TSP GP, XCMG at average import price. Rp Jt = million rupiah.', False, '000000', 10)]])
 for i, r in enumerate(rows):
-    C.tx(960, 250 + i * 80, 280, 50, [[(f"−{jt(r['lp'] - r['p'])}", True, G, 16)], [('cheaper per unit', False, '595959', 10)]])
+    C.tx(960, 246 + i * 72, 280, 50, [[(f"−{jt(r['lp'] - r['p'])}", True, G, 16)], [('cheaper per unit', False, '595959', 10)]])
 C.tx(36, 680, 1206, 30, [[(SRC, False, '7F7F7F', 7.5)]])
 deck.save('v7/Stock_Recommendation_5.pptx'); print('ok', tot, allu)
